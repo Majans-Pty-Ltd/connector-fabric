@@ -12,11 +12,12 @@ if os.path.isdir(ADOMD_DLL_PATH):
     sys.path.insert(0, ADOMD_DLL_PATH)
     os.environ["PATH"] = ADOMD_DLL_PATH + os.pathsep + os.environ.get("PATH", "")
 
-import clr
+import clr  # noqa: E402
+
 dll_path = os.path.join(ADOMD_DLL_PATH, "Microsoft.AnalysisServices.AdomdClient.dll")
 clr.AddReference(dll_path)
 
-from pyadomd import Pyadomd
+from pyadomd import Pyadomd  # noqa: E402
 
 TENANT_ID = os.getenv("AZURE_TENANT_ID")
 CLIENT_ID = os.getenv("AZURE_CLIENT_ID")

@@ -30,8 +30,13 @@ DATASET_NAME = os.getenv("PBI_DATASET_NAME")
 def check_env():
     """Verify all required environment variables are set."""
     missing = []
-    for var in ["AZURE_TENANT_ID", "AZURE_CLIENT_ID", "AZURE_CLIENT_SECRET",
-                "PBI_XMLA_ENDPOINT", "PBI_DATASET_NAME"]:
+    for var in [
+        "AZURE_TENANT_ID",
+        "AZURE_CLIENT_ID",
+        "AZURE_CLIENT_SECRET",
+        "PBI_XMLA_ENDPOINT",
+        "PBI_DATASET_NAME",
+    ]:
         if not os.getenv(var):
             missing.append(var)
     if missing:
@@ -95,7 +100,10 @@ def test_xmla_connection(token):
     print("\n--- Stage 3: XMLA Endpoint Test ---")
     try:
         import clr
-        dll_path = os.path.join(ADOMD_DLL_PATH, "Microsoft.AnalysisServices.AdomdClient.dll")
+
+        dll_path = os.path.join(
+            ADOMD_DLL_PATH, "Microsoft.AnalysisServices.AdomdClient.dll"
+        )
         if os.path.isfile(dll_path):
             clr.AddReference(dll_path)
             print(f"OK: Loaded ADOMD.NET DLL from {dll_path}")
@@ -123,7 +131,7 @@ def test_xmla_connection(token):
         print("OK: XMLA connection opened successfully!")
 
         # Run a simple DAX query to confirm data access
-        query = "EVALUATE ROW(\"Test\", 1)"
+        query = 'EVALUATE ROW("Test", 1)'
         cursor1 = conn.cursor()
         cursor1.execute(query)
         rows = cursor1.fetchall()
@@ -153,7 +161,9 @@ def test_xmla_connection(token):
         print(f"FAIL: XMLA connection error: {e}")
         if "MSOLAP" in str(e):
             print("Install the MSOLAP provider from:")
-            print("https://learn.microsoft.com/en-us/analysis-services/client-libraries")
+            print(
+                "https://learn.microsoft.com/en-us/analysis-services/client-libraries"
+            )
         return False
 
 

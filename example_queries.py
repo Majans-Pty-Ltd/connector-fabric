@@ -12,9 +12,12 @@ if os.path.isdir(ADOMD_DLL_PATH):
     sys.path.insert(0, ADOMD_DLL_PATH)
     os.environ["PATH"] = ADOMD_DLL_PATH + os.pathsep + os.environ.get("PATH", "")
 
-import clr
-clr.AddReference(os.path.join(ADOMD_DLL_PATH, "Microsoft.AnalysisServices.AdomdClient.dll"))
-from pyadomd import Pyadomd
+import clr  # noqa: E402
+
+clr.AddReference(
+    os.path.join(ADOMD_DLL_PATH, "Microsoft.AnalysisServices.AdomdClient.dll")
+)
+from pyadomd import Pyadomd  # noqa: E402
 
 TENANT_ID = os.getenv("AZURE_TENANT_ID")
 CLIENT_ID = os.getenv("AZURE_CLIENT_ID")
@@ -35,9 +38,9 @@ conn_str = (
 
 def run_query(conn, name, dax):
     """Run a DAX query and print results."""
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"  {name}")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     cur = conn.cursor()
     cur.execute(dax)
     cols = [col[0] for col in cur.description]
@@ -59,17 +62,24 @@ conn = Pyadomd(conn_str)
 conn.open()
 
 # 1. Total scan sales and units by customer
-run_query(conn, "Sales & Units by Customer", """
+run_query(
+    conn,
+    "Sales & Units by Customer",
+    """
 EVALUATE
 SUMMARIZECOLUMNS(
     'ITEMS'[CUSTOMER],
     "TotalSales", SUM('SCAN'[SALES]),
     "TotalUnits", SUM('SCAN'[UNITS])
 )
-""")
+""",
+)
 
 # 2. Top 10 products by scan units
-run_query(conn, "Top 10 Products by Scan Units", """
+run_query(
+    conn,
+    "Top 10 Products by Scan Units",
+    """
 EVALUATE
 TOPN(
     10,
@@ -82,20 +92,28 @@ TOPN(
     ),
     [TotalUnits], DESC
 )
-""")
+""",
+)
 
 # 3. Scan data by fiscal year
-run_query(conn, "Sales by Fiscal Year", """
+run_query(
+    conn,
+    "Sales by Fiscal Year",
+    """
 EVALUATE
 SUMMARIZECOLUMNS(
     'DATE'[FISCALYEAR],
     "TotalSales", SUM('SCAN'[SALES]),
     "TotalUnits", SUM('SCAN'[UNITS])
 )
-""")
+""",
+)
 
 # 4. Category breakdown
-run_query(conn, "Sales by Category", """
+run_query(
+    conn,
+    "Sales by Category",
+    """
 EVALUATE
 SUMMARIZECOLUMNS(
     'ITEMS'[CATEGORY],
@@ -103,16 +121,21 @@ SUMMARIZECOLUMNS(
     "TotalUnits", SUM('SCAN'[UNITS]),
     "SKUCount", DISTINCTCOUNT('ITEMS'[EAN])
 )
-""")
+""",
+)
 
 # 5. Demand units by customer
-run_query(conn, "Demand Units by Customer", """
+run_query(
+    conn,
+    "Demand Units by Customer",
+    """
 EVALUATE
 SUMMARIZECOLUMNS(
     'CUSTOMER'[CUSTOMER],
     "DemandUnits", SUM('DEMAND'[UNITS])
 )
-""")
+""",
+)
 
 conn.close()
 print("\nDone.")

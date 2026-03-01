@@ -9,7 +9,6 @@ Requires: pip install mcp pyadomd python-dotenv pythonnet
 
 import os
 import sys
-import traceback
 
 # --- CLR INITIALIZATION (must happen before pyadomd import) ---
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -18,12 +17,15 @@ if os.path.isdir(ADOMD_DLL_PATH):
     sys.path.insert(0, ADOMD_DLL_PATH)
     os.environ["PATH"] = ADOMD_DLL_PATH + os.pathsep + os.environ.get("PATH", "")
 
-import clr
-clr.AddReference(os.path.join(ADOMD_DLL_PATH, "Microsoft.AnalysisServices.AdomdClient.dll"))
+import clr  # noqa: E402
 
-from pyadomd import Pyadomd
-from dotenv import load_dotenv
-from mcp.server.fastmcp import FastMCP
+clr.AddReference(
+    os.path.join(ADOMD_DLL_PATH, "Microsoft.AnalysisServices.AdomdClient.dll")
+)
+
+from pyadomd import Pyadomd  # noqa: E402
+from dotenv import load_dotenv  # noqa: E402
+from mcp.server.fastmcp import FastMCP  # noqa: E402
 
 # --- CONFIGURATION ---
 load_dotenv(os.path.join(SCRIPT_DIR, ".env"))
@@ -157,7 +159,9 @@ def _to_markdown_table(headers: list, rows: list, max_rows: int = 100) -> str:
         lines.append("| " + " | ".join(fmt(v) for v in row) + " |")
 
     if total > max_rows:
-        lines.append(f"\n*Showing {max_rows} of {total} rows. Use max_rows parameter to see more.*")
+        lines.append(
+            f"\n*Showing {max_rows} of {total} rows. Use max_rows parameter to see more.*"
+        )
     else:
         lines.append(f"\n*{total} row(s)*")
 
@@ -165,7 +169,9 @@ def _to_markdown_table(headers: list, rows: list, max_rows: int = 100) -> str:
 
 
 @mcp.tool()
-def pbi_query(query: str, max_rows: int = 100, workspace: str = DEFAULT_WORKSPACE) -> str:
+def pbi_query(
+    query: str, max_rows: int = 100, workspace: str = DEFAULT_WORKSPACE
+) -> str:
     """Execute a DAX query against a Power BI semantic model.
 
     Args:
@@ -286,11 +292,14 @@ def pbi_test_connection(workspace: str = DEFAULT_WORKSPACE) -> str:
             result.insert(0, "Connection: OK")
             result.append(f"Dataset: {ws['dataset']}")
 
-            headers2, rows2 = _execute("""
+            headers2, rows2 = _execute(
+                """
                 SELECT [TABLE_NAME]
                 FROM $SYSTEM.DBSCHEMA_TABLES
                 WHERE [TABLE_TYPE] = 'TABLE'
-            """, workspace)
+            """,
+                workspace,
+            )
             result.append(f"\nTables ({len(rows2)}):")
             for row in rows2:
                 result.append(f"  - {row[0]}")
@@ -314,7 +323,6 @@ def pbi_test_connection(workspace: str = DEFAULT_WORKSPACE) -> str:
                 SELECT [CATALOG_NAME]
                 FROM $SYSTEM.DBSCHEMA_CATALOGS
             """)
-            headers = [col[0] for col in cur.description] if cur.description else []
             rows = cur.fetchall()
             cur.close()
 
@@ -378,7 +386,9 @@ def pbi_discover_workspaces() -> str:
     headers = {"Authorization": f"Bearer {token}"}
 
     try:
-        resp = requests.get("https://api.powerbi.com/v1.0/myorg/groups", headers=headers, timeout=30)
+        resp = requests.get(
+            "https://api.powerbi.com/v1.0/myorg/groups", headers=headers, timeout=30
+        )
         if resp.status_code != 200:
             return f"REST API error ({resp.status_code}): {resp.text}"
         workspaces = resp.json().get("value", [])
@@ -391,7 +401,9 @@ def pbi_discover_workspaces() -> str:
         ws_name = ws["name"]
         lines.append(f"### {ws_name}")
         lines.append(f"- ID: `{ws_id}`")
-        lines.append(f"- XMLA endpoint: `powerbi://api.powerbi.com/v1.0/myorg/{ws_name}`")
+        lines.append(
+            f"- XMLA endpoint: `powerbi://api.powerbi.com/v1.0/myorg/{ws_name}`"
+        )
 
         # List datasets in this workspace
         try:

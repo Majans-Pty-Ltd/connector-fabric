@@ -15,7 +15,6 @@ Schedule via Windows Task Scheduler:
 import json
 import os
 import subprocess
-import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -36,11 +35,26 @@ D365_UAT_URL = "https://majans-uat.sandbox.operations.dynamics.com"
 D365_PROD_URL = "https://majans.operations.dynamics.com"
 
 PBI_WORKSPACES = {
-    "SCAN": {"endpoint": "powerbi://api.powerbi.com/v1.0/myorg/DEMAND", "dataset": "SCANv2"},
-    "REVIEW": {"endpoint": "powerbi://api.powerbi.com/v1.0/myorg/REVIEW", "dataset": "FINANCIALv2"},
-    "SUPPLY": {"endpoint": "powerbi://api.powerbi.com/v1.0/myorg/SUPPLY", "dataset": "MANUFACTURING V3"},
-    "DEMAND": {"endpoint": "powerbi://api.powerbi.com/v1.0/myorg/DEMAND", "dataset": "SALESv2"},
-    "IT_COST": {"endpoint": "powerbi://api.powerbi.com/v1.0/myorg/IT COST", "dataset": "IT COST"},
+    "SCAN": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/DEMAND",
+        "dataset": "SCANv2",
+    },
+    "REVIEW": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/REVIEW",
+        "dataset": "FINANCIALv2",
+    },
+    "SUPPLY": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/SUPPLY",
+        "dataset": "MANUFACTURING V3",
+    },
+    "DEMAND": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/DEMAND",
+        "dataset": "SALESv2",
+    },
+    "IT_COST": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/IT COST",
+        "dataset": "IT COST",
+    },
 }
 
 OUTPUT_PATH = Path.home() / ".claude" / "memory" / "mcp-health.json"
@@ -116,7 +130,9 @@ def check_pbi_rest() -> dict:
             groups = api_resp.json().get("value", [])
             workspace_names = [g["name"] for g in groups]
             result["status"] = "connected"
-            result["details"] = f"{len(groups)} workspaces: {', '.join(workspace_names)}"
+            result["details"] = (
+                f"{len(groups)} workspaces: {', '.join(workspace_names)}"
+            )
         else:
             result["status"] = "failed"
             result["details"] = f"API call failed ({api_resp.status_code})"
@@ -133,8 +149,7 @@ def check_1password() -> dict:
 
     try:
         version = subprocess.run(
-            ["op", "--version"],
-            capture_output=True, text=True, timeout=10
+            ["op", "--version"], capture_output=True, text=True, timeout=10
         )
         if version.returncode != 0:
             result["status"] = "not_installed"
@@ -142,8 +157,7 @@ def check_1password() -> dict:
             return result
 
         whoami = subprocess.run(
-            ["op", "whoami"],
-            capture_output=True, text=True, timeout=10
+            ["op", "whoami"], capture_output=True, text=True, timeout=10
         )
         if whoami.returncode == 0:
             result["status"] = "signed_in"
@@ -168,22 +182,30 @@ def check_secret_expiry() -> list[dict]:
     # Known Entra app secrets with expiry dates
     # These are manually tracked since op CLI doesn't expose expiry natively
     secrets_to_track = [
-        {"name": "Majans Service Principal", "vault": "Majans Dev", "expires": "2027-12-02"},
+        {
+            "name": "Majans Service Principal",
+            "vault": "Majans Dev",
+            "expires": "2027-12-02",
+        },
     ]
 
     now = datetime.now(timezone.utc)
     for secret in secrets_to_track:
         try:
-            expiry = datetime.strptime(secret["expires"], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            expiry = datetime.strptime(secret["expires"], "%Y-%m-%d").replace(
+                tzinfo=timezone.utc
+            )
             days_left = (expiry - now).days
             if days_left < 90:
-                warnings.append({
-                    "item": secret["name"],
-                    "vault": secret["vault"],
-                    "expires": secret["expires"],
-                    "days_left": days_left,
-                    "severity": "critical" if days_left < 30 else "warning",
-                })
+                warnings.append(
+                    {
+                        "item": secret["name"],
+                        "vault": secret["vault"],
+                        "expires": secret["expires"],
+                        "days_left": days_left,
+                        "severity": "critical" if days_left < 30 else "warning",
+                    }
+                )
         except ValueError:
             pass
 
@@ -216,9 +238,9 @@ def main():
     expiry_warnings = check_secret_expiry()
 
     # Print summary
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print(f"{'System':<20} {'Status':<15} {'Details'}")
-    print(f"{'='*50}")
+    print(f"{'=' * 50}")
     for r in results:
         status_icon = {
             "connected": "OK",
@@ -232,16 +254,20 @@ def main():
         print(f"{r['system']:<20} {status_icon:<15} {r['details'][:60]}")
 
     if expiry_warnings:
-        print(f"\n--- Secret Expiry Warnings ---")
+        print("\n--- Secret Expiry Warnings ---")
         for w in expiry_warnings:
-            print(f"  {w['severity'].upper()}: {w['item']} expires {w['expires']} ({w['days_left']} days)")
+            print(
+                f"  {w['severity'].upper()}: {w['item']} expires {w['expires']} ({w['days_left']} days)"
+            )
 
     # Write JSON output
     output = {
         "timestamp": timestamp,
         "results": results,
         "expiry_warnings": expiry_warnings,
-        "all_healthy": all(r["status"] in ("connected", "signed_in", "skipped") for r in results),
+        "all_healthy": all(
+            r["status"] in ("connected", "signed_in", "skipped") for r in results
+        ),
     }
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
