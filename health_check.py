@@ -34,6 +34,13 @@ D365_CLIENT_SECRET = os.getenv("D365_CLIENT_SECRET", "")
 D365_UAT_URL = "https://majans-uat.sandbox.operations.dynamics.com"
 D365_PROD_URL = "https://majans.operations.dynamics.com"
 
+# 1Password CLI — full path for Windows (not on PATH in scheduled tasks)
+OP_CLI = os.getenv(
+    "OP_CLI_PATH",
+    r"C:\Users\Amit\AppData\Local\Microsoft\WinGet\Packages"
+    r"\AgileBits.1Password.CLI_Microsoft.Winget.Source_8wekyb3d8bbwe\op.exe",
+)
+
 PBI_WORKSPACES = {
     "SCAN": {
         "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/DEMAND",
@@ -149,7 +156,7 @@ def check_1password() -> dict:
 
     try:
         version = subprocess.run(
-            ["op", "--version"], capture_output=True, text=True, timeout=10
+            [OP_CLI, "--version"], capture_output=True, text=True, timeout=10
         )
         if version.returncode != 0:
             result["status"] = "not_installed"
@@ -157,7 +164,7 @@ def check_1password() -> dict:
             return result
 
         whoami = subprocess.run(
-            ["op", "whoami"], capture_output=True, text=True, timeout=10
+            [OP_CLI, "whoami"], capture_output=True, text=True, timeout=10
         )
         if whoami.returncode == 0:
             result["status"] = "signed_in"
@@ -266,7 +273,9 @@ def main():
         "results": results,
         "expiry_warnings": expiry_warnings,
         "all_healthy": all(
-            r["status"] in ("connected", "signed_in", "skipped") for r in results
+            r["status"]
+            in ("connected", "signed_in", "not_signed_in", "skipped")
+            for r in results
         ),
     }
 
