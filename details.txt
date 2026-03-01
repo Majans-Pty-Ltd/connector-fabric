@@ -1,0 +1,5 @@
+tenant id: d54794b1-f598-4c0f-a276-6039a39774ac
+application id: 6028b4a4-5849-4425-91fa-b1768a8b8b51
+secretname: xmla
+secret: ir18Q~0oZQ5qITQYa49UdNfN-flAGtq-DxpozaIJ
+

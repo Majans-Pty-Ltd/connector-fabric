@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip --version:*)",
+      "Bash(reg query:*)",
+      "Bash(pip install:*)",
+      "Bash(python test_connection.py:*)",
+      "Bash(where:*)",
+      "Bash(curl:*)",
+      "Bash(powershell -Command \"Invoke-WebRequest -Uri ''https://www.nuget.org/api/v2/package/Microsoft.AnalysisServices.AdomdClient.retail.amd64'' -OutFile ''adomd.zip''\")",
+      "Bash(powershell -Command \"Expand-Archive -Path ''adomd.zip'' -DestinationPath ''adomd_package'' -Force\")",
+      "Bash(dir:*)",
+      "Bash(python:*)"
+    ]
+  }
+}

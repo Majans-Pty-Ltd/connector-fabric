@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.AnalysisServices.AdomdClient.retail.amd64</id>
+    <version>19.84.1</version>
+    <authors>Microsoft</authors>
+    <owners>NuGetAnalysisSrvs</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://go.microsoft.com/fwlink/?linkid=852895</licenseUrl>
+    <projectUrl>https://docs.microsoft.com/en-us/sql/analysis-services/tabular-models/tabular-models-ssas?view=sql-server-2017</projectUrl>
+    <description>ADOMD.NET is a Microsoft .NET Framework data provider to communicate with Azure Analysis Services and Microsoft SQL Server Analysis Services.</description>
+    <releaseNotes>NuGet package for Microsoft.AnalysisServices.AdomdClient</releaseNotes>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <tags>SSAS Adomd AdomdClient Microsoft Analysis-Services</tags>
+    <dependencies>
+      <dependency id="Microsoft.Identity.Client" version="4.56.0" />
+    </dependencies>
+  </metadata>
+</package>
