@@ -421,12 +421,16 @@ def fabric_list_configured_workspaces() -> str:
 
 
 @mcp.tool()
-def fabric_discover_workspaces() -> str:
+def fabric_discover_workspaces(format: str = "markdown") -> str:
     """Discover all Fabric workspaces the service principal can access.
 
     Uses the Power BI REST API to list workspaces and their datasets.
     Use this to find workspace IDs needed for other Fabric REST tools.
+
+    Args:
+        format: Output format — "markdown" (default) or "json" for structured data.
     """
+    import json
     import requests
 
     try:
@@ -445,6 +449,24 @@ def fabric_discover_workspaces() -> str:
         workspaces = resp.json().get("value", [])
     except Exception as e:
         return f"REST API error: {e}"
+
+    if format == "json":
+        result = []
+        for ws in workspaces:
+            ws_id = ws["id"]
+            ws_entry = {"id": ws_id, "name": ws["name"], "datasets": []}
+            try:
+                ds_resp = requests.get(
+                    f"https://api.powerbi.com/v1.0/myorg/groups/{ws_id}/datasets",
+                    headers=headers, timeout=30,
+                )
+                if ds_resp.status_code == 200:
+                    for ds in ds_resp.json().get("value", []):
+                        ws_entry["datasets"].append({"id": ds["id"], "name": ds["name"]})
+            except Exception:
+                pass
+            result.append(ws_entry)
+        return json.dumps(result)
 
     lines = [f"## Fabric Workspaces ({len(workspaces)} found)\n"]
     for ws in workspaces:
@@ -484,13 +506,17 @@ def fabric_discover_workspaces() -> str:
 
 
 @mcp.tool()
-def fabric_list_workspace_items(workspace_id: str, item_type: str = "") -> str:
+def fabric_list_workspace_items(
+    workspace_id: str, item_type: str = "", format: str = "markdown"
+) -> str:
     """List items in a Fabric workspace (semantic models, pipelines, lakehouses, etc.).
 
     Args:
         workspace_id: The workspace GUID (use fabric_discover_workspaces to find it).
         item_type: Optional filter — SemanticModel, DataPipeline, Lakehouse, Notebook, etc.
+        format: Output format — "markdown" (default) or "json" for structured data.
     """
+    import json
     import requests
 
     try:
@@ -513,7 +539,14 @@ def fabric_list_workspace_items(workspace_id: str, item_type: str = "") -> str:
 
     if not items:
         filter_note = f" of type '{item_type}'" if item_type else ""
+        if format == "json":
+            return "[]"
         return f"No items found{filter_note} in workspace `{workspace_id}`."
+
+    if format == "json":
+        return json.dumps(
+            [{"id": i.get("id"), "type": i.get("type"), "name": i.get("displayName")} for i in items]
+        )
 
     lines = [f"## Workspace Items ({len(items)} found)\n"]
     lines.append("| Type | Name | ID |")
@@ -528,7 +561,7 @@ def fabric_list_workspace_items(workspace_id: str, item_type: str = "") -> str:
 
 @mcp.tool()
 def fabric_get_refresh_history(
-    workspace_id: str, dataset_id: str, top: int = 10
+    workspace_id: str, dataset_id: str, top: int = 10, format: str = "markdown"
 ) -> str:
     """Get refresh history for a semantic model (dataset).
 
@@ -536,7 +569,9 @@ def fabric_get_refresh_history(
         workspace_id: The workspace GUID.
         dataset_id: The dataset/semantic model GUID.
         top: Number of recent refreshes to return (default 10).
+        format: Output format — "markdown" (default) or "json" for structured data.
     """
+    import json
     import requests
 
     try:
@@ -556,7 +591,12 @@ def fabric_get_refresh_history(
         return f"API error: {e}"
 
     if not refreshes:
+        if format == "json":
+            return "[]"
         return "No refresh history found."
+
+    if format == "json":
+        return json.dumps(refreshes)
 
     lines = ["## Refresh History\n"]
     lines.append("| Status | Type | Start | End | Duration |")
@@ -566,7 +606,6 @@ def fabric_get_refresh_history(
         refresh_type = r.get("refreshType", "?")
         start = r.get("startTime", "?")
         end = r.get("endTime", "?")
-        # Extract just time portion for readability
         start_short = start[:19].replace("T", " ") if start != "?" else "?"
         end_short = end[:19].replace("T", " ") if end != "?" else "?"
         lines.append(f"| {status} | {refresh_type} | {start_short} | {end_short} | |")
@@ -603,13 +642,17 @@ def fabric_trigger_refresh(workspace_id: str, dataset_id: str) -> str:
 
 
 @mcp.tool()
-def fabric_get_pipeline_runs(workspace_id: str, pipeline_id: str) -> str:
+def fabric_get_pipeline_runs(
+    workspace_id: str, pipeline_id: str, format: str = "markdown"
+) -> str:
     """Get recent pipeline run history.
 
     Args:
         workspace_id: The workspace GUID.
         pipeline_id: The pipeline item GUID.
+        format: Output format — "markdown" (default) or "json" for structured data.
     """
+    import json
     import requests
 
     try:
@@ -629,7 +672,12 @@ def fabric_get_pipeline_runs(workspace_id: str, pipeline_id: str) -> str:
         return f"API error: {e}"
 
     if not runs:
+        if format == "json":
+            return "[]"
         return "No pipeline runs found."
+
+    if format == "json":
+        return json.dumps(runs)
 
     lines = ["## Pipeline Runs\n"]
     lines.append("| Status | Job Type | Start | End |")
@@ -642,6 +690,107 @@ def fabric_get_pipeline_runs(workspace_id: str, pipeline_id: str) -> str:
         start_short = start[:19].replace("T", " ") if start != "?" else "?"
         end_short = end[:19].replace("T", " ") if end != "?" else "?"
         lines.append(f"| {status} | {job_type} | {start_short} | {end_short} |")
+
+    return "\n".join(lines)
+
+
+@mcp.tool()
+def fabric_list_dataflows(
+    workspace_id: str, format: str = "markdown"
+) -> str:
+    """List dataflows in a Power BI workspace.
+
+    Args:
+        workspace_id: The workspace GUID.
+        format: Output format — "markdown" (default) or "json" for structured data.
+    """
+    import json
+    import requests
+
+    try:
+        token = _get_fabric_token()
+    except Exception as e:
+        return f"Auth error: {e}"
+
+    headers = {"Authorization": f"Bearer {token}"}
+    url = f"https://api.powerbi.com/v1.0/myorg/groups/{workspace_id}/dataflows"
+
+    try:
+        resp = requests.get(url, headers=headers, timeout=30)
+        if resp.status_code != 200:
+            return f"API error ({resp.status_code}): {resp.text[:500]}"
+        dataflows = resp.json().get("value", [])
+    except Exception as e:
+        return f"API error: {e}"
+
+    if not dataflows:
+        if format == "json":
+            return "[]"
+        return f"No dataflows found in workspace `{workspace_id}`."
+
+    if format == "json":
+        return json.dumps(
+            [{"id": df.get("objectId"), "name": df.get("name")} for df in dataflows]
+        )
+
+    lines = [f"## Dataflows ({len(dataflows)} found)\n"]
+    lines.append("| Name | ID |")
+    lines.append("| --- | --- |")
+    for df in dataflows:
+        lines.append(f"| {df.get('name', '?')} | `{df.get('objectId', '?')}` |")
+
+    return "\n".join(lines)
+
+
+@mcp.tool()
+def fabric_get_dataflow_transactions(
+    workspace_id: str, dataflow_id: str, format: str = "markdown"
+) -> str:
+    """Get transaction history for a dataflow.
+
+    Args:
+        workspace_id: The workspace GUID.
+        dataflow_id: The dataflow GUID (objectId from fabric_list_dataflows).
+        format: Output format — "markdown" (default) or "json" for structured data.
+    """
+    import json
+    import requests
+
+    try:
+        token = _get_fabric_token()
+    except Exception as e:
+        return f"Auth error: {e}"
+
+    headers = {"Authorization": f"Bearer {token}"}
+    url = f"https://api.powerbi.com/v1.0/myorg/groups/{workspace_id}/dataflows/{dataflow_id}/transactions"
+
+    try:
+        resp = requests.get(url, headers=headers, timeout=30)
+        if resp.status_code != 200:
+            return f"API error ({resp.status_code}): {resp.text[:500]}"
+        transactions = resp.json().get("value", [])
+    except Exception as e:
+        return f"API error: {e}"
+
+    if not transactions:
+        if format == "json":
+            return "[]"
+        return "No transactions found."
+
+    if format == "json":
+        return json.dumps(transactions)
+
+    lines = ["## Dataflow Transactions\n"]
+    lines.append("| Status | Type | Start | End |")
+    lines.append("| --- | --- | --- | --- |")
+    for t in transactions:
+        status = t.get("status", "?")
+        refresh_type = t.get("refreshType", "?")
+        start = t.get("startTime", "?")
+        end = t.get("endTime", "?")
+        start_short = start[:19].replace("T", " ") if start != "?" else "?"
+        end_short = end[:19].replace("T", " ") if end != "?" else "?"
+        lines.append(f"| {status} | {refresh_type} | {start_short} | {end_short} |")
 
     return "\n".join(lines)
 
