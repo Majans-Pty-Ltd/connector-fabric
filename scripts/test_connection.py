@@ -11,11 +11,12 @@ import sys
 import requests
 from dotenv import load_dotenv
 
-load_dotenv()
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 
 # Add ADOMD.NET DLL path before pyadomd is imported
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-ADOMD_DLL_PATH = os.path.join(SCRIPT_DIR, "adomd_package", "lib", "net45")
+ADOMD_DLL_PATH = os.path.join(PROJECT_ROOT, "adomd_package", "lib", "net45")
 if os.path.isdir(ADOMD_DLL_PATH):
     sys.path.insert(0, ADOMD_DLL_PATH)
     os.environ["PATH"] = ADOMD_DLL_PATH + os.pathsep + os.environ.get("PATH", "")

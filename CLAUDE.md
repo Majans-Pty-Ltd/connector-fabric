@@ -1,23 +1,24 @@
-# connector-powerbi — Project Instructions
+# connector-fabric — Project Instructions
 
 ## What Is This?
-Python MCP server that gives Claude Code DAX query access to Majans' Power BI semantic models via XMLA endpoints, using a Service Principal and ADOMD.NET.
+Python MCP server providing Claude Code with access to Microsoft Fabric artefacts — semantic models (DAX via XMLA), workspace management, pipeline operations, dataset refresh, and item discovery via the Fabric REST API.
 
 ## Tech Stack
 - Python 3.x with `mcp` (FastMCP) — MCP server framework
-- `pyadomd` + `pythonnet` (CLR) — ADOMD.NET bridge for XMLA connections
+- `pyadomd` + `pythonnet` (CLR) — ADOMD.NET bridge for XMLA connections (Windows-only)
 - `ADOMD.NET` DLL — bundled locally at `adomd_package/lib/net45/` (net45 build)
-- `azure-identity`, `requests` — REST API calls for workspace discovery
+- `requests` — Fabric REST API calls
 - `python-dotenv` — `.env` loading
 
 ## Architecture
 - Single file server: `mcp_server.py` — all tools defined here with `@mcp.tool()`
-- ADOMD.NET DLL must be loaded into CLR **before** `pyadomd` is imported (top of file)
-- New XMLA connection opened per query (no persistent connection pool)
-- Auth: client credentials → MSOLAP connection string (`User ID=app:{CLIENT_ID}@{TENANT_ID}`)
+- **Two API paths**:
+  - **XMLA** (DAX queries): lazy-loaded ADOMD.NET via `_ensure_xmla()` — Windows-only, loads CLR on first XMLA tool call
+  - **REST** (Fabric API): `_get_fabric_token()` with token caching — cross-platform
+- Auth: Service Principal (client credentials) for both paths
 - Workspace registry hardcoded in `WORKSPACES` dict — maps short names to XMLA endpoints + datasets
 
-## Configured Workspaces
+## Configured Workspaces (XMLA)
 | Key | Workspace | Dataset | Content |
 |-----|-----------|---------|---------|
 | SCAN | DEMAND | SCANv2 | POS retail scan data (Coles/Woolworths) |
@@ -27,30 +28,41 @@ Python MCP server that gives Claude Code DAX query access to Majans' Power BI se
 | IT_COST | IT COST | IT COST | M365/D365/Azure spend, FY26 budget |
 
 ## MCP Tools
-- `pbi_query(query, max_rows, workspace)` — execute DAX (EVALUATE syntax)
-- `pbi_list_tables(workspace)` — list tables + columns + data types
-- `pbi_list_measures(workspace)` — list visible measures
-- `pbi_test_connection(workspace)` — test XMLA connectivity + discover datasets
-- `pbi_list_workspaces()` — show all configured workspaces
-- `pbi_discover_workspaces()` — REST API discovery of all SP-accessible workspaces
+
+### XMLA (DAX Queries)
+- `fabric_dax_query(query, max_rows, workspace)` — execute DAX (EVALUATE syntax)
+- `fabric_list_tables(workspace)` — list tables + columns + data types
+- `fabric_list_measures(workspace)` — list visible measures
+- `fabric_test_xmla(workspace)` — test XMLA connectivity + discover datasets
+
+### Workspace Discovery
+- `fabric_list_configured_workspaces()` — show configured XMLA workspaces
+- `fabric_discover_workspaces()` — REST API discovery of all SP-accessible workspaces
+
+### Fabric REST API
+- `fabric_list_workspace_items(workspace_id, item_type?)` — list items (semantic models, pipelines, lakehouses, etc.)
+- `fabric_get_refresh_history(workspace_id, dataset_id, top)` — dataset refresh history
+- `fabric_trigger_refresh(workspace_id, dataset_id)` — trigger semantic model refresh
+- `fabric_get_pipeline_runs(workspace_id, pipeline_id)` — pipeline run history
+- `fabric_trigger_pipeline(workspace_id, pipeline_id)` — trigger pipeline run
 
 ## Commands
 ```bash
 # Install dependencies
 pip install -r requirements.txt
-# Also requires: pip install pythonnet
+# Also requires: pip install pythonnet (for XMLA tools, Windows-only)
 
 # Test XMLA connectivity (verifies auth + ADOMD.NET stack)
-python test_connection.py
+python scripts/test_connection.py
 
 # Run example DAX queries against SCANv2
-python example_queries.py
+python scripts/example_queries.py
+
+# Explore model structure
+python scripts/explore_model.py
 
 # Start MCP server (Claude Code invokes this via mcp config)
 python mcp_server.py
-
-# Explore model structure
-python explore_model.py
 ```
 
 ## Configuration
@@ -59,7 +71,7 @@ python explore_model.py
 AZURE_TENANT_ID=d54794b1-f598-4c0f-a276-6039a39774ac
 AZURE_CLIENT_ID=6028b4a4-5849-4425-91fa-b1768a8b8b51
 AZURE_CLIENT_SECRET=<from Entra — secret name: xmla>
-# These two are used by test_connection.py / example_queries.py only:
+# These two are used by scripts/test_connection.py and scripts/example_queries.py only:
 PBI_XMLA_ENDPOINT=powerbi://api.powerbi.com/v1.0/myorg/DEMAND
 PBI_DATASET_NAME=SCANv2
 ```
@@ -70,11 +82,12 @@ Add to `.claude.json` MCP config:
 ```json
 {
   "command": "python",
-  "args": ["C:\\Users\\Amit\\OneDrive - Majans Pty Ltd\\Documents 1\\GitHub\\connector-powerbi\\mcp_server.py"]
+  "args": ["C:\\Users\\Amit\\OneDrive - Majans Pty Ltd\\Documents 1\\GitHub\\connector-fabric\\mcp_server.py"]
 }
 ```
 
 ## Key Dependency Notes
 - `pythonnet` must be installed for `clr` import to work — not in `requirements.txt`
 - ADOMD.NET DLL is bundled locally (`adomd_package/lib/net45/`) — no system install needed
-- Windows-only: MSOLAP provider and CLR/pythonnet require Windows
+- XMLA tools are Windows-only (MSOLAP + CLR/pythonnet), REST tools work cross-platform
+- ADOMD.NET is lazy-loaded — REST-only tools work without pythonnet installed

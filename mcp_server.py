@@ -1,33 +1,22 @@
 """
-Power BI XMLA MCP Server for Claude Code.
+Microsoft Fabric MCP Server for Claude Code.
 
-Provides DAX query execution and model exploration against multiple
-Majans Power BI workspaces via XMLA endpoints.
+Provides DAX query execution, model exploration, and Fabric REST API operations
+against Majans' Microsoft Fabric workspaces — semantic models, pipelines,
+lakehouses, and more.
 
-Requires: pip install mcp pyadomd python-dotenv pythonnet
+Requires: pip install mcp python-dotenv requests
+XMLA tools also require: pip install pyadomd pythonnet (Windows only)
 """
 
 import os
-import sys
+import time
 
-# --- CLR INITIALIZATION (must happen before pyadomd import) ---
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-ADOMD_DLL_PATH = os.path.join(SCRIPT_DIR, "adomd_package", "lib", "net45")
-if os.path.isdir(ADOMD_DLL_PATH):
-    sys.path.insert(0, ADOMD_DLL_PATH)
-    os.environ["PATH"] = ADOMD_DLL_PATH + os.pathsep + os.environ.get("PATH", "")
-
-import clr  # noqa: E402
-
-clr.AddReference(
-    os.path.join(ADOMD_DLL_PATH, "Microsoft.AnalysisServices.AdomdClient.dll")
-)
-
-from pyadomd import Pyadomd  # noqa: E402
-from dotenv import load_dotenv  # noqa: E402
-from mcp.server.fastmcp import FastMCP  # noqa: E402
+from dotenv import load_dotenv
+from mcp.server.fastmcp import FastMCP
 
 # --- CONFIGURATION ---
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(SCRIPT_DIR, ".env"))
 
 TENANT_ID = os.getenv("AZURE_TENANT_ID")
@@ -65,6 +54,72 @@ WORKSPACES = {
 
 DEFAULT_WORKSPACE = "SCAN"
 
+# --- LAZY XMLA INITIALIZATION ---
+_clr_initialized = False
+_Pyadomd = None
+
+
+def _ensure_xmla():
+    """Lazy-load ADOMD.NET and pyadomd. Only needed for XMLA tools (Windows-only)."""
+    global _clr_initialized, _Pyadomd
+    if _clr_initialized:
+        return
+
+    import sys
+
+    adomd_dll_path = os.path.join(SCRIPT_DIR, "adomd_package", "lib", "net45")
+    if not os.path.isdir(adomd_dll_path):
+        raise RuntimeError(
+            f"ADOMD.NET DLL directory not found: {adomd_dll_path}. "
+            "XMLA tools require Windows with the bundled ADOMD.NET package."
+        )
+
+    sys.path.insert(0, adomd_dll_path)
+    os.environ["PATH"] = adomd_dll_path + os.pathsep + os.environ.get("PATH", "")
+
+    import clr
+
+    clr.AddReference(
+        os.path.join(adomd_dll_path, "Microsoft.AnalysisServices.AdomdClient.dll")
+    )
+
+    from pyadomd import Pyadomd
+
+    _Pyadomd = Pyadomd
+    _clr_initialized = True
+
+
+# --- FABRIC REST API AUTH ---
+_token_cache = {"token": None, "expires_at": 0}
+
+
+def _get_fabric_token() -> str:
+    """Get a cached Fabric REST API token. Refreshes when expired."""
+    import requests
+
+    now = time.time()
+    if _token_cache["token"] and _token_cache["expires_at"] > now + 60:
+        return _token_cache["token"]
+
+    resp = requests.post(
+        f"https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/token",
+        data={
+            "grant_type": "client_credentials",
+            "client_id": CLIENT_ID,
+            "client_secret": CLIENT_SECRET,
+            "scope": "https://analysis.windows.net/powerbi/api/.default",
+        },
+        timeout=30,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    _token_cache["token"] = data["access_token"]
+    _token_cache["expires_at"] = now + data.get("expires_in", 3600)
+    return _token_cache["token"]
+
+
+# --- XMLA HELPERS ---
+
 
 def _build_conn_str(workspace: str) -> str:
     """Build an XMLA connection string for the given workspace."""
@@ -75,7 +130,7 @@ def _build_conn_str(workspace: str) -> str:
     if not ws["dataset"]:
         raise ValueError(
             f"Workspace '{workspace}' has no dataset configured. "
-            f"Run pbi_test_connection with this workspace first to discover datasets."
+            f"Run fabric_test_xmla with this workspace first to discover datasets."
         )
     return (
         f"Provider=MSOLAP;"
@@ -104,25 +159,11 @@ def _build_conn_str_no_catalog(workspace: str) -> str:
     )
 
 
-# --- MCP SERVER ---
-mcp = FastMCP(
-    "power-bi-xmla",
-    instructions=(
-        "Power BI XMLA endpoint for querying Majans' semantic models across multiple workspaces. "
-        "Available workspaces: SCAN (SCANv2 — POS retail scan data, default), "
-        "REVIEW (FINANCIALv2 — P&L, budgets, forecasts), "
-        "SUPPLY (MANUFACTURING V3 — production, supply chain), DEMAND (SALESv2 — sales/demand). "
-        "Default workspace is SCAN. Use the 'workspace' parameter to switch. "
-        "Run pbi_list_tables first to discover available tables and columns, "
-        "then pbi_list_measures to see defined measures."
-    ),
-)
-
-
 def _execute(query: str, workspace: str = DEFAULT_WORKSPACE) -> tuple:
     """Execute a query and return (headers, rows). New connection per query."""
+    _ensure_xmla()
     conn_str = _build_conn_str(workspace)
-    conn = Pyadomd(conn_str)
+    conn = _Pyadomd(conn_str)
     conn.open()
     try:
         cur = conn.cursor()
@@ -168,18 +209,39 @@ def _to_markdown_table(headers: list, rows: list, max_rows: int = 100) -> str:
     return "\n".join(lines)
 
 
+# --- MCP SERVER ---
+mcp = FastMCP(
+    "fabric",
+    instructions=(
+        "Microsoft Fabric MCP server for Majans — provides access to semantic models (DAX queries via XMLA), "
+        "workspace management, pipeline operations, and dataset refresh via the Fabric REST API. "
+        "Available XMLA workspaces: SCAN (SCANv2 — POS retail scan data, default), "
+        "REVIEW (FINANCIALv2 — P&L, budgets, forecasts), "
+        "SUPPLY (MANUFACTURING V3 — production, supply chain), "
+        "DEMAND (SALESv2 — sales/demand), IT_COST (IT spend). "
+        "Default workspace is SCAN. Use the 'workspace' parameter to switch. "
+        "Run fabric_list_tables first to discover available tables and columns, "
+        "then fabric_list_measures to see defined measures. "
+        "Use fabric_list_workspace_items to explore all Fabric artefacts in a workspace."
+    ),
+)
+
+
+# ===== XMLA TOOLS =====
+
+
 @mcp.tool()
-def pbi_query(
+def fabric_dax_query(
     query: str, max_rows: int = 100, workspace: str = DEFAULT_WORKSPACE
 ) -> str:
-    """Execute a DAX query against a Power BI semantic model.
+    """Execute a DAX query against a Power BI semantic model via XMLA.
 
     Args:
         query: DAX query string (use EVALUATE for tabular results).
         max_rows: Maximum rows to return (default 100).
-        workspace: Workspace to query — REVIEW (default, FINANCIALv2), SUPPLY (MANUFACTURING V3), or DEMAND.
+        workspace: Workspace to query — SCAN (default), REVIEW, SUPPLY, DEMAND, IT_COST.
 
-    Run pbi_list_tables first to discover available tables and columns.
+    Run fabric_list_tables first to discover available tables and columns.
 
     Example queries:
         EVALUATE ROW("Test", 1)
@@ -193,11 +255,11 @@ def pbi_query(
 
 
 @mcp.tool()
-def pbi_list_tables(workspace: str = DEFAULT_WORKSPACE) -> str:
-    """List all tables and columns in a Power BI semantic model with data types.
+def fabric_list_tables(workspace: str = DEFAULT_WORKSPACE) -> str:
+    """List all tables and columns in a semantic model with data types.
 
     Args:
-        workspace: REVIEW (default, FINANCIALv2), SUPPLY (MANUFACTURING V3), or DEMAND.
+        workspace: SCAN (default), REVIEW, SUPPLY, DEMAND, IT_COST.
     """
     try:
         ws = WORKSPACES[workspace.upper()]
@@ -236,11 +298,11 @@ def pbi_list_tables(workspace: str = DEFAULT_WORKSPACE) -> str:
 
 
 @mcp.tool()
-def pbi_list_measures(workspace: str = DEFAULT_WORKSPACE) -> str:
-    """List all measures defined in a Power BI semantic model.
+def fabric_list_measures(workspace: str = DEFAULT_WORKSPACE) -> str:
+    """List all measures defined in a semantic model.
 
     Args:
-        workspace: REVIEW (default, FINANCIALv2), SUPPLY (MANUFACTURING V3), or DEMAND.
+        workspace: SCAN (default), REVIEW, SUPPLY, DEMAND, IT_COST.
     """
     try:
         ws = WORKSPACES[workspace.upper()]
@@ -269,13 +331,13 @@ def pbi_list_measures(workspace: str = DEFAULT_WORKSPACE) -> str:
 
 
 @mcp.tool()
-def pbi_test_connection(workspace: str = DEFAULT_WORKSPACE) -> str:
-    """Test XMLA connection to a Power BI workspace and discover datasets.
+def fabric_test_xmla(workspace: str = DEFAULT_WORKSPACE) -> str:
+    """Test XMLA connection to a workspace and discover datasets.
 
     Args:
-        workspace: REVIEW (default), SUPPLY, or DEMAND.
+        workspace: SCAN (default), REVIEW, SUPPLY, DEMAND, IT_COST.
 
-    Use this to verify connectivity and discover dataset names in a workspace.
+    Use this to verify XMLA connectivity and discover dataset names.
     """
     ws_key = workspace.upper()
     ws = WORKSPACES.get(ws_key)
@@ -285,7 +347,6 @@ def pbi_test_connection(workspace: str = DEFAULT_WORKSPACE) -> str:
 
     result = [f"Workspace: {ws_key}", f"Endpoint: {ws['endpoint']}"]
 
-    # If dataset is configured, test full connection
     if ws["dataset"]:
         try:
             headers, rows = _execute('EVALUATE ROW("Status", "Connected")', workspace)
@@ -311,11 +372,11 @@ def pbi_test_connection(workspace: str = DEFAULT_WORKSPACE) -> str:
             result.append(f"Error: {e}")
             return "\n".join(result)
 
-    # No dataset configured — try to discover datasets via catalog query
     result.append("Dataset: Not configured — attempting discovery...")
     try:
+        _ensure_xmla()
         conn_str = _build_conn_str_no_catalog(workspace)
-        conn = Pyadomd(conn_str)
+        conn = _Pyadomd(conn_str)
         conn.open()
         try:
             cur = conn.cursor()
@@ -330,7 +391,6 @@ def pbi_test_connection(workspace: str = DEFAULT_WORKSPACE) -> str:
                 result.append(f"\nDiscovered datasets ({len(rows)}):")
                 for row in rows:
                     result.append(f"  - {row[0]}")
-                # Auto-configure the first dataset found
                 first_dataset = rows[0][0]
                 WORKSPACES[ws_key]["dataset"] = first_dataset
                 result.append(f"\nAuto-configured dataset: {first_dataset}")
@@ -345,9 +405,12 @@ def pbi_test_connection(workspace: str = DEFAULT_WORKSPACE) -> str:
         return "\n".join(result)
 
 
+# ===== WORKSPACE & DISCOVERY TOOLS =====
+
+
 @mcp.tool()
-def pbi_list_workspaces() -> str:
-    """List all configured Power BI workspaces and their connection status."""
+def fabric_list_configured_workspaces() -> str:
+    """List all configured Fabric workspaces and their XMLA connection details."""
     lines = ["## Configured Workspaces\n"]
     lines.append("| Workspace | Dataset | Description |")
     lines.append("| --- | --- | --- |")
@@ -358,28 +421,16 @@ def pbi_list_workspaces() -> str:
 
 
 @mcp.tool()
-def pbi_discover_workspaces() -> str:
-    """Discover all Power BI workspaces the service principal can access.
+def fabric_discover_workspaces() -> str:
+    """Discover all Fabric workspaces the service principal can access.
 
-    Uses the Power BI REST API to list workspaces, then for each workspace
-    lists the datasets available. Use this to find the correct workspace name
-    for a dataset.
+    Uses the Power BI REST API to list workspaces and their datasets.
+    Use this to find workspace IDs needed for other Fabric REST tools.
     """
     import requests
 
-    token_url = f"https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/token"
-    token_data = {
-        "grant_type": "client_credentials",
-        "client_id": CLIENT_ID,
-        "client_secret": CLIENT_SECRET,
-        "scope": "https://analysis.windows.net/powerbi/api/.default",
-    }
-
     try:
-        resp = requests.post(token_url, data=token_data, timeout=30)
-        if resp.status_code != 200:
-            return f"Auth failed ({resp.status_code}): {resp.json().get('error_description', resp.text)}"
-        token = resp.json()["access_token"]
+        token = _get_fabric_token()
     except Exception as e:
         return f"Auth error: {e}"
 
@@ -395,7 +446,7 @@ def pbi_discover_workspaces() -> str:
     except Exception as e:
         return f"REST API error: {e}"
 
-    lines = [f"## Power BI Workspaces ({len(workspaces)} found)\n"]
+    lines = [f"## Fabric Workspaces ({len(workspaces)} found)\n"]
     for ws in workspaces:
         ws_id = ws["id"]
         ws_name = ws["name"]
@@ -405,7 +456,6 @@ def pbi_discover_workspaces() -> str:
             f"- XMLA endpoint: `powerbi://api.powerbi.com/v1.0/myorg/{ws_name}`"
         )
 
-        # List datasets in this workspace
         try:
             ds_resp = requests.get(
                 f"https://api.powerbi.com/v1.0/myorg/groups/{ws_id}/datasets",
@@ -428,6 +478,204 @@ def pbi_discover_workspaces() -> str:
         lines.append("")
 
     return "\n".join(lines)
+
+
+# ===== FABRIC REST API TOOLS =====
+
+
+@mcp.tool()
+def fabric_list_workspace_items(workspace_id: str, item_type: str = "") -> str:
+    """List items in a Fabric workspace (semantic models, pipelines, lakehouses, etc.).
+
+    Args:
+        workspace_id: The workspace GUID (use fabric_discover_workspaces to find it).
+        item_type: Optional filter — SemanticModel, DataPipeline, Lakehouse, Notebook, etc.
+    """
+    import requests
+
+    try:
+        token = _get_fabric_token()
+    except Exception as e:
+        return f"Auth error: {e}"
+
+    headers = {"Authorization": f"Bearer {token}"}
+    url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}/items"
+    if item_type:
+        url += f"?type={item_type}"
+
+    try:
+        resp = requests.get(url, headers=headers, timeout=30)
+        if resp.status_code != 200:
+            return f"API error ({resp.status_code}): {resp.text[:500]}"
+        items = resp.json().get("value", [])
+    except Exception as e:
+        return f"API error: {e}"
+
+    if not items:
+        filter_note = f" of type '{item_type}'" if item_type else ""
+        return f"No items found{filter_note} in workspace `{workspace_id}`."
+
+    lines = [f"## Workspace Items ({len(items)} found)\n"]
+    lines.append("| Type | Name | ID |")
+    lines.append("| --- | --- | --- |")
+    for item in items:
+        lines.append(
+            f"| {item.get('type', '?')} | {item.get('displayName', '?')} | `{item.get('id', '?')}` |"
+        )
+
+    return "\n".join(lines)
+
+
+@mcp.tool()
+def fabric_get_refresh_history(
+    workspace_id: str, dataset_id: str, top: int = 10
+) -> str:
+    """Get refresh history for a semantic model (dataset).
+
+    Args:
+        workspace_id: The workspace GUID.
+        dataset_id: The dataset/semantic model GUID.
+        top: Number of recent refreshes to return (default 10).
+    """
+    import requests
+
+    try:
+        token = _get_fabric_token()
+    except Exception as e:
+        return f"Auth error: {e}"
+
+    headers = {"Authorization": f"Bearer {token}"}
+    url = f"https://api.powerbi.com/v1.0/myorg/groups/{workspace_id}/datasets/{dataset_id}/refreshes?$top={top}"
+
+    try:
+        resp = requests.get(url, headers=headers, timeout=30)
+        if resp.status_code != 200:
+            return f"API error ({resp.status_code}): {resp.text[:500]}"
+        refreshes = resp.json().get("value", [])
+    except Exception as e:
+        return f"API error: {e}"
+
+    if not refreshes:
+        return "No refresh history found."
+
+    lines = ["## Refresh History\n"]
+    lines.append("| Status | Type | Start | End | Duration |")
+    lines.append("| --- | --- | --- | --- | --- |")
+    for r in refreshes:
+        status = r.get("status", "?")
+        refresh_type = r.get("refreshType", "?")
+        start = r.get("startTime", "?")
+        end = r.get("endTime", "?")
+        # Extract just time portion for readability
+        start_short = start[:19].replace("T", " ") if start != "?" else "?"
+        end_short = end[:19].replace("T", " ") if end != "?" else "?"
+        lines.append(f"| {status} | {refresh_type} | {start_short} | {end_short} | |")
+
+    return "\n".join(lines)
+
+
+@mcp.tool()
+def fabric_trigger_refresh(workspace_id: str, dataset_id: str) -> str:
+    """Trigger a refresh for a semantic model (dataset).
+
+    Args:
+        workspace_id: The workspace GUID.
+        dataset_id: The dataset/semantic model GUID.
+    """
+    import requests
+
+    try:
+        token = _get_fabric_token()
+    except Exception as e:
+        return f"Auth error: {e}"
+
+    headers = {"Authorization": f"Bearer {token}"}
+    url = f"https://api.powerbi.com/v1.0/myorg/groups/{workspace_id}/datasets/{dataset_id}/refreshes"
+
+    try:
+        resp = requests.post(url, headers=headers, timeout=30)
+        if resp.status_code == 202:
+            return f"Refresh triggered successfully for dataset `{dataset_id}`."
+        else:
+            return f"Refresh trigger failed ({resp.status_code}): {resp.text[:500]}"
+    except Exception as e:
+        return f"API error: {e}"
+
+
+@mcp.tool()
+def fabric_get_pipeline_runs(workspace_id: str, pipeline_id: str) -> str:
+    """Get recent pipeline run history.
+
+    Args:
+        workspace_id: The workspace GUID.
+        pipeline_id: The pipeline item GUID.
+    """
+    import requests
+
+    try:
+        token = _get_fabric_token()
+    except Exception as e:
+        return f"Auth error: {e}"
+
+    headers = {"Authorization": f"Bearer {token}"}
+    url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}/items/{pipeline_id}/jobs/instances"
+
+    try:
+        resp = requests.get(url, headers=headers, timeout=30)
+        if resp.status_code != 200:
+            return f"API error ({resp.status_code}): {resp.text[:500]}"
+        runs = resp.json().get("value", [])
+    except Exception as e:
+        return f"API error: {e}"
+
+    if not runs:
+        return "No pipeline runs found."
+
+    lines = ["## Pipeline Runs\n"]
+    lines.append("| Status | Job Type | Start | End |")
+    lines.append("| --- | --- | --- | --- |")
+    for run in runs:
+        status = run.get("status", "?")
+        job_type = run.get("jobType", "?")
+        start = run.get("startTimeUtc", "?")
+        end = run.get("endTimeUtc", "?")
+        start_short = start[:19].replace("T", " ") if start != "?" else "?"
+        end_short = end[:19].replace("T", " ") if end != "?" else "?"
+        lines.append(f"| {status} | {job_type} | {start_short} | {end_short} |")
+
+    return "\n".join(lines)
+
+
+@mcp.tool()
+def fabric_trigger_pipeline(workspace_id: str, pipeline_id: str) -> str:
+    """Trigger a pipeline run in Fabric.
+
+    Args:
+        workspace_id: The workspace GUID.
+        pipeline_id: The pipeline item GUID.
+    """
+    import requests
+
+    try:
+        token = _get_fabric_token()
+    except Exception as e:
+        return f"Auth error: {e}"
+
+    headers = {"Authorization": f"Bearer {token}"}
+    url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}/items/{pipeline_id}/jobs/instances?jobType=Pipeline"
+
+    try:
+        resp = requests.post(url, headers=headers, timeout=30)
+        if resp.status_code == 202:
+            location = resp.headers.get("Location", "")
+            msg = f"Pipeline triggered successfully for `{pipeline_id}`."
+            if location:
+                msg += f"\nMonitor URL: {location}"
+            return msg
+        else:
+            return f"Pipeline trigger failed ({resp.status_code}): {resp.text[:500]}"
+    except Exception as e:
+        return f"API error: {e}"
 
 
 if __name__ == "__main__":
