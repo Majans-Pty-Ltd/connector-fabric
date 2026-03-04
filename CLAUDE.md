@@ -1,7 +1,7 @@
 # connector-fabric — Project Instructions
 
 ## What Is This?
-Python MCP server providing Claude Code with access to Microsoft Fabric artefacts — semantic models (DAX via XMLA), workspace management, pipeline operations, dataset refresh, and item discovery via the Fabric REST API.
+Python MCP server providing Claude Code with access to Microsoft Fabric artefacts — semantic models (DAX via XMLA), static schema lookups, workspace management, pipeline operations, dataset refresh, and item discovery via the Fabric REST API.
 
 ## Tech Stack
 - Python 3.x with `mcp` (FastMCP) — MCP server framework
@@ -15,29 +15,37 @@ Python MCP server providing Claude Code with access to Microsoft Fabric artefact
 - **Two API paths**:
   - **XMLA** (DAX queries): lazy-loaded ADOMD.NET via `_ensure_xmla()` — Windows-only, loads CLR on first XMLA tool call
   - **REST** (Fabric API): `_get_fabric_token()` with token caching — cross-platform
+- **Static schema**: `schemas/*.json` — cached table/column/measure snapshots per dataset, served without XMLA
 - Auth: Service Principal (client credentials) for both paths
-- Workspace registry hardcoded in `WORKSPACES` dict — maps short names to XMLA endpoints + datasets
+- **Dataset-centric interface**: all XMLA tools take a `dataset` parameter (the semantic model name). The code resolves which workspace endpoint it belongs to internally.
 
-## Configured Workspaces (XMLA)
-| Key | Workspace | Dataset | Content |
-|-----|-----------|---------|---------|
-| SCAN | DEMAND | SCANv2 | POS retail scan data (Coles/Woolworths) |
-| REVIEW | REVIEW | FINANCIALv2 | P&L, budgets, forecasts, GL |
-| SUPPLY | SUPPLY | MANUFACTURING V3 | Production & supply chain |
-| PURCHASING | SUPPLY | PURCHASINGV3 | Vendor SIFOT/DIFOT, PO delivery performance, supplier scoring |
-| DEMAND | DEMAND | SALESv2 | Customer orders, invoicing |
-| IT_COST | IT COST | IT COST | M365/D365/Azure spend, FY26 budget |
+## Configured Workspaces & Datasets (XMLA)
+
+4 IBP-domain Fabric workspaces, 15 datasets:
+
+| Workspace | Endpoint | Datasets |
+|-----------|----------|----------|
+| PRODUCT | `powerbi://api.powerbi.com/v1.0/myorg/PRODUCT` | CONSUMERv2 |
+| DEMAND | `powerbi://api.powerbi.com/v1.0/myorg/DEMAND` | SALESv2, SCANv2, STORE, SCAN TOTAL GROCERY |
+| SUPPLY | `powerbi://api.powerbi.com/v1.0/myorg/SUPPLY` | AM, CUSTOMER SERVICE v2, INVENTORYV2, MANUFACTURING V3, PURCHASINGV3 |
+| REVIEW | `powerbi://api.powerbi.com/v1.0/myorg/REVIEW` | FINANCIALv2, PLANAUDIT, THREE-WAY, PRODUCTIONCOST, COSTINGv2 |
+
+Default dataset: **SCANv2**
 
 ## MCP Tools
 
 ### XMLA (DAX Queries)
-- `fabric_dax_query(query, max_rows, workspace)` — execute DAX (EVALUATE syntax)
-- `fabric_list_tables(workspace)` — list tables + columns + data types
-- `fabric_list_measures(workspace)` — list visible measures
-- `fabric_test_xmla(workspace)` — test XMLA connectivity + discover datasets
+- `fabric_dax_query(query, max_rows, dataset)` — execute DAX (EVALUATE syntax)
+- `fabric_list_tables(dataset)` — list tables + columns + data types (live XMLA)
+- `fabric_list_measures(dataset)` — list visible measures (live XMLA)
+- `fabric_test_xmla(dataset)` — test XMLA connectivity + list tables
+
+### Dataset & Schema
+- `fabric_list_datasets()` — show all 15 datasets grouped by workspace
+- `fabric_get_schema(dataset)` — return static cached schema (no XMLA needed)
+- `fabric_refresh_schema(dataset)` — live-query XMLA and update cached schema JSON
 
 ### Workspace Discovery
-- `fabric_list_configured_workspaces()` — show configured XMLA workspaces
 - `fabric_discover_workspaces()` — REST API discovery of all SP-accessible workspaces
 
 ### Fabric REST API
@@ -46,6 +54,8 @@ Python MCP server providing Claude Code with access to Microsoft Fabric artefact
 - `fabric_trigger_refresh(workspace_id, dataset_id)` — trigger semantic model refresh
 - `fabric_get_pipeline_runs(workspace_id, pipeline_id)` — pipeline run history
 - `fabric_trigger_pipeline(workspace_id, pipeline_id)` — trigger pipeline run
+- `fabric_list_dataflows(workspace_id)` — list dataflows
+- `fabric_get_dataflow_transactions(workspace_id, dataflow_id)` — dataflow transaction history
 
 ## Commands
 ```bash
@@ -62,6 +72,10 @@ python scripts/example_queries.py
 # Explore model structure
 python scripts/explore_model.py
 
+# Refresh static schema snapshots (all 15 datasets or specific ones)
+python scripts/refresh_schemas.py
+python scripts/refresh_schemas.py SCANv2 FINANCIALv2
+
 # Start MCP server (Claude Code invokes this via mcp config)
 python mcp_server.py
 ```
@@ -76,7 +90,7 @@ AZURE_CLIENT_SECRET=<from Entra — secret name: xmla>
 PBI_XMLA_ENDPOINT=powerbi://api.powerbi.com/v1.0/myorg/DEMAND
 PBI_DATASET_NAME=SCANv2
 ```
-Note: `mcp_server.py` uses the workspace registry (not `PBI_XMLA_ENDPOINT`/`PBI_DATASET_NAME`).
+Note: `mcp_server.py` uses the dataset registry (not `PBI_XMLA_ENDPOINT`/`PBI_DATASET_NAME`).
 
 ## Registering with Claude Code
 Add to `.claude.json` MCP config:

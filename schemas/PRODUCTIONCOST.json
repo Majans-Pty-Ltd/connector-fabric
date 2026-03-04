@@ -1,0 +1,8523 @@
+{
+  "dataset": "PRODUCTIONCOST",
+  "workspace": "REVIEW",
+  "captured_at": "2026-03-04T12:15:29.675192+00:00",
+  "tables": [
+    {
+      "name": "BOMCostGroup",
+      "columns": [
+        {
+          "name": "__Count of BOMCostGroup",
+          "data_type": "12",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DATES",
+      "columns": [
+        {
+          "name": "__Count of DATES",
+          "data_type": "12",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DBSCHEMA_CATALOGS",
+      "columns": [
+        {
+          "name": "POPULARITY",
+          "data_type": "4",
+          "description": ""
+        },
+        {
+          "name": "COMPATIBILITY_LEVEL",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CRYPTOKEY_UPDATED",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ROLES",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DATABASE_ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CATALOG_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ENCRYPTION_LEVEL",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TYPE",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "DATE_QUERIED",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "VERSION",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "DATE_MODIFIED",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "DATABASE_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "WEIGHTEDPOPULARITY",
+          "data_type": "5",
+          "description": ""
+        },
+        {
+          "name": "CURRENTLY_USED",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "CLIENTCACHEREFRESHPOLICY",
+          "data_type": "19",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DBSCHEMA_COLUMNS",
+      "columns": [
+        {
+          "name": "TYPE_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "ORDINAL_POSITION",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DOMAIN_CATALOG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CHARACTER_SET_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "COLLATION_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CHARACTER_SET_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "COLLATION_CATALOG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_DEFAULT",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CHARACTER_MAXIMUM_LENGTH",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_HAS_DEFAULT",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "TABLE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "IS_NULLABLE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "NUMERIC_SCALE",
+          "data_type": "2",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_FLAGS",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "CHARACTER_SET_CATALOG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DOMAIN_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DATETIME_PRECISION",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_PROPID",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_OLAP_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DATA_TYPE",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TABLE_CATALOG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "NUMERIC_PRECISION",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "TABLE_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CHARACTER_OCTET_LENGTH",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DOMAIN_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "COLLATION_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DBSCHEMA_PROVIDER_TYPES",
+      "columns": [
+        {
+          "name": "MINIMUM_SCALE",
+          "data_type": "2",
+          "description": ""
+        },
+        {
+          "name": "LITERAL_SUFFIX",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "FIXED_PREC_SCALE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "BEST_MATCH",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "IS_FIXEDLENGTH",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "IS_NULLABLE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "VERSION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TYPELIB",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MAXIMUM_SCALE",
+          "data_type": "2",
+          "description": ""
+        },
+        {
+          "name": "DATA_TYPE",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "IS_LONG",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_SIZE",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "UNSIGNED_ATTRIBUTE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "LITERAL_PREFIX",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LOCAL_TYPE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CREATE_PARAMS",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TYPE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CASE_SENSITIVE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "AUTO_UNIQUE_VALUE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "SEARCHABLE",
+          "data_type": "19",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DBSCHEMA_TABLES",
+      "columns": [
+        {
+          "name": "DATE_MODIFIED",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "DATE_CREATED",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "TABLE_CATALOG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TABLE_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TABLE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TABLE_PROPID",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "TABLE_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TABLE_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TABLE_OLAP_TYPE",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_CALC_DEPENDENCY",
+      "columns": [
+        {
+          "name": "REFERENCED_OBJECT_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TABLE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "REFERENCED_TABLE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "QUERY",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "REFERENCED_OBJECT",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DATABASE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "OBJECT",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "REFERENCED_EXPRESSION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "EXPRESSION",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_COMMANDS",
+      "columns": [
+        {
+          "name": "COMMAND_READS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "SESSION_COMMAND_COUNT",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "COMMAND_CPU_TIME_MS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "COMMAND_WRITES",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "COMMAND_READ_KB",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "COMMAND_START_TIME",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "COMMAND_WRITE_KB",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "COMMAND_END_TIME",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "COMMAND_ELAPSED_TIME_MS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "COMMAND_TEXT",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SESSION_SPID",
+          "data_type": "3",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_COMMAND_OBJECTS",
+      "columns": [
+        {
+          "name": "OBJECT_PARENT_PATH",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_WRITE_KB",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "SESSION_COMMAND_COUNT",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_WRITES",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_VERSION",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_CPU_TIME_MS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_ROWS_SCANNED",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_READS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SESSION_SPID",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_ROWS_RETURNED",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_READ_KB",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_DATA_VERSION",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "SESSION_ID",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_CONNECTIONS",
+      "columns": [
+        {
+          "name": "CONNECTION_IDLE_TIME_MS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_ELAPSED_TIME_MS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_BYTES_RECEIVED",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_LAST_COMMAND_END_TIME",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_HOST_APPLICATION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_HOST_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_LAST_COMMAND_ELAPSED_TIME_MS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_IMPERSONATED_USER_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_USER_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_BYTES_SENT",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_DATA_BYTES_RECEIVED",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_ID",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_DATA_BYTES_SENT",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_START_TIME",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_LAST_COMMAND_START_TIME",
+          "data_type": "135",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_CSDL_METADATA",
+      "columns": [
+        {
+          "name": "METADATA",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_DB_CONNECTIONS",
+      "columns": [
+        {
+          "name": "CONNECTION_LAST_COMMAND_END_TIME",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_USAGE_TIME_MS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_ID",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_IN_USE",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_IDLE_TIME_MS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_SERVER_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_SPID",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_START_TIME",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_LAST_COMMAND_START_TIME",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "CONNECTION_CATALOG_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_DB_MEM_STATS",
+      "columns": [
+        {
+          "name": "WEIGHTEDPOPULARITY",
+          "data_type": "5",
+          "description": ""
+        },
+        {
+          "name": "ACTIVE_REQUESTS_MEMORY_KB",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "PROXY_REQUESTS_ALLOCATIONS_COUNT",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "PROXY_REQUESTS_COUNT",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DATABASE_ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ACTIVE_REQUESTS_COUNT",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "PROXY_REQUESTS_MEMORY_KB",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "DB_PROXY_TRACKERS_COUNT",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DATABASE_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "CURRENTLY_USED",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "POPULARITY",
+          "data_type": "4",
+          "description": ""
+        },
+        {
+          "name": "DB_PROXY_TRACKERS_ALLOCATIONS_COUNT",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "OWNED_MEMORY_KB",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "CATALOG_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_DIMENSION_STAT",
+      "columns": [
+        {
+          "name": "DIMENSION_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ATTRIBUTE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DATABASE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ATTRIBUTE_COUNT",
+          "data_type": "20",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_ENUMERATORS",
+      "columns": [
+        {
+          "name": "ElementName",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "EnumType",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "EnumName",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "EnumDescription",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ElementValue",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ElementDescription",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_INSTANCES",
+      "columns": [
+        {
+          "name": "INSTANCE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "INSTANCE_STATE",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "INSTANCE_PORT_NUMBER",
+          "data_type": "3",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_JOBS",
+      "columns": [
+        {
+          "name": "JOB_START_TIME",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "JOB_EXECUTION_TIME_MS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "JOB_THREADPOOL_ID",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "JOB_CREATION_TIME",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "JOB_ID",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "JOB_TOTAL_TIME_MS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "SPID",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "JOB_DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_KEYWORDS",
+      "columns": [
+        {
+          "name": "Keyword",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_LITERALS",
+      "columns": [
+        {
+          "name": "LiteralNameEnumValue",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "LiteralInvalidChars",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LiteralMaxLength",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "LiteralName",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LiteralInvalidStartingChars",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LiteralValue",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_LOCKS",
+      "columns": [
+        {
+          "name": "LOCK_STATUS",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "LOCK_OBJECT_ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LOCK_ID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "LOCK_TRANSACTION_ID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "LOCK_CREATION_TIME",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "LOCK_TYPE",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "LOCK_GRANT_TIME",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "SPID",
+          "data_type": "3",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_MASTER_KEY",
+      "columns": [
+        {
+          "name": "KEY",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_MEMORYGRANT",
+      "columns": [
+        {
+          "name": "LastRequestTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "Blocked",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "CreationTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "MemoryGranted",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "SPID",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "MemoryUsed",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "MemoryID",
+          "data_type": "20",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_MEMORYUSAGE",
+      "columns": [
+        {
+          "name": "ObjectId",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SPID",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "BaseObjectType",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "MemoryUsed",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "MemoryAllocBase",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Group",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MemoryAllocFromAlloc",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "MemoryID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Shrinkable",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "MemoryName",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ObjectParentPath",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MemoryAllocated",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "CreationTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ElementCount",
+          "data_type": "19",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_MEM_STATS",
+      "columns": [
+        {
+          "name": "CHILD_TRACKER_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PARENT_TRACKER_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PARENT_TRACKER_ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PARENT_TRACKER_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "OWNED_MEMORY_KB",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ALLOCATIONS_COUNT",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "OWNED_STORE_MEMORY_KB",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "CATALOG_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CHILD_TRACKER_ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CHILD_TRACKER_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "REQUEST_PEAK_MEMORY_KB",
+          "data_type": "20",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_MODEL_SECURITY",
+      "columns": [
+        {
+          "name": "ModelSecurityFlags",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "DatabaseID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DATABASE_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_M_EXPRESSIONS",
+      "columns": [
+        {
+          "name": "ENABLELOAD",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "EXPRESSION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_OBJECT_ACTIVITY",
+      "columns": [
+        {
+          "name": "OBJECT_AGGREGATION_HIT",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_HIT",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_VERSION",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_AGGREGATION_MISS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_WRITE_KB",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_MISS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_CPU_TIME_MS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_PARENT_PATH",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_DATA_VERSION",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_WRITES",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_READ_KB",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_ROWS_RETURNED",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_READS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_ROWS_SCANNED",
+          "data_type": "20",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_OBJECT_COUNTERS",
+      "columns": [
+        {
+          "name": "MODULE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "INSTANCE_SIZEOF",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "INSTANCES",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_OBJECT_MEMORY_USAGE",
+      "columns": [
+        {
+          "name": "OBJECT_MEMORY_CHILD_SHRINKABLE",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_VERSION",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_TYPE_ID",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_TIME_CREATED",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_MEMORY_NONSHRINKABLE",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_PARENT_PATH",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_GROUP",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_MEMORY_SHRINKABLE",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_MEMORY_CHILD_NONSHRINKABLE",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_DATA_VERSION",
+          "data_type": "3",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_PARTITION_DIMENSION_STAT",
+      "columns": [
+        {
+          "name": "DATABASE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ATTRIBUTE_INDEXED",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "ATTRIBUTE_COUNT_MAX",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ATTRIBUTE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEASURE_GROUP_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ATTRIBUTE_COUNT_MIN",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "CUBE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PARTITION_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_PARTITION_STAT",
+      "columns": [
+        {
+          "name": "MEASURE_GROUP_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "AGGREGATION_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "AGGREGATION_SIZE",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "PARTITION_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CUBE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DATABASE_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_PERFORMANCE_COUNTERS",
+      "columns": [
+        {
+          "name": "PERF_COUNTER_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PERF_COUNTER_VALUE",
+          "data_type": "5",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_POWERBI_DATASOURCES",
+      "columns": [
+        {
+          "name": "PROVIDER",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CONNECTIONSTRING",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DATA_BINDING_HINT_CONNECTION_ID",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_POWERBI_ROLES",
+      "columns": [
+        {
+          "name": "LINEAGE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_PROPERTIES",
+      "columns": [
+        {
+          "name": "PropertyDescription",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "IsRequired",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "PropertyType",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PropertyName",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Value",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PropertyAccessType",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_RESOURCE_POOLS",
+      "columns": [
+        {
+          "name": "MAX_MEMORY",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "AVERAGE_QUERY_DURATION_LAST_50",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "COUNT_OF_THROTTLED_REQUESTS",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "POOL_ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "AVERAGE_CPU_5_SEC",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "COUNT_OF_ACTIVE_REQUESTS",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "COUNT_OF_CANCELED_REQUESTS",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "POOL_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MAX_CPU_PERCENT",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "STATISTICS_START_TIME",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "USED_MEMORY_KB",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "COUNT_OF_QUERIES",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "AVERAGE_QUERY_DURATION",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "POOL_SHRINKABLE_MEMORY",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "USED_CPU_TIME",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_RING_BUFFERS",
+      "columns": [
+        {
+          "name": "EVENT_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "EVENT_TIMESTAMP",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "SESSION_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_SCHEMA_ROWSETS",
+      "columns": [
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SchemaGuid",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "RestrictionsMask",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Restrictions",
+          "data_type": "136",
+          "description": ""
+        },
+        {
+          "name": "SchemaName",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_SESSIONS",
+      "columns": [
+        {
+          "name": "REQUEST_ACTIVITY_ID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "SESSION_SPID",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "SESSION_ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SESSION_CURRENT_DATABASE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SESSION_CPU_TIME_MS",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SESSION_READ_KB",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SESSION_READS",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SESSION_START_TIME",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "RESTRICT_CATALOG_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SESSION_LAST_COMMAND",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SESSION_LAST_COMMAND_CPU_TIME_MS",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SESSION_IDLE_TIME_MS",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SESSION_PROPERTIES",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SESSION_COMMAND_COUNT",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "SESSION_CONNECTION_ID",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "SESSION_WRITE_KB",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SESSION_LAST_COMMAND_ELAPSED_TIME_MS",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SESSION_USER_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "RESTRICT_CATALOG_ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SESSION_LAST_COMMAND_END_TIME",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "THREAD_POOL_USED",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CLIENT_ACTIVITY_ID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "SESSION_LAST_COMMAND_START_TIME",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "SESSION_WRITES",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SESSION_STATUS",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "SESSION_ELAPSED_TIME_MS",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SESSION_USED_MEMORY",
+          "data_type": "3",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_STORAGE_TABLES",
+      "columns": [
+        {
+          "name": "MEASURE_GROUP_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "RIVIOLATION_COUNT",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "HINT_TABLE_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TABLE_ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DATABASE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ROWS_COUNT",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "TABLE_PARTITIONS_COUNT",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CUBE_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_STORAGE_TABLE_COLUMNS",
+      "columns": [
+        {
+          "name": "DATATYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ISKEY",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "DICTIONARY_ISRESIDENT",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "DICTIONARY_TEMPERATURE",
+          "data_type": "5",
+          "description": ""
+        },
+        {
+          "name": "DICTIONARY_SIZE",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DICTIONARY_LAST_ACCESSED",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ISROWNUMBER",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "ISNULLABLE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_ENCODING",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "STRING_INDEX_SIZE",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DICTIONARY_ISPAGEABLE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "ISUNIQUE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TABLE_ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEASURE_GROUP_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CUBE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DATABASE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ATTRIBUTE_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_STORAGE_TABLE_COLUMN_SEGMENTS",
+      "columns": [
+        {
+          "name": "DATABASE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEASURE_GROUP_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TABLE_ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "COMPRESSION_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ISPAGEABLE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "ALLOCATED_SIZE",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "BOOKMARK_BITS_COUNT",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "TEMPERATURE",
+          "data_type": "5",
+          "description": ""
+        },
+        {
+          "name": "LAST_ACCESSED",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ISRESIDENT",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "VERTIPAQ_STATE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "USED_SIZE",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "RECORDS_COUNT",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "SEGMENT_NUMBER",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "PARTITION_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CUBE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TABLE_PARTITION_NUMBER",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "BITS_COUNT",
+          "data_type": "20",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_TRACES",
+      "columns": [
+        {
+          "name": "Type",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LogFileRollover",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "StopTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "CreationTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "AutoRestart",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "LogFileSize",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "LogFileName",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TraceName",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TraceID",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_TRACE_COLUMNS",
+      "columns": [
+        {
+          "name": "Data",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_TRACE_DEFINITION_PROVIDERINFO",
+      "columns": [
+        {
+          "name": "Data",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_TRACE_EVENT_CATEGORIES",
+      "columns": [
+        {
+          "name": "Data",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_TRANSACTIONS",
+      "columns": [
+        {
+          "name": "TRANSACTION_START_TIME",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "TRANSACTION_ELAPSED_TIME_MS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "TRANSACTION_CPU_TIME_MS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "TRANSACTION_SESSION_ID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TRANSACTION_ID",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_XEVENT_OBJECTS",
+      "columns": [
+        {
+          "name": "OBJECT_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TYPE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TYPE_SIZE",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CAPABILITIES_DESC",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CAPABILITIES",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "TYPE_PACKAGE_ID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "PACKAGE_ID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_XEVENT_OBJECT_COLUMNS",
+      "columns": [
+        {
+          "name": "CAPABILITIES_DESC",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_ID",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CAPABILITIES",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_VALUE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TYPE_PACKAGE_ID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "TYPE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_PACKAGE_ID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "OBJECT_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_XEVENT_PACKAGES",
+      "columns": [
+        {
+          "name": "NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CAPABILITIES_DESC",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CAPABILITIES",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "72",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_XEVENT_SESSIONS",
+      "columns": [
+        {
+          "name": "SESSION_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TOTAL_BUFFER_SIZE",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "DROPPED_EVENT_COUNT",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "LARGE_BUFFER_SIZE",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "DROPPED_BUFFER_COUNT",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "BLOCKED_EVENT_FIRE_TIME",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "CREATE_TIME",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "LARGEST_EVENT_DROPPED_SIZE",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "FLAG_DESC",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "BUFFER_POLICY_FLAGS",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "PENDING_BUFFERS",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "TOTAL_REGULAR_BUFFERS",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "TOTAL_LARGE_BUFFERS",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "REGULAR_BUFFER_SIZE",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "FLAGS",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "BUFFER_POLICY_DESC",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DISCOVER_XEVENT_SESSION_TARGETS",
+      "columns": [
+        {
+          "name": "TARGET_DATA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "EXECUTION_DURATION_MS",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "SESSION_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PACKAGE_ID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "EXECUTION_COUNT",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DMSCHEMA_MINING_COLUMNS",
+      "columns": [
+        {
+          "name": "FILTER",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SOURCE_COLUMN",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PREDICTION_SCORE",
+          "data_type": "5",
+          "description": ""
+        },
+        {
+          "name": "IS_POPULATED",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "PREDICTION_TABLE_FUNCTIONS",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PREDICTION_SCALAR_FUNCTIONS",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CONTAINING_COLUMN",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "IS_PREDICTABLE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "IS_INPUT",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "RELATED_ATTRIBUTE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "IS_RELATED_TO_KEY",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "MODELING_FLAG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CONTENT_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DISTRIBUTION_FLAG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DOMAIN_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DOMAIN_CATALOG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CHARACTER_SET_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CHARACTER_SET_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CHARACTER_SET_CATALOG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DATETIME_PRECISION",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "NUMERIC_SCALE",
+          "data_type": "2",
+          "description": ""
+        },
+        {
+          "name": "NUMERIC_PRECISION",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "CHARACTER_OCTET_LENGTH",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "CHARACTER_MAXIMUM_LENGTH",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "TYPE_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "DATA_TYPE",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "IS_NULLABLE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_FLAGS",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_DEFAULT",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_HAS_DEFAULT",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "ORDINAL_POSITION",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_PROPID",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MODEL_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MODEL_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MODEL_CATALOG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "COLLATION_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DOMAIN_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "COLLATION_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "COLLATION_CATALOG",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DMSCHEMA_MINING_FUNCTIONS",
+      "columns": [
+        {
+          "name": "HELP_FILE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "FUNCTION_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "FUNCTION_SIGNATURE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "RETURNS_TABLE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "HELP_CONTEXT",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "SERVICE_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DMSCHEMA_MINING_MODELS",
+      "columns": [
+        {
+          "name": "TRAINING_SET_SIZE",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "FILTER",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MSOLAP_IS_DRILLTHROUGH_ENABLED",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "LAST_PROCESSED",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "MINING_STRUCTURE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MINING_PARAMETERS",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "IS_POPULATED",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "PREDICTION_ENTITY",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CREATION_STATEMENT",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SERVICE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SERVICE_TYPE_ID",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DATE_MODIFIED",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "DATE_CREATED",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "MODEL_PROPID",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MODEL_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "MODEL_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MODEL_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MODEL_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MODEL_CATALOG",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DMSCHEMA_MINING_MODEL_CONTENT",
+      "columns": [
+        {
+          "name": "NODE_RULE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "NODE_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "MSOLAP_NODE_SHORT_CAPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MSOLAP_NODE_SCORE",
+          "data_type": "5",
+          "description": ""
+        },
+        {
+          "name": "MSOLAP_MODEL_COLUMN",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "NODE_PROBABILITY",
+          "data_type": "5",
+          "description": ""
+        },
+        {
+          "name": "PARENT_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "NODE_TYPE",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "NODE_DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "NODE_CAPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MARGINAL_RULE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MODEL_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MODEL_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "NODE_SUPPORT",
+          "data_type": "5",
+          "description": ""
+        },
+        {
+          "name": "NODE_DISTRIBUTION",
+          "data_type": "136",
+          "description": ""
+        },
+        {
+          "name": "MODEL_CATALOG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MARGINAL_PROBABILITY",
+          "data_type": "5",
+          "description": ""
+        },
+        {
+          "name": "ATTRIBUTE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "NODE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CHILDREN_CARDINALITY",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "NODE_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DMSCHEMA_MINING_MODEL_CONTENT_PMML",
+      "columns": [
+        {
+          "name": "LOCATION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SIZE",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "MODEL_PMML",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MODEL_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "MODEL_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MODEL_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MODEL_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MODEL_CATALOG",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DMSCHEMA_MINING_MODEL_XML",
+      "columns": [
+        {
+          "name": "LOCATION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SIZE",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "MODEL_PMML",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MODEL_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "MODEL_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MODEL_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MODEL_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MODEL_CATALOG",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DMSCHEMA_MINING_SERVICES",
+      "columns": [
+        {
+          "name": "SERVICE_TYPE_ID",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "HELP_FILE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MSOLAP_SUPPORTS_DRILLTHROUGH",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "MSOLAP_SUPPORTS_DATA_MINING_DIMENSIONS",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "HELP_CONTEXT",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "VIEWER_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CONTROL",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "ALLOW_PMML_INITIALIZATION",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "EXPECTED_QUALITY",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "PREDICTION_COMPLEXITY",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "TRAINING_COMPLEXITY",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "SUPPORTED_SOURCE_QUERY",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SUPPORTED_MODELING_FLAGS",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SUPPORTED_PREDICTION_CONTENT_TYPES",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SUPPORTED_INPUT_CONTENT_TYPES",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SUPPORTED_DISTRIBUTION_FLAGS",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PREDICTION_LIMIT",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SERVICE_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "SERVICE_DISPLAY_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MSOLAP_SUPPORTS_ANALYSIS_SERVICES_DDL",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SERVICE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ALLOW_DUPLICATE_KEY",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "MSOLAP_SUPPORTS_OLAP_MINING_MODELS",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "ALLOW_INCREMENTAL_INSERT",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "SCALING",
+          "data_type": "3",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DMSCHEMA_MINING_SERVICE_PARAMETERS",
+      "columns": [
+        {
+          "name": "HELP_CONTEXT",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "VALUE_ENUMERATION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SERVICE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "IS_REQUIRED",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "PARAMETER_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PARAMETER_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PARAMETER_FLAGS",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DEFAULT_VALUE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "HELP_FILE",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DMSCHEMA_MINING_STRUCTURES",
+      "columns": [
+        {
+          "name": "HOLDOUT_ACTUAL_SIZE",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "HOLDOUT_SEED",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "HOLDOUT_MAXCASES",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "HOLDOUT_MAXPERCENT",
+          "data_type": "17",
+          "description": ""
+        },
+        {
+          "name": "IS_POPULATED",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "CREATION_STATEMENT",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DATE_MODIFIED",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "DATE_CREATED",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "STRUCTURE_PROPID",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "STRUCTURE_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "STRUCTURE_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "STRUCTURE_CATALOG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "STRUCTURE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LAST_PROCESSED",
+          "data_type": "135",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "DMSCHEMA_MINING_STRUCTURE_COLUMNS",
+      "columns": [
+        {
+          "name": "IS_POPULATED",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "CONTAINING_COLUMN",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "RELATED_ATTRIBUTE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "IS_RELATED_TO_KEY",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "MODELING_FLAG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CONTENT_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DISTRIBUTION_FLAG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "COLLATION_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CHARACTER_SET_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CHARACTER_SET_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CHARACTER_SET_CATALOG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DATETIME_PRECISION",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "NUMERIC_SCALE",
+          "data_type": "2",
+          "description": ""
+        },
+        {
+          "name": "NUMERIC_PRECISION",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "CHARACTER_OCTET_LENGTH",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "CHARACTER_MAXIMUM_LENGTH",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "TYPE_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "DATA_TYPE",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "IS_NULLABLE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_FLAGS",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_DEFAULT",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_HASDEFAULT",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "ORDINAL_POSITION",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_PROPID",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "COLUMN_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "STRUCTURE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "STRUCTURE_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "STRUCTURE_CATALOG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "COLLATION_CATALOG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "COLLATION_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DOMAIN_SCHEMA",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DOMAIN_CATALOG",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DOMAIN_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "INGREDIENT",
+      "columns": [
+        {
+          "name": "__Count of INGREDIENT",
+          "data_type": "12",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "InventTrans",
+      "columns": [
+        {
+          "name": "__Count of InventTrans",
+          "data_type": "12",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "InventTransOrigin",
+      "columns": [
+        {
+          "name": "__Count of InventTransOrigin",
+          "data_type": "12",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "MDSCHEMA_CUBES",
+      "columns": [
+        {
+          "name": "PREFERRED_QUERY_PATTERNS",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "CUBE_SOURCE",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "DATA_UPDATED_BY",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "BASE_CUBE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CUBE_CAPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "IS_SQL_ENABLED",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "IS_WRITE_ENABLED",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "IS_LINKABLE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "IS_DRILLTHROUGH_ENABLED",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "LAST_DATA_UPDATE",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "SCHEMA_UPDATED_BY",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CREATED_ON",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "LAST_SCHEMA_UPDATE",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "CUBE_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "CUBE_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SCHEMA_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CATALOG_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CUBE_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "MDSCHEMA_DIMENSIONS",
+      "columns": [
+        {
+          "name": "DIMENSION_CAPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_IS_VISIBLE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_MASTER_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_UNIQUE_SETTINGS",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "IS_READWRITE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "IS_VIRTUAL",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DEFAULT_HIERARCHY",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_CARDINALITY",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_ORDINAL",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_TYPE",
+          "data_type": "2",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CUBE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SCHEMA_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CATALOG_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "MDSCHEMA_FUNCTIONS",
+      "columns": [
+        {
+          "name": "PARAMETERINFO",
+          "data_type": "136",
+          "description": ""
+        },
+        {
+          "name": "CAPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "OBJECT",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "HELP_CONTEXT",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "HELP_FILE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DLL_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "INTERFACE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LIBRARY_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ORIGIN",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "RETURN_TYPE",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PARAMETER_LIST",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "FUNCTION_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DIRECTQUERY_PUSHABLE",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "VISUAL_CALCULATIONS_INFO",
+          "data_type": "3",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "MDSCHEMA_HIERARCHIES",
+      "columns": [
+        {
+          "name": "HIERARCHY_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "HIERARCHY_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "CUBE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SCHEMA_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CATALOG_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "INSTANCE_SELECTION",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_IS_SHARED",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "GROUPING_BEHAVIOR",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "STRUCTURE_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "HIERARCHY_IS_VISIBLE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "HIERARCHY_DISPLAY_FOLDER",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "HIERARCHY_ORDINAL",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_IS_VISIBLE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_MASTER_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_UNIQUE_SETTINGS",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "IS_READWRITE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "STRUCTURE",
+          "data_type": "2",
+          "description": ""
+        },
+        {
+          "name": "IS_VIRTUAL",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ALL_MEMBER",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "HIERARCHY_ORIGIN",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "DEFAULT_MEMBER",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "HIERARCHY_CARDINALITY",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_TYPE",
+          "data_type": "2",
+          "description": ""
+        },
+        {
+          "name": "HIERARCHY_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "HIERARCHY_CAPTION",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "MDSCHEMA_INPUT_DATASOURCES",
+      "columns": [
+        {
+          "name": "DBMS_VERSION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DBMS_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TIMEOUT",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LAST_SCHEMA_UPDATE",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "CREATED_ON",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "DATASOURCE_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CATALOG_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SCHEMA_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DATASOURCE_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "MDSCHEMA_KPIS",
+      "columns": [
+        {
+          "name": "CUBE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "KPI_PARENT_KPI_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SCOPE",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "KPI_CURRENT_TIME_MEMBER",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ANNOTATIONS",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "KPI_WEIGHT",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "KPI_STATUS_GRAPHIC",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "KPI_TREND_GRAPHIC",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "KPI_TREND",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "KPI_STATUS",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "KPI_GOAL",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "KPI_VALUE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "KPI_DISPLAY_FOLDER",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "KPI_DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "KPI_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "KPI_CAPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEASUREGROUP_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SCHEMA_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CATALOG_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "MDSCHEMA_LEVELS",
+      "columns": [
+        {
+          "name": "LEVEL_ORDERING_PROPERTY",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CATALOG_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_ORIGIN",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_KEY_CARDINALITY",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_MASTER_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_UNIQUE_NAME_SQL_COLUMN_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_KEY_SQL_COLUMN_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_NAME_SQL_COLUMN_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_CARDINALITY",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_DBTYPE",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_UNIQUE_SETTINGS",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "CUSTOM_ROLLUP_SETTINGS",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_TYPE",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_NUMBER",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_CAPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_ATTRIBUTE_HIERARCHY_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "HIERARCHY_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CUBE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_IS_VISIBLE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "SCHEMA_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "MDSCHEMA_MEASUREGROUPS",
+      "columns": [
+        {
+          "name": "MEASUREGROUP_CAPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "IS_WRITE_ENABLED",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEASUREGROUP_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CATALOG_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CUBE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SCHEMA_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "MDSCHEMA_MEASUREGROUP_DIMENSIONS",
+      "columns": [
+        {
+          "name": "DIMENSION_GRANULARITY",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_PATH",
+          "data_type": "136",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_IS_VISIBLE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_CARDINALITY",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEASUREGROUP_CARDINALITY",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEASUREGROUP_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SCHEMA_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CATALOG_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_IS_FACT_DIMENSION",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "CUBE_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "MDSCHEMA_MEASURES",
+      "columns": [
+        {
+          "name": "MEASURE_UNITS",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEASURE_IS_VISIBLE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "MEASUREGROUP_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEASURE_UNQUALIFIED_CAPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEASURE_DISPLAY_FOLDER",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DEFAULT_FORMAT_STRING",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEASURE_NAME_SQL_COLUMN_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LEVELS_LIST",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "EXPRESSION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "NUMERIC_SCALE",
+          "data_type": "2",
+          "description": ""
+        },
+        {
+          "name": "NUMERIC_PRECISION",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "DATA_TYPE",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "MEASURE_CAPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SCHEMA_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEASURE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CUBE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEASURE_AGGREGATOR",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "CATALOG_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEASURE_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEASURE_GUID",
+          "data_type": "72",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "MDSCHEMA_MEMBERS",
+      "columns": [
+        {
+          "name": "SCOPE",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "IS_DATAMEMBER",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "IS_PLACEHOLDERMEMBER",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "MEMBER_KEY",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "EXPRESSION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PARENT_COUNT",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PARENT_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PARENT_LEVEL",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "CHILDREN_CARDINALITY",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "MEMBER_CAPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEMBER_GUID",
+          "data_type": "72",
+          "description": ""
+        },
+        {
+          "name": "MEMBER_TYPE",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "MEMBER_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEMBER_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "HIERARCHY_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MEMBER_ORDINAL",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_NUMBER",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CUBE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SCHEMA_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CATALOG_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "MDSCHEMA_PROPERTIES",
+      "columns": [
+        {
+          "name": "CHARACTER_OCTET_LENGTH",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "CATALOG_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PROPERTY_ATTRIBUTE_HIERARCHY_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PROPERTY_IS_VISIBLE",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "MIME_TYPE",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PROPERTY_CARDINALITY",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PROPERTY_ORIGIN",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "LANGUAGE",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "SQL_COLUMN_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PROPERTY_CONTENT_TYPE",
+          "data_type": "2",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "NUMERIC_SCALE",
+          "data_type": "2",
+          "description": ""
+        },
+        {
+          "name": "NUMERIC_PRECISION",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "CHARACTER_MAXIMUM_LENGTH",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DATA_TYPE",
+          "data_type": "18",
+          "description": ""
+        },
+        {
+          "name": "PROPERTY_CAPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PROPERTY_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PROPERTY_TYPE",
+          "data_type": "2",
+          "description": ""
+        },
+        {
+          "name": "MEMBER_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LEVEL_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "HIERARCHY_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DIMENSION_UNIQUE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CUBE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SCHEMA_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "MDSCHEMA_SETS",
+      "columns": [
+        {
+          "name": "SET_EVALUATION_CONTEXT",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "SET_DISPLAY_FOLDER",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SET_CAPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DIMENSIONS",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "EXPRESSION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DESCRIPTION",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SCOPE",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "SET_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CATALOG_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CUBE_NAME",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SCHEMA_NAME",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "MEASURENAMES",
+      "columns": [
+        {
+          "name": "__Count of MEASURENAMES",
+          "data_type": "12",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "PRODUCT",
+      "columns": [
+        {
+          "name": "__Count of PRODUCT",
+          "data_type": "12",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "ProdCalcTrans",
+      "columns": [
+        {
+          "name": "__Count of ProdCalcTrans",
+          "data_type": "12",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "ProdTable",
+      "columns": [
+        {
+          "name": "__Count of ProdTable",
+          "data_type": "12",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "ProdTableJour",
+      "columns": [
+        {
+          "name": "__Count of ProdTableJour",
+          "data_type": "12",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_ALTERNATE_OF_DEFINITIONS",
+      "columns": [
+        {
+          "name": "Summarization",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "BaseTableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "BaseColumnID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ColumnID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_ANALYTICS_AIMETADATA",
+      "columns": [
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "MeasureAnalysisDefinition",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ModelID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_ANNOTATIONS",
+      "columns": [
+        {
+          "name": "Value",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ObjectType",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "ObjectID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_ATTRIBUTE_HIERARCHIES",
+      "columns": [
+        {
+          "name": "RefreshedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "AttributeHierarchyStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "State",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ColumnID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_ATTRIBUTE_HIERARCHY_STORAGES",
+      "columns": [
+        {
+          "name": "MaxValue",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "StringValueMaxLength",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "HasStatistics",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "SystemTableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "StorageFileID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DistinctDataCount",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ColumnDataToPosition",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ColumnPositionToData",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "OptimizationLevel",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "SortOrder",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "AttributeHierarchyID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "MaterializationType",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "DataVersion",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "MinValue",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_BINDING_INFO_COLLECTION",
+      "columns": [
+        {
+          "name": "ModelID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ConnectionId",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_CALCULATION_EXPRESSIONS",
+      "columns": [
+        {
+          "name": "ErrorMessage",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "Expression",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "FormatStringDefinitionID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "CalculationGroupID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SelectionMode",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "State",
+          "data_type": "20",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_CALCULATION_GROUPS",
+      "columns": [
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Precedence",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_CALCULATION_ITEMS",
+      "columns": [
+        {
+          "name": "State",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "Expression",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ErrorMessage",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Ordinal",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "FormatStringDefinitionID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "CalculationGroupID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_CALENDARS",
+      "columns": [
+        {
+          "name": "LineageTag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "SourceLineageTag",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_CALENDAR_COLUMN_GROUPS",
+      "columns": [
+        {
+          "name": "CalendarID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "TimeUnit",
+          "data_type": "20",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_CALENDAR_COLUMN_REFERENCES",
+      "columns": [
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "IsPrimaryColumn",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "CalendarColumnGroupID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ColumnID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_CHANGED_PROPERTIES",
+      "columns": [
+        {
+          "name": "ObjectID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Property",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ObjectType",
+          "data_type": "3",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_COLUMNS",
+      "columns": [
+        {
+          "name": "AlternateOfID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DataCategory",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LineageTag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "StringIndexingBehavior",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ExpressionContext",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "SourceLineageTag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "RelatedColumnDetailsID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "EncodingHint",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "DisplayFolder",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SourceProviderType",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ErrorMessage",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DisplayOrdinal",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "KeepUniqueRows",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "SystemFlags",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "RefreshedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "StructureModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "AttributeHierarchyID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SortByColumnID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "IsAvailableInMDX",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "FormatString",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Expression",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ColumnOriginID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SourceColumn",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ColumnStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SummarizeBy",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "IsDefaultImage",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "IsDefaultLabel",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "TableDetailPosition",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "Alignment",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "IsNullable",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "IsKey",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "IsUnique",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "State",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "IsHidden",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "InferredDataType",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ExplicitDataType",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "InferredName",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ExplicitName",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_COLUMN_INDEX_STORAGES",
+      "columns": [
+        {
+          "name": "IsOperatingOn32",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "IsNullable",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "LastId",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DataVersion",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "StorageFileID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ColumnStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DeltaVersion",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_COLUMN_PARTITION_STORAGES",
+      "columns": [
+        {
+          "name": "State",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ColumnStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "StorageFileID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DataVersion",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "PartitionStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SegmentStorageID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_COLUMN_PERMISSIONS",
+      "columns": [
+        {
+          "name": "ColumnID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "MetadataPermission",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "TablePermissionID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_COLUMN_STORAGES",
+      "columns": [
+        {
+          "name": "DeltaColumnPrimitiveType",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "Locale",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "Statistics_XMType",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ColumnFlags",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Statistics_RLERuns",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "OrderByColumn",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Statistics_CompressionType",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Collation",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ColumnIndexStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "StringIndexStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DeltaTableColumnStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "FramedSourceColumn",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DeltaColumnMappingId",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "DeltaColumnMappingPhysicalName",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "IsDeltaPartitionColumn",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "Statistics_EncodingHint",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Statistics_CompressionParam",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Statistics_DBType",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Statistics_Usage",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Statistics_OthersRLERuns",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Statistics_HasNulls",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "Statistics_RowCount",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Statistics_RLESortOrder",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Statistics_OriginalMinSegmentDataID",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "Statistics_MaxDataID",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "Statistics_MinDataID",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "Statistics_DistinctStates",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "BinaryCharacters",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Settings",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DictionaryStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "StoragePosition",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ColumnID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_CULTURES",
+      "columns": [
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "StructureModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "LinguisticMetadataID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ModelID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_DATA_COVERAGE_DEFINITIONS",
+      "columns": [
+        {
+          "name": "ErrorMessage",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "Expression",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "State",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "PartitionID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_DATA_SOURCES",
+      "columns": [
+        {
+          "name": "Options",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ConnectionDetails",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Credential",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ContextExpression",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "Provider",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Timeout",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "Isolation",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "MaxConnections",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "Password",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Account",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ImpersonationMode",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ConnectionString",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ModelID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_DELTA_TABLE_COLUMN_STORAGES",
+      "columns": [
+        {
+          "name": "MinCardinality",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "MaxCardinality",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "UncompressedSize",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ColumnStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_DELTA_TABLE_METADATA_STORAGES",
+      "columns": [
+        {
+          "name": "PartitionStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ArtifactSecurityVersion",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DeltaLogETag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DeltaColumnMappingMode",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DatamartObjectID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TableObjectID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CurrentVersion",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "RootLocation",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TableName",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DataSourceReference",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "FramedSchemaName",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ArtifactObjectId",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "FallbackReason",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_DETAIL_ROWS_DEFINITIONS",
+      "columns": [
+        {
+          "name": "ObjectID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ErrorMessage",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "State",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "Expression",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ObjectType",
+          "data_type": "3",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_DICTIONARY_STORAGES",
+      "columns": [
+        {
+          "name": "LastId",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "Size",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "StorageFileID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DictionaryFlags",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "IsOperatingOn32",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "IsUnique",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "IsNullable",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "BaseId",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DataVersion",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "DataType",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ColumnStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Magnitude",
+          "data_type": "5",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_EXCLUDED_ARTIFACTS",
+      "columns": [
+        {
+          "name": "ObjectType",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "ArtifactType",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "ObjectID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Reference",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_EXPRESSIONS",
+      "columns": [
+        {
+          "name": "Kind",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ParameterValuesColumnID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ExpressionSourceID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SourceLineageTag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LineageTag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MAttributes",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "QueryGroupID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "Expression",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ModelID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "RemoteParameterName",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_EXTENDED_PROPERTIES",
+      "columns": [
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "Value",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ObjectType",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "ObjectID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_FORMAT_STRING_DEFINITIONS",
+      "columns": [
+        {
+          "name": "State",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "Expression",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ObjectType",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "ObjectID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ErrorMessage",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_FUNCTIONS",
+      "columns": [
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SourceLineageTag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LineageTag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "StructureModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ErrorMessage",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "State",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "IsHidden",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "Expression",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ModelID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_GENERAL_SEGMENT_MAP_SEGMENT_METADATA_STORAGES",
+      "columns": [
+        {
+          "name": "RecordCount",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SegmentMapStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Ordinal",
+          "data_type": "3",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_GROUP_BY_COLUMNS",
+      "columns": [
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "GroupingColumnID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "RelatedColumnDetailsID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_HIERARCHIES",
+      "columns": [
+        {
+          "name": "SourceLineageTag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LineageTag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "IsHidden",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "HideMembers",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "DisplayFolder",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "RefreshedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "StructureModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "HierarchyStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "State",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_HIERARCHY_STORAGES",
+      "columns": [
+        {
+          "name": "SystemTableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "HierarchyID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "StructureType",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "MaterializationType",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "LevelDefinition",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_KPIS",
+      "columns": [
+        {
+          "name": "StatusDescription",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "TrendExpression",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TrendDescription",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TrendGraphic",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "StatusExpression",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "StatusGraphic",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TargetFormatString",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TargetExpression",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TargetDescription",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MeasureID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_LEVELS",
+      "columns": [
+        {
+          "name": "LineageTag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "SourceLineageTag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ColumnID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Ordinal",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "HierarchyID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_LINGUISTIC_METADATA",
+      "columns": [
+        {
+          "name": "ContentType",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "Content",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CultureID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_MEASURES",
+      "columns": [
+        {
+          "name": "SourceLineageTag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LineageTag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "FormatStringDefinitionID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DataCategory",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DetailRowsDefinitionID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DisplayFolder",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ErrorMessage",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "IsSimpleMeasure",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "KPIID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "StructureModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "State",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "IsHidden",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "FormatString",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Expression",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DataType",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_MODEL",
+      "columns": [
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DiscourageImplicitMeasures",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "ForceUniqueNames",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "DefaultDirectLakeIndexingBehavior",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "MetadataAccessPolicy",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "SelectionExpressionBehavior",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ValueFilterBehavior",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "DirectLakeBehavior",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "DisableSystemDefaultExpression",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "MaxParallelismPerQuery",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "MaxParallelismPerRefresh",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "DisableAutoExists",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "AutomaticAggregationOptions",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DiscourageCompositeModels",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "MAttributes",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SourceQueryCulture",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DataSourceDefaultMaxConnections",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "DataSourceVariablesOverrideBehavior",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "DiscourageReportMeasures",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "DefaultPowerBIDataSourceVersion",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "DefaultMeasureID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DataAccessOptions",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Version",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "StructureModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "Collation",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Culture",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DefaultDataView",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "DefaultMode",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "StorageLocation",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_OBJECT_TRANSLATIONS",
+      "columns": [
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Value",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Property",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "Altered",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ObjectType",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "ObjectID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "CultureID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_PARQUET_FILE_STORAGES",
+      "columns": [
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DeletionVectorFileETag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DeletionVectorBitmapSize",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DeletionVectorFileLocation",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ETag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Ordinal",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "RowgroupCount",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DeletedVersion",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "CreatedVersion",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Location",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Size",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "DeltaTableMetadataStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DeletionVectorBitmapOffset",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_PARTITIONS",
+      "columns": [
+        {
+          "name": "QueryGroupID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "RefreshBookmark",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "RangeGranularity",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "RangeEnd",
+          "data_type": "7",
+          "description": ""
+        },
+        {
+          "name": "RangeStart",
+          "data_type": "7",
+          "description": ""
+        },
+        {
+          "name": "RetainDataTillForceCalculate",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "ErrorMessage",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "SystemFlags",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "RefreshedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "DataView",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "Mode",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "PartitionStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "State",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "QueryDefinition",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DataSourceID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "MAttributes",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ExpressionSourceID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SchemaName",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DataCoverageDefinitionID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_PARTITION_STORAGES",
+      "columns": [
+        {
+          "name": "DataObjectId",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "PartitionID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "StorageFolderID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DeltaTableMetadataStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SegmentMapStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "StoragePosition",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_PERSPECTIVES",
+      "columns": [
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ModelID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_PERSPECTIVE_COLUMNS",
+      "columns": [
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "PerspectiveTableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ColumnID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_PERSPECTIVE_HIERARCHIES",
+      "columns": [
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "HierarchyID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "PerspectiveTableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_PERSPECTIVE_MEASURES",
+      "columns": [
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "PerspectiveTableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "MeasureID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_PERSPECTIVE_SETS",
+      "columns": [
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "SetID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "PerspectiveTableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_PERSPECTIVE_TABLES",
+      "columns": [
+        {
+          "name": "TableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "IncludeAll",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "PerspectiveID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_QUERY_GROUPS",
+      "columns": [
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Folder",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ModelID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_REFRESH_POLICIES",
+      "columns": [
+        {
+          "name": "Mode",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "SourceExpression",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "PollingExpression",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "IncrementalPeriods",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "IncrementalGranularity",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "RollingWindowPeriods",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "RollingWindowGranularity",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "PolicyType",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "TableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "IncrementalPeriodsOffset",
+          "data_type": "3",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_RELATED_COLUMN_DETAILS",
+      "columns": [
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ColumnID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_RELATIONSHIPS",
+      "columns": [
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ModelID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SecurityFilteringBehavior",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "RefreshedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "RelationshipStorage2ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "RelationshipStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "State",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ToCardinality",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ToColumnID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ToTableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "FromCardinality",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "FromColumnID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "FromTableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "RelyOnReferentialIntegrity",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "JoinOnDateBehavior",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "CrossFilteringBehavior",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "IsActive",
+          "data_type": "11",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_RELATIONSHIP_INDEX_STORAGES",
+      "columns": [
+        {
+          "name": "SecondarySystemTableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SystemTableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "StorageFileID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "StorageFolderID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SecondaryRecordCount",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "RecordCount",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Flags",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "IndexType",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "RelationshipStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_RELATIONSHIP_STORAGES",
+      "columns": [
+        {
+          "name": "RelationshipIndexStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Flags",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Cardinality",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "DefinitionType",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "RelationshipID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_ROLES",
+      "columns": [
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ModelPermission",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ModelID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_ROLE_MEMBERSHIPS",
+      "columns": [
+        {
+          "name": "MemberID",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "MemberType",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "IdentityProvider",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "MemberName",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "RoleID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_SEGMENT_MAP_STORAGES",
+      "columns": [
+        {
+          "name": "Type",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "PartitionStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "RecordsPerSegment",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SegmentCount",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "RecordCount",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_SEGMENT_STORAGES",
+      "columns": [
+        {
+          "name": "StorageFileID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "SegmentCount",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ColumnPartitionStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_SETS",
+      "columns": [
+        {
+          "name": "DisplayFolder",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ErrorMessage",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "StructureModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "State",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "IsHidden",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "IsDynamic",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "Expression",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_STORAGE_FILES",
+      "columns": [
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "FileName",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "StorageFolderID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "OwnerType",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "OwnerID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_STORAGE_FOLDERS",
+      "columns": [
+        {
+          "name": "Path",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "OwnerType",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "OwnerID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_STRING_INDEX_STORAGES",
+      "columns": [
+        {
+          "name": "SourceDictionaryDataVersion",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "ImplementationVersion",
+          "data_type": "19",
+          "description": ""
+        },
+        {
+          "name": "DataVersion",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "StorageFileID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ColumnStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_TABLES",
+      "columns": [
+        {
+          "name": "DirectLakeIndexingBehavior",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ExcludeFromAutomaticAggregations",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "SystemManaged",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "SourceLineageTag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "LineageTag",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ExcludeFromModelRefresh",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "CalculationGroupID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "RefreshPolicyID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "AlternateSourcePrecedence",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "DefaultDetailRowsDefinitionID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "IsPrivate",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "ShowAsVariationsOnly",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "SystemFlags",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "StructureModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "TableStorageID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "IsHidden",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "DataCategory",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ModelID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_TABLE_PERMISSIONS",
+      "columns": [
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ModifiedTime",
+          "data_type": "135",
+          "description": ""
+        },
+        {
+          "name": "FilterExpression",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "State",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "TableID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "MetadataPermission",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "ErrorMessage",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "RoleID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_TABLE_STORAGES",
+      "columns": [
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "StorageFolderID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "RIViolationCount",
+          "data_type": "20",
+          "description": ""
+        },
+        {
+          "name": "Settings",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Version",
+          "data_type": "3",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "TableID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "TMSCHEMA_VARIATIONS",
+      "columns": [
+        {
+          "name": "IsDefault",
+          "data_type": "11",
+          "description": ""
+        },
+        {
+          "name": "DefaultColumnID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "DefaultHierarchyID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "RelationshipID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "data_type": "130",
+          "description": ""
+        },
+        {
+          "name": "ColumnID",
+          "data_type": "21",
+          "description": ""
+        },
+        {
+          "name": "ID",
+          "data_type": "21",
+          "description": ""
+        }
+      ]
+    }
+  ],
+  "measures": [
+    {
+      "table": "MEASURENAMES",
+      "name": "Planned Qty",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Std Total Cost",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Actual Total Cost",
+      "format_string": "\\$#,0;(\\$#,0);\\$#,0",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Total Variance",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Std Unit Mfg Cost",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Actual Unit Mfg Cost",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Unit Cost Variance",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Std Mat Cost",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Actual Mat Cost",
+      "format_string": "\\$#,0.###############;(\\$#,0.###############);\\$#,0.###############",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Std Labor Cost",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Actual Labor Cost",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Std Mat Qty",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Actual Mat Qty",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Std Labor Hrs",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Actual Labor Hrs",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Std Mat Unit Cost",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Actual Mat Unit Cost",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Std Labor Rate",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Actual Labor Rate",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Actual Qty",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Std Total @ActualQty",
+      "format_string": "\\$#,0;(\\$#,0);\\$#,0",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Total Variance, Std@Actual",
+      "format_string": "\\$#,0;(\\$#,0);\\$#,0",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Variance % of Standard (Std@Actual)",
+      "format_string": "0%;-0%;0%",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Std Mat Qty @ActualQty",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Counts $",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "VARIANCE QTY",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "ZERO",
+      "format_string": "0",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Counts Qty",
+      "format_string": "",
+      "description": ""
+    },
+    {
+      "table": "MEASURENAMES",
+      "name": "Actual+Counts $",
+      "format_string": "",
+      "description": ""
+    }
+  ]
+}

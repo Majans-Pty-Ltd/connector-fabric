@@ -1,63 +1,95 @@
 """
 Microsoft Fabric MCP Server for Claude Code.
 
-Provides DAX query execution, model exploration, and Fabric REST API operations
-against Majans' Microsoft Fabric workspaces — semantic models, pipelines,
-lakehouses, and more.
+Provides DAX query execution, model exploration, static schema lookups,
+and Fabric REST API operations against Majans' Microsoft Fabric workspaces —
+semantic models, pipelines, lakehouses, and more.
 
 Requires: pip install mcp python-dotenv requests
 XMLA tools also require: pip install pyadomd pythonnet (Windows only)
 """
 
+import json
 import os
 import time
+from datetime import datetime, timezone
 
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP
 
 # --- CONFIGURATION ---
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+SCHEMAS_DIR = os.path.join(SCRIPT_DIR, "schemas")
 load_dotenv(os.path.join(SCRIPT_DIR, ".env"))
 
 TENANT_ID = os.getenv("AZURE_TENANT_ID")
 CLIENT_ID = os.getenv("AZURE_CLIENT_ID")
 CLIENT_SECRET = os.getenv("AZURE_CLIENT_SECRET")
 
-# Workspace registry: short name -> (XMLA endpoint, default dataset)
+# Workspace registry: 4 IBP-domain Fabric workspaces, 15 datasets
 WORKSPACES = {
-    "SCAN": {
-        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/DEMAND",
-        "dataset": "SCANv2",
-        "description": "POS scan data model (SCANv2) — retail scan data, Coles/Woolworths, Bhuja/Infuzions",
-    },
-    "REVIEW": {
-        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/REVIEW",
-        "dataset": "FINANCIALv2",
-        "description": "Financial P&L model (FINANCIALv2) — budgets, forecasts, actuals, GL",
-    },
-    "SUPPLY": {
-        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/SUPPLY",
-        "dataset": "MANUFACTURING V3",
-        "description": "Manufacturing & supply chain model (MANUFACTURING V3)",
+    "PRODUCT": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/PRODUCT",
+        "datasets": {
+            "CONSUMERv2": "Consumer insights model",
+        },
     },
     "DEMAND": {
         "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/DEMAND",
-        "dataset": "SALESv2",
-        "description": "Sales & demand model (SALESv2) — customer orders, invoicing, demand",
+        "datasets": {
+            "SALESv2": "Sales & demand — customer orders, invoicing",
+            "SCANv2": "POS retail scan data — Coles/Woolworths",
+            "STORE": "Store-level data",
+            "SCAN TOTAL GROCERY": "Total grocery scan data",
+        },
     },
-    "IT_COST": {
-        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/IT COST",
-        "dataset": "IT COST",
-        "description": "IT cost management model — M365/D365 licenses, Azure spend, CC transactions, FY26 budget vs actual, savings opportunities",
-    },
-    "PURCHASING": {
+    "SUPPLY": {
         "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/SUPPLY",
-        "dataset": "PURCHASINGV3",
-        "description": "Purchasing model (PURCHASINGV3) — vendor SIFOT/DIFOT, PO delivery performance, service levels, supplier scoring",
+        "datasets": {
+            "AM": "Asset management",
+            "CUSTOMER SERVICE v2": "Customer service metrics",
+            "INVENTORYV2": "Inventory management",
+            "MANUFACTURING V3": "Production & supply chain",
+            "PURCHASINGV3": "Vendor SIFOT/DIFOT, PO delivery, supplier scoring",
+        },
+    },
+    "REVIEW": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/REVIEW",
+        "datasets": {
+            "FINANCIALv2": "P&L, budgets, forecasts, actuals, GL",
+            "PLANAUDIT": "Plan audit",
+            "THREE-WAY": "Three-way match",
+            "PRODUCTIONCOST": "Production costing",
+            "COSTINGv2": "Costing model",
+        },
     },
 }
 
-DEFAULT_WORKSPACE = "SCAN"
+DEFAULT_DATASET = "SCANv2"
+
+# Build reverse lookup: dataset name (upper) -> (workspace_key, endpoint, dataset_name)
+_DATASET_INDEX = {}
+for _ws_key, _ws_info in WORKSPACES.items():
+    for _ds_name in _ws_info["datasets"]:
+        _DATASET_INDEX[_ds_name.upper()] = {
+            "workspace": _ws_key,
+            "endpoint": _ws_info["endpoint"],
+            "dataset": _ds_name,
+        }
+
+
+def _resolve_dataset(dataset: str) -> dict:
+    """Resolve a dataset name to its workspace endpoint info (case-insensitive).
+
+    Returns dict with keys: workspace, endpoint, dataset (canonical name).
+    Raises ValueError if not found.
+    """
+    entry = _DATASET_INDEX.get(dataset.upper())
+    if not entry:
+        available = ", ".join(sorted(_DATASET_INDEX.keys()))
+        raise ValueError(f"Unknown dataset '{dataset}'. Available: {available}")
+    return entry
+
 
 # --- LAZY XMLA INITIALIZATION ---
 _clr_initialized = False
@@ -126,21 +158,13 @@ def _get_fabric_token() -> str:
 # --- XMLA HELPERS ---
 
 
-def _build_conn_str(workspace: str) -> str:
-    """Build an XMLA connection string for the given workspace."""
-    ws = WORKSPACES.get(workspace.upper())
-    if not ws:
-        available = ", ".join(WORKSPACES.keys())
-        raise ValueError(f"Unknown workspace '{workspace}'. Available: {available}")
-    if not ws["dataset"]:
-        raise ValueError(
-            f"Workspace '{workspace}' has no dataset configured. "
-            f"Run fabric_test_xmla with this workspace first to discover datasets."
-        )
+def _build_conn_str(dataset: str) -> str:
+    """Build an XMLA connection string for the given dataset."""
+    info = _resolve_dataset(dataset)
     return (
         f"Provider=MSOLAP;"
-        f"Data Source={ws['endpoint']};"
-        f"Initial Catalog={ws['dataset']};"
+        f"Data Source={info['endpoint']};"
+        f"Initial Catalog={info['dataset']};"
         f"User ID=app:{CLIENT_ID}@{TENANT_ID};"
         f"Password={CLIENT_SECRET};"
         f"Persist Security Info=True;"
@@ -148,15 +172,12 @@ def _build_conn_str(workspace: str) -> str:
     )
 
 
-def _build_conn_str_no_catalog(workspace: str) -> str:
+def _build_conn_str_no_catalog(dataset: str) -> str:
     """Build connection string without Initial Catalog (for discovery)."""
-    ws = WORKSPACES.get(workspace.upper())
-    if not ws:
-        available = ", ".join(WORKSPACES.keys())
-        raise ValueError(f"Unknown workspace '{workspace}'. Available: {available}")
+    info = _resolve_dataset(dataset)
     return (
         f"Provider=MSOLAP;"
-        f"Data Source={ws['endpoint']};"
+        f"Data Source={info['endpoint']};"
         f"User ID=app:{CLIENT_ID}@{TENANT_ID};"
         f"Password={CLIENT_SECRET};"
         f"Persist Security Info=True;"
@@ -164,10 +185,10 @@ def _build_conn_str_no_catalog(workspace: str) -> str:
     )
 
 
-def _execute(query: str, workspace: str = DEFAULT_WORKSPACE) -> tuple:
+def _execute(query: str, dataset: str = DEFAULT_DATASET) -> tuple:
     """Execute a query and return (headers, rows). New connection per query."""
     _ensure_xmla()
-    conn_str = _build_conn_str(workspace)
+    conn_str = _build_conn_str(dataset)
     conn = _Pyadomd(conn_str)
     conn.open()
     try:
@@ -218,17 +239,18 @@ def _to_markdown_table(headers: list, rows: list, max_rows: int = 100) -> str:
 mcp = FastMCP(
     "fabric",
     instructions=(
-        "Microsoft Fabric MCP server for Majans — provides access to semantic models (DAX queries via XMLA), "
-        "workspace management, pipeline operations, and dataset refresh via the Fabric REST API. "
-        "Available XMLA workspaces: SCAN (SCANv2 — POS retail scan data, default), "
-        "REVIEW (FINANCIALv2 — P&L, budgets, forecasts), "
-        "SUPPLY (MANUFACTURING V3 — production, supply chain), "
-        "PURCHASING (PURCHASINGv2 — vendor SIFOT/DIFOT, PO delivery performance), "
-        "DEMAND (SALESv2 — sales/demand), IT_COST (IT spend). "
-        "Default workspace is SCAN. Use the 'workspace' parameter to switch. "
-        "Run fabric_list_tables first to discover available tables and columns, "
-        "then fabric_list_measures to see defined measures. "
-        "Use fabric_list_workspace_items to explore all Fabric artefacts in a workspace."
+        "Microsoft Fabric MCP server for Majans — provides access to 15 semantic models across 4 IBP workspaces "
+        "(PRODUCT, DEMAND, SUPPLY, REVIEW) via DAX queries (XMLA), static schema lookups, "
+        "workspace management, pipeline operations, and dataset refresh via the Fabric REST API.\n\n"
+        "All XMLA tools take a 'dataset' parameter — the semantic model name. "
+        "Default dataset is SCANv2. Use fabric_list_datasets() to see all 15 datasets.\n\n"
+        "For fast schema lookups (no XMLA connection needed), use fabric_get_schema(dataset). "
+        "For live queries, use fabric_list_tables(dataset) and fabric_list_measures(dataset).\n\n"
+        "Datasets by workspace:\n"
+        "  PRODUCT: CONSUMERv2\n"
+        "  DEMAND: SALESv2, SCANv2, STORE, SCAN TOTAL GROCERY\n"
+        "  SUPPLY: AM, CUSTOMER SERVICE v2, INVENTORYV2, MANUFACTURING V3, PURCHASINGV3\n"
+        "  REVIEW: FINANCIALv2, PLANAUDIT, THREE-WAY, PRODUCTIONCOST, COSTINGv2"
     ),
 )
 
@@ -238,37 +260,41 @@ mcp = FastMCP(
 
 @mcp.tool()
 def fabric_dax_query(
-    query: str, max_rows: int = 100, workspace: str = DEFAULT_WORKSPACE
+    query: str, max_rows: int = 100, dataset: str = DEFAULT_DATASET
 ) -> str:
     """Execute a DAX query against a Power BI semantic model via XMLA.
 
     Args:
         query: DAX query string (use EVALUATE for tabular results).
         max_rows: Maximum rows to return (default 100).
-        workspace: Workspace to query — SCAN (default), REVIEW, SUPPLY, DEMAND, IT_COST.
+        dataset: Semantic model to query — e.g. SCANv2 (default), FINANCIALv2, PURCHASINGV3.
+            Use fabric_list_datasets() to see all 15 available datasets.
 
-    Run fabric_list_tables first to discover available tables and columns.
+    Run fabric_list_tables or fabric_get_schema first to discover available tables and columns.
 
     Example queries:
         EVALUATE ROW("Test", 1)
         EVALUATE SUMMARIZECOLUMNS('Table'[Column], "Metric", SUM('Table'[Value]))
     """
     try:
-        headers, rows = _execute(query, workspace)
+        headers, rows = _execute(query, dataset)
         return _to_markdown_table(headers, rows, max_rows)
     except Exception as e:
-        return f"DAX query error ({workspace}): {e}\n\nQuery was:\n```\n{query}\n```"
+        return f"DAX query error ({dataset}): {e}\n\nQuery was:\n```\n{query}\n```"
 
 
 @mcp.tool()
-def fabric_list_tables(workspace: str = DEFAULT_WORKSPACE) -> str:
-    """List all tables and columns in a semantic model with data types.
+def fabric_list_tables(dataset: str = DEFAULT_DATASET) -> str:
+    """List all tables and columns in a semantic model with data types (live XMLA query).
 
     Args:
-        workspace: SCAN (default), REVIEW, SUPPLY, DEMAND, IT_COST.
+        dataset: Semantic model name — e.g. SCANv2 (default), FINANCIALv2, PURCHASINGV3.
+            Use fabric_list_datasets() to see all 15 available datasets.
+
+    For a faster offline alternative, use fabric_get_schema(dataset) instead.
     """
     try:
-        ws = WORKSPACES[workspace.upper()]
+        info = _resolve_dataset(dataset)
         query = """
         SELECT
             [TABLE_NAME],
@@ -279,7 +305,7 @@ def fabric_list_tables(workspace: str = DEFAULT_WORKSPACE) -> str:
         WHERE LEFT([TABLE_NAME], 1) <> '$'
         ORDER BY [TABLE_NAME]
         """
-        headers, rows = _execute(query, workspace)
+        headers, rows = _execute(query, dataset)
 
         tables = {}
         for row in rows:
@@ -288,7 +314,7 @@ def fabric_list_tables(workspace: str = DEFAULT_WORKSPACE) -> str:
                 tables[tbl] = []
             tables[tbl].append(row)
 
-        lines = [f"## {ws['dataset']} Model Structure ({workspace})\n"]
+        lines = [f"## {info['dataset']} Model Structure ({info['workspace']})\n"]
         for tbl, cols in sorted(tables.items()):
             lines.append(f"### {tbl}")
             lines.append("| Column | Data Type | Description |")
@@ -300,18 +326,21 @@ def fabric_list_tables(workspace: str = DEFAULT_WORKSPACE) -> str:
 
         return "\n".join(lines)
     except Exception as e:
-        return f"Error listing tables ({workspace}): {e}"
+        return f"Error listing tables ({dataset}): {e}"
 
 
 @mcp.tool()
-def fabric_list_measures(workspace: str = DEFAULT_WORKSPACE) -> str:
-    """List all measures defined in a semantic model.
+def fabric_list_measures(dataset: str = DEFAULT_DATASET) -> str:
+    """List all measures defined in a semantic model (live XMLA query).
 
     Args:
-        workspace: SCAN (default), REVIEW, SUPPLY, DEMAND, IT_COST.
+        dataset: Semantic model name — e.g. SCANv2 (default), FINANCIALv2, PURCHASINGV3.
+            Use fabric_list_datasets() to see all 15 available datasets.
+
+    For a faster offline alternative, use fabric_get_schema(dataset) instead.
     """
     try:
-        ws = WORKSPACES[workspace.upper()]
+        info = _resolve_dataset(dataset)
         query = """
         SELECT
             [MEASUREGROUP_NAME],
@@ -321,9 +350,9 @@ def fabric_list_measures(workspace: str = DEFAULT_WORKSPACE) -> str:
         FROM $SYSTEM.MDSCHEMA_MEASURES
         WHERE [MEASURE_IS_VISIBLE]
         """
-        headers, rows = _execute(query, workspace)
+        headers, rows = _execute(query, dataset)
 
-        lines = [f"## {ws['dataset']} Measures ({workspace})\n"]
+        lines = [f"## {info['dataset']} Measures ({info['workspace']})\n"]
         lines.append("| Measure Group | Measure | Format | Description |")
         lines.append("| --- | --- | --- | --- |")
         for row in rows:
@@ -333,97 +362,211 @@ def fabric_list_measures(workspace: str = DEFAULT_WORKSPACE) -> str:
 
         return "\n".join(lines)
     except Exception as e:
-        return f"Error listing measures ({workspace}): {e}"
+        return f"Error listing measures ({dataset}): {e}"
 
 
 @mcp.tool()
-def fabric_test_xmla(workspace: str = DEFAULT_WORKSPACE) -> str:
-    """Test XMLA connection to a workspace and discover datasets.
+def fabric_test_xmla(dataset: str = DEFAULT_DATASET) -> str:
+    """Test XMLA connection to a dataset and list its tables.
 
     Args:
-        workspace: SCAN (default), REVIEW, SUPPLY, DEMAND, IT_COST.
-
-    Use this to verify XMLA connectivity and discover dataset names.
+        dataset: Semantic model name — e.g. SCANv2 (default), FINANCIALv2, PURCHASINGV3.
+            Use fabric_list_datasets() to see all 15 available datasets.
     """
-    ws_key = workspace.upper()
-    ws = WORKSPACES.get(ws_key)
-    if not ws:
-        available = ", ".join(WORKSPACES.keys())
-        return f"Unknown workspace '{workspace}'. Available: {available}"
-
-    result = [f"Workspace: {ws_key}", f"Endpoint: {ws['endpoint']}"]
-
-    if ws["dataset"]:
-        try:
-            headers, rows = _execute('EVALUATE ROW("Status", "Connected")', workspace)
-            result.insert(0, "Connection: OK")
-            result.append(f"Dataset: {ws['dataset']}")
-
-            headers2, rows2 = _execute(
-                """
-                SELECT [TABLE_NAME]
-                FROM $SYSTEM.DBSCHEMA_TABLES
-                WHERE [TABLE_TYPE] = 'TABLE'
-            """,
-                workspace,
-            )
-            result.append(f"\nTables ({len(rows2)}):")
-            for row in rows2:
-                result.append(f"  - {row[0]}")
-
-            return "\n".join(result)
-        except Exception as e:
-            result.insert(0, "Connection FAILED")
-            result.append(f"Dataset: {ws['dataset']}")
-            result.append(f"Error: {e}")
-            return "\n".join(result)
-
-    result.append("Dataset: Not configured — attempting discovery...")
     try:
-        _ensure_xmla()
-        conn_str = _build_conn_str_no_catalog(workspace)
-        conn = _Pyadomd(conn_str)
-        conn.open()
-        try:
-            cur = conn.cursor()
-            cur.execute("""
-                SELECT [CATALOG_NAME]
-                FROM $SYSTEM.DBSCHEMA_CATALOGS
-            """)
-            rows = cur.fetchall()
-            cur.close()
+        info = _resolve_dataset(dataset)
+    except ValueError as e:
+        return str(e)
 
-            if rows:
-                result.append(f"\nDiscovered datasets ({len(rows)}):")
-                for row in rows:
-                    result.append(f"  - {row[0]}")
-                first_dataset = rows[0][0]
-                WORKSPACES[ws_key]["dataset"] = first_dataset
-                result.append(f"\nAuto-configured dataset: {first_dataset}")
-            else:
-                result.append("\nNo datasets found in workspace.")
-        finally:
-            conn.close()
+    result = [
+        f"Dataset: {info['dataset']}",
+        f"Workspace: {info['workspace']}",
+        f"Endpoint: {info['endpoint']}",
+    ]
+
+    try:
+        headers, rows = _execute('EVALUATE ROW("Status", "Connected")', dataset)
+        result.insert(0, "Connection: OK")
+
+        headers2, rows2 = _execute(
+            """
+            SELECT [TABLE_NAME]
+            FROM $SYSTEM.DBSCHEMA_TABLES
+            WHERE [TABLE_TYPE] = 'TABLE'
+        """,
+            dataset,
+        )
+        result.append(f"\nTables ({len(rows2)}):")
+        for row in rows2:
+            result.append(f"  - {row[0]}")
 
         return "\n".join(result)
     except Exception as e:
-        result.append(f"Discovery FAILED: {e}")
+        result.insert(0, "Connection FAILED")
+        result.append(f"Error: {e}")
         return "\n".join(result)
 
 
-# ===== WORKSPACE & DISCOVERY TOOLS =====
+# ===== DATASET & SCHEMA TOOLS =====
 
 
 @mcp.tool()
-def fabric_list_configured_workspaces() -> str:
-    """List all configured Fabric workspaces and their XMLA connection details."""
-    lines = ["## Configured Workspaces\n"]
-    lines.append("| Workspace | Dataset | Description |")
-    lines.append("| --- | --- | --- |")
-    for name, ws in WORKSPACES.items():
-        dataset = ws["dataset"] or "(not configured)"
-        lines.append(f"| {name} | {dataset} | {ws['description']} |")
+def fabric_list_datasets() -> str:
+    """List all 15 configured semantic models (datasets) grouped by Fabric workspace.
+
+    Shows dataset names, descriptions, and which workspace they belong to.
+    Use the dataset name as the 'dataset' parameter in other XMLA tools.
+    """
+    lines = ["## Configured Datasets\n"]
+    total = 0
+    for ws_name, ws_info in WORKSPACES.items():
+        lines.append(f"### {ws_name}")
+        lines.append(f"Endpoint: `{ws_info['endpoint']}`\n")
+        lines.append("| Dataset | Description |")
+        lines.append("| --- | --- |")
+        for ds_name, ds_desc in ws_info["datasets"].items():
+            lines.append(f"| {ds_name} | {ds_desc} |")
+            total += 1
+        lines.append("")
+    lines.append(f"*{total} datasets across {len(WORKSPACES)} workspaces. Default: {DEFAULT_DATASET}*")
     return "\n".join(lines)
+
+
+@mcp.tool()
+def fabric_get_schema(dataset: str) -> str:
+    """Get the static data dictionary for a semantic model — tables, columns, and measures.
+
+    Returns the cached schema from the schemas/ directory. No XMLA connection needed.
+    Use fabric_refresh_schema(dataset) to update the cached schema from a live XMLA query.
+
+    Args:
+        dataset: Semantic model name — e.g. SCANv2, FINANCIALv2, PURCHASINGV3.
+    """
+    info = _resolve_dataset(dataset)
+    schema_path = os.path.join(SCHEMAS_DIR, f"{info['dataset']}.json")
+
+    if not os.path.exists(schema_path):
+        return (
+            f"No cached schema found for '{info['dataset']}'. "
+            f"Run fabric_refresh_schema(dataset='{info['dataset']}') to generate it, "
+            f"or use fabric_list_tables(dataset='{info['dataset']}') for a live query."
+        )
+
+    with open(schema_path, "r") as f:
+        schema = json.load(f)
+
+    lines = [f"## {schema['dataset']} Schema ({schema['workspace']})\n"]
+    lines.append(f"*Captured: {schema.get('captured_at', 'unknown')}*\n")
+
+    # Tables and columns
+    for table in schema.get("tables", []):
+        lines.append(f"### {table['name']}")
+        lines.append("| Column | Data Type | Description |")
+        lines.append("| --- | --- | --- |")
+        for col in table.get("columns", []):
+            desc = col.get("description", "")
+            lines.append(f"| {col['name']} | {col['data_type']} | {desc} |")
+        lines.append("")
+
+    # Measures
+    measures = schema.get("measures", [])
+    if measures:
+        lines.append("### Measures\n")
+        lines.append("| Table | Measure | Format | Description |")
+        lines.append("| --- | --- | --- | --- |")
+        for m in measures:
+            fmt = m.get("format_string", "")
+            desc = m.get("description", "")
+            lines.append(f"| {m['table']} | {m['name']} | `{fmt}` | {desc} |")
+        lines.append("")
+
+    return "\n".join(lines)
+
+
+@mcp.tool()
+def fabric_refresh_schema(dataset: str) -> str:
+    """Live-query XMLA and update the static schema JSON file for a dataset.
+
+    Use this when a semantic model has been updated and the cached schema is stale.
+
+    Args:
+        dataset: Semantic model name — e.g. SCANv2, FINANCIALv2, PURCHASINGV3.
+    """
+    try:
+        info = _resolve_dataset(dataset)
+        ds_name = info["dataset"]
+
+        # Query columns
+        col_query = """
+        SELECT
+            [TABLE_NAME],
+            [COLUMN_NAME],
+            [DATA_TYPE],
+            [DESCRIPTION]
+        FROM $SYSTEM.DBSCHEMA_COLUMNS
+        WHERE LEFT([TABLE_NAME], 1) <> '$'
+        ORDER BY [TABLE_NAME]
+        """
+        _, col_rows = _execute(col_query, dataset)
+
+        tables = {}
+        for row in col_rows:
+            tbl = row[0]
+            if tbl not in tables:
+                tables[tbl] = []
+            tables[tbl].append({
+                "name": row[1],
+                "data_type": str(row[2]) if row[2] else "",
+                "description": str(row[3]) if row[3] else "",
+            })
+
+        # Query measures
+        meas_query = """
+        SELECT
+            [MEASUREGROUP_NAME],
+            [MEASURE_NAME],
+            [DEFAULT_FORMAT_STRING],
+            [DESCRIPTION]
+        FROM $SYSTEM.MDSCHEMA_MEASURES
+        WHERE [MEASURE_IS_VISIBLE]
+        """
+        _, meas_rows = _execute(meas_query, dataset)
+
+        measures = []
+        for row in meas_rows:
+            measures.append({
+                "table": str(row[0]) if row[0] else "",
+                "name": str(row[1]) if row[1] else "",
+                "format_string": str(row[2]) if row[2] else "",
+                "description": str(row[3]) if row[3] else "",
+            })
+
+        schema = {
+            "dataset": ds_name,
+            "workspace": info["workspace"],
+            "captured_at": datetime.now(timezone.utc).isoformat(),
+            "tables": [
+                {"name": tbl, "columns": cols}
+                for tbl, cols in sorted(tables.items())
+            ],
+            "measures": measures,
+        }
+
+        os.makedirs(SCHEMAS_DIR, exist_ok=True)
+        schema_path = os.path.join(SCHEMAS_DIR, f"{ds_name}.json")
+        with open(schema_path, "w") as f:
+            json.dump(schema, f, indent=2)
+
+        return (
+            f"Schema refreshed for {ds_name} ({info['workspace']}). "
+            f"{len(tables)} tables, {len(measures)} measures. "
+            f"Saved to schemas/{ds_name}.json"
+        )
+    except Exception as e:
+        return f"Error refreshing schema ({dataset}): {e}"
+
+
+# ===== WORKSPACE DISCOVERY TOOLS =====
 
 
 @mcp.tool()
@@ -436,7 +579,6 @@ def fabric_discover_workspaces(format: str = "markdown") -> str:
     Args:
         format: Output format — "markdown" (default) or "json" for structured data.
     """
-    import json
     import requests
 
     try:
@@ -522,7 +664,6 @@ def fabric_list_workspace_items(
         item_type: Optional filter — SemanticModel, DataPipeline, Lakehouse, Notebook, etc.
         format: Output format — "markdown" (default) or "json" for structured data.
     """
-    import json
     import requests
 
     try:
@@ -577,7 +718,6 @@ def fabric_get_refresh_history(
         top: Number of recent refreshes to return (default 10).
         format: Output format — "markdown" (default) or "json" for structured data.
     """
-    import json
     import requests
 
     try:
@@ -658,7 +798,6 @@ def fabric_get_pipeline_runs(
         pipeline_id: The pipeline item GUID.
         format: Output format — "markdown" (default) or "json" for structured data.
     """
-    import json
     import requests
 
     try:
@@ -710,7 +849,6 @@ def fabric_list_dataflows(
         workspace_id: The workspace GUID.
         format: Output format — "markdown" (default) or "json" for structured data.
     """
-    import json
     import requests
 
     try:
@@ -759,7 +897,6 @@ def fabric_get_dataflow_transactions(
         dataflow_id: The dataflow GUID (objectId from fabric_list_dataflows).
         format: Output format — "markdown" (default) or "json" for structured data.
     """
-    import json
     import requests
 
     try:

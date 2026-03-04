@@ -2,7 +2,7 @@
 Majans MCP Health Check — Daily Automated Check
 
 Tests connectivity to all MCP-integrated systems:
-1. Power BI XMLA endpoints (all 5 workspaces)
+1. Power BI XMLA endpoints (4 IBP workspaces, 15 datasets)
 2. D365 UAT/PROD token acquisition
 3. 1Password CLI availability and secret expiry warnings
 
@@ -42,25 +42,21 @@ OP_CLI = os.getenv(
 )
 
 PBI_WORKSPACES = {
-    "SCAN": {
-        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/DEMAND",
-        "dataset": "SCANv2",
-    },
-    "REVIEW": {
-        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/REVIEW",
-        "dataset": "FINANCIALv2",
-    },
-    "SUPPLY": {
-        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/SUPPLY",
-        "dataset": "MANUFACTURING V3",
+    "PRODUCT": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/PRODUCT",
+        "datasets": ["CONSUMERv2"],
     },
     "DEMAND": {
         "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/DEMAND",
-        "dataset": "SALESv2",
+        "datasets": ["SALESv2", "SCANv2", "STORE", "SCAN TOTAL GROCERY"],
     },
-    "IT_COST": {
-        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/IT COST",
-        "dataset": "IT COST",
+    "SUPPLY": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/SUPPLY",
+        "datasets": ["AM", "CUSTOMER SERVICE v2", "INVENTORYV2", "MANUFACTURING V3", "PURCHASINGV3"],
+    },
+    "REVIEW": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/REVIEW",
+        "datasets": ["FINANCIALv2", "PLANAUDIT", "THREE-WAY", "PRODUCTIONCOST", "COSTINGv2"],
     },
 }
 
