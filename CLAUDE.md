@@ -24,6 +24,7 @@ Python MCP server providing Claude Code with access to Microsoft Fabric artefact
 | SCAN | DEMAND | SCANv2 | POS retail scan data (Coles/Woolworths) |
 | REVIEW | REVIEW | FINANCIALv2 | P&L, budgets, forecasts, GL |
 | SUPPLY | SUPPLY | MANUFACTURING V3 | Production & supply chain |
+| PURCHASING | SUPPLY | PURCHASINGV3 | Vendor SIFOT/DIFOT, PO delivery performance, supplier scoring |
 | DEMAND | DEMAND | SALESv2 | Customer orders, invoicing |
 | IT_COST | IT COST | IT COST | M365/D365/Azure spend, FY26 budget |
 

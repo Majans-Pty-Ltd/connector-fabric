@@ -50,6 +50,11 @@ WORKSPACES = {
         "dataset": "IT COST",
         "description": "IT cost management model — M365/D365 licenses, Azure spend, CC transactions, FY26 budget vs actual, savings opportunities",
     },
+    "PURCHASING": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/SUPPLY",
+        "dataset": "PURCHASINGV3",
+        "description": "Purchasing model (PURCHASINGV3) — vendor SIFOT/DIFOT, PO delivery performance, service levels, supplier scoring",
+    },
 }
 
 DEFAULT_WORKSPACE = "SCAN"
@@ -218,6 +223,7 @@ mcp = FastMCP(
         "Available XMLA workspaces: SCAN (SCANv2 — POS retail scan data, default), "
         "REVIEW (FINANCIALv2 — P&L, budgets, forecasts), "
         "SUPPLY (MANUFACTURING V3 — production, supply chain), "
+        "PURCHASING (PURCHASINGv2 — vendor SIFOT/DIFOT, PO delivery performance), "
         "DEMAND (SALESv2 — sales/demand), IT_COST (IT spend). "
         "Default workspace is SCAN. Use the 'workspace' parameter to switch. "
         "Run fabric_list_tables first to discover available tables and columns, "
