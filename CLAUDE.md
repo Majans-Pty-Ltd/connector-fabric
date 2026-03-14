@@ -19,16 +19,28 @@ Python MCP server providing Claude Code with access to Microsoft Fabric artefact
 - Auth: Service Principal (client credentials) for both paths
 - **Dataset-centric interface**: all XMLA tools take a `dataset` parameter (the semantic model name). The code resolves which workspace endpoint it belongs to internally.
 
+## File Structure
+
+```
+mcp_server.py        # MCP server — all tools defined here (@mcp.tool)
+schemas/             # Cached table/column/measure JSON per dataset
+adomd_package/
+  lib/net45/         # Bundled ADOMD.NET DLL (Windows-only)
+.env.template        # 1Password op:// references (SP creds)
+requirements.txt     # Python dependencies
+```
+
 ## Configured Workspaces & Datasets (XMLA)
 
-4 IBP-domain Fabric workspaces, 15 datasets:
+5 Fabric workspaces, 17 datasets:
 
 | Workspace | Endpoint | Datasets |
 |-----------|----------|----------|
-| PRODUCT | `powerbi://api.powerbi.com/v1.0/myorg/PRODUCT` | CONSUMERv2 |
+| PRODUCT | `powerbi://api.powerbi.com/v1.0/myorg/PRODUCT` | CONSUMERv2, MAGIC |
 | DEMAND | `powerbi://api.powerbi.com/v1.0/myorg/DEMAND` | SALESv2, SCANv2, STORE, SCAN TOTAL GROCERY |
 | SUPPLY | `powerbi://api.powerbi.com/v1.0/myorg/SUPPLY` | AM, CUSTOMER SERVICE v2, INVENTORYV2, MANUFACTURING V3, PURCHASINGV3 |
 | REVIEW | `powerbi://api.powerbi.com/v1.0/myorg/REVIEW` | FINANCIALv2, PLANAUDIT, THREE-WAY, PRODUCTIONCOST, COSTINGv2 |
+| FIELD | `powerbi://api.powerbi.com/v1.0/myorg/FIELD` | FIELD |
 
 Default dataset: **SCANv2**
 
@@ -41,7 +53,7 @@ Default dataset: **SCANv2**
 - `fabric_test_xmla(dataset)` — test XMLA connectivity + list tables
 
 ### Dataset & Schema
-- `fabric_list_datasets()` — show all 15 datasets grouped by workspace
+- `fabric_list_datasets()` — show all 17 datasets grouped by workspace
 - `fabric_get_schema(dataset)` — return static cached schema (no XMLA needed)
 - `fabric_refresh_schema(dataset)` — live-query XMLA and update cached schema JSON
 
@@ -72,7 +84,7 @@ python scripts/example_queries.py
 # Explore model structure
 python scripts/explore_model.py
 
-# Refresh static schema snapshots (all 15 datasets or specific ones)
+# Refresh static schema snapshots (all 17 datasets or specific ones)
 python scripts/refresh_schemas.py
 python scripts/refresh_schemas.py SCANv2 FINANCIALv2
 
