@@ -1,120 +1,181 @@
 # connector-fabric — Project Instructions
 
 ## What Is This?
-Python MCP server providing Claude Code with access to Microsoft Fabric artefacts — semantic models (DAX via XMLA), static schema lookups, workspace management, pipeline operations, dataset refresh, and item discovery via the Fabric REST API.
+Python MCP server + HTTP API providing access to Microsoft Fabric semantic models — DAX queries, schema lookups, workspace discovery, pipeline operations, and dataset refresh.
 
-## Tech Stack
-- Python 3.x with `mcp` (FastMCP) — MCP server framework
-- `pyadomd` + `pythonnet` (CLR) — ADOMD.NET bridge for XMLA connections (Windows-only)
-- `ADOMD.NET` DLL — bundled locally at `adomd_package/lib/net45/` (net45 build)
-- `requests` — Fabric REST API calls
-- `python-dotenv` — `.env` loading
+**Two deployment modes**:
+- **Local (stdio)**: `mcp_server.py` — full-featured, Windows-only XMLA + REST tools
+- **Remote (Container App)**: `http_server.py` — REST API + StreamableHTTP MCP, Linux-compatible
 
 ## Architecture
-- Single file server: `mcp_server.py` — all tools defined here with `@mcp.tool()`
-- **Two API paths**:
-  - **XMLA** (DAX queries): lazy-loaded ADOMD.NET via `_ensure_xmla()` — Windows-only, loads CLR on first XMLA tool call
-  - **REST** (Fabric API): `_get_fabric_token()` with token caching — cross-platform
-- **Static schema**: `schemas/*.json` — cached table/column/measure snapshots per dataset, served without XMLA
-- Auth: Service Principal (client credentials) for both paths
-- **Dataset-centric interface**: all XMLA tools take a `dataset` parameter (the semantic model name). The code resolves which workspace endpoint it belongs to internally.
+
+```
+AGENTS (Container Apps, internal)           TEAM MEMBERS (Windows, external)
+────────────────────────────────            ────────────────────────────────
+agent-scandata, agent-costing...            Claude Code
+        │                                         │ stdio
+        │ POST /call-tool                         ▼
+        │ + X-API-Key header               start-mcp.cmd
+        │ (SP token, full access)           → get-user-token.py (MSAL device code, cached)
+        ▼                                   → npx mcp-remote https://fabric.majans.com/mcp
+┌─────────────────────────────────────────────────────────────────┐
+│  connector-fabric (Azure Container App, external ingress)       │
+│  https://fabric.majans.com                                      │
+│                                                                 │
+│  /mcp        → FastMCP StreamableHTTP (MCP protocol)            │
+│                Bearer token from user → PBI API as that user    │
+│                Fabric enforces workspace roles natively          │
+│                                                                 │
+│  /call-tool  → Legacy REST (backward compat for agents)         │
+│                X-API-Key required → SP token → PBI API          │
+│                                                                 │
+│  /health     → Container App probe                              │
+└────────────────────────────┬────────────────────────────────────┘
+                             │
+                             ▼
+                  Power BI REST API (executeQueries)
+                  Enforces workspace role per token identity
+```
+
+## Tech Stack
+- Python 3.12 with `mcp` (FastMCP) — MCP server + StreamableHTTP
+- `pyadomd` + `pythonnet` (CLR) — ADOMD.NET bridge for XMLA (Windows-only, `mcp_server.py`)
+- `FastAPI` + `uvicorn` — HTTP server (`http_server.py`)
+- `requests` — Fabric REST API calls
+- Auth: Service Principal (agents) + User tokens via MSAL device code (team members)
 
 ## File Structure
 
 ```
-mcp_server.py        # MCP server — all tools defined here (@mcp.tool)
-schemas/             # Cached table/column/measure JSON per dataset
+http_server.py          # HTTP server: /call-tool (REST) + /mcp (StreamableHTTP) + /health
+auth.py                 # Token context var + ASGI middleware for Bearer extraction
+mcp_server.py           # Local MCP server — all tools via @mcp.tool() (stdio, Windows)
+get-user-token.py       # MSAL device-code flow for user auth (client script)
+start-mcp.cmd           # Wrapper: get token → launch mcp-remote as stdio proxy
+schemas/                # Cached table/column/measure JSON per dataset
 adomd_package/
-  lib/net45/         # Bundled ADOMD.NET DLL (Windows-only)
-.env.template        # 1Password op:// references (SP creds)
-requirements.txt     # Python dependencies
+  lib/net45/            # Bundled ADOMD.NET DLL (Windows-only)
+Dockerfile              # Container image (http_server.py + auth.py + schemas)
+requirements-http.txt   # Server dependencies (FastAPI, MCP, requests)
+requirements-client.txt # Client dependencies (msal)
+requirements.txt        # Full local dependencies
+.env.template           # 1Password op:// references
+.github/workflows/
+  ci.yml                # Lint (ruff)
+  deploy.yml            # 1Password → ACR build → Container App update
 ```
 
-## Configured Workspaces & Datasets (XMLA)
+## Auth Model
 
-5 Fabric workspaces, 17 datasets:
+### Agent calls (SP token, full access)
+- `POST /call-tool` with `X-API-Key` header
+- Server uses Service Principal client credentials for PBI API
+- API key stored in 1Password: `Fabric MCP API Key`
 
-| Workspace | Endpoint | Datasets |
-|-----------|----------|----------|
-| PRODUCT | `powerbi://api.powerbi.com/v1.0/myorg/PRODUCT` | CONSUMERv2, MAGIC |
-| DEMAND | `powerbi://api.powerbi.com/v1.0/myorg/DEMAND` | SALESv2, SCANv2, STORE, SCAN TOTAL GROCERY |
-| SUPPLY | `powerbi://api.powerbi.com/v1.0/myorg/SUPPLY` | AM, CUSTOMER SERVICE v2, INVENTORYV2, MANUFACTURING V3, PURCHASINGV3 |
-| REVIEW | `powerbi://api.powerbi.com/v1.0/myorg/REVIEW` | FINANCIALv2, PLANAUDIT, THREE-WAY, PRODUCTIONCOST, COSTINGv2 |
-| FIELD | `powerbi://api.powerbi.com/v1.0/myorg/FIELD` | FIELD |
+### User calls (per-user Fabric permissions)
+- `/mcp` StreamableHTTP with `Authorization: Bearer <user_token>`
+- ASGI middleware extracts token → stored in `contextvars.ContextVar`
+- Tool functions call PBI API with user's token
+- Fabric enforces workspace roles: user with Viewer on DEMAND can query SCANv2, gets 403 on FINANCIALv2
+- Entra app: `Fabric-MCP-User` (`cf4685ef-d594-4ede-961d-5c3554be3974`), public client, delegated `Dataset.Read.All` + `Workspace.Read.All`
+
+## Configured Workspaces & Datasets
+
+5 Fabric workspaces, 16+ datasets:
+
+| Workspace | Datasets |
+|-----------|----------|
+| PRODUCT | CONSUMERv2 |
+| DEMAND | SALESv2, SCANv2, STORE, SCAN TOTAL GROCERY |
+| SUPPLY | AM, CUSTOMER SERVICE v2, INVENTORYV2, MANUFACTURING V3, PURCHASINGV3 |
+| REVIEW | FINANCIALv2, PLANAUDIT, THREE-WAY, PRODUCTIONCOST, COSTINGv2 |
+| HR | HR |
 
 Default dataset: **SCANv2**
 
-## MCP Tools
+## HTTP Server Tools (http_server.py)
 
-### XMLA (DAX Queries)
-- `fabric_dax_query(query, max_rows, dataset)` — execute DAX (EVALUATE syntax)
-- `fabric_list_tables(dataset)` — list tables + columns + data types (live XMLA)
-- `fabric_list_measures(dataset)` — list visible measures (live XMLA)
-- `fabric_test_xmla(dataset)` — test XMLA connectivity + list tables
+| Tool | Description |
+|------|-------------|
+| `fabric_dax_query` | Execute DAX query via REST API (EVALUATE syntax) |
+| `fabric_list_tables` | List tables/columns from cached schema |
+| `fabric_get_schema` | Get cached schema for a dataset |
+| `fabric_list_datasets` | List all datasets grouped by workspace |
+| `fabric_discover_workspaces` | Discover accessible workspaces (per-user when Bearer token provided) |
 
-### Dataset & Schema
-- `fabric_list_datasets()` — show all 17 datasets grouped by workspace
-- `fabric_get_schema(dataset)` — return static cached schema (no XMLA needed)
-- `fabric_refresh_schema(dataset)` — live-query XMLA and update cached schema JSON
+## Local MCP Tools (mcp_server.py)
 
-### Workspace Discovery
-- `fabric_discover_workspaces()` — REST API discovery of all SP-accessible workspaces
-
-### Fabric REST API
-- `fabric_list_workspace_items(workspace_id, item_type?)` — list items (semantic models, pipelines, lakehouses, etc.)
-- `fabric_get_refresh_history(workspace_id, dataset_id, top)` — dataset refresh history
-- `fabric_trigger_refresh(workspace_id, dataset_id)` — trigger semantic model refresh
-- `fabric_get_pipeline_runs(workspace_id, pipeline_id)` — pipeline run history
-- `fabric_trigger_pipeline(workspace_id, pipeline_id)` — trigger pipeline run
-- `fabric_list_dataflows(workspace_id)` — list dataflows
-- `fabric_get_dataflow_transactions(workspace_id, dataflow_id)` — dataflow transaction history
+Additional tools available in stdio mode (Windows-only XMLA):
+- `fabric_list_measures` — list visible measures (live XMLA)
+- `fabric_test_xmla` — test XMLA connectivity
+- `fabric_refresh_schema` — live-query XMLA and update cached schema
+- `fabric_list_workspace_items` — list items in workspace
+- `fabric_get_refresh_history` / `fabric_trigger_refresh` — dataset refresh
+- `fabric_get_pipeline_runs` / `fabric_trigger_pipeline` — pipeline operations
+- `fabric_list_dataflows` / `fabric_get_dataflow_transactions` — dataflow operations
 
 ## Commands
+
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-# Also requires: pip install pythonnet (for XMLA tools, Windows-only)
+# Local MCP server (Claude Code stdio)
+python mcp_server.py
 
-# Test XMLA connectivity (verifies auth + ADOMD.NET stack)
-python scripts/test_connection.py
+# HTTP server (local testing)
+op run --env-file=.env.template -- python http_server.py
 
-# Run example DAX queries against SCANv2
-python scripts/example_queries.py
-
-# Explore model structure
-python scripts/explore_model.py
-
-# Refresh static schema snapshots (all 17 datasets or specific ones)
+# Refresh static schemas (Windows-only, XMLA)
 python scripts/refresh_schemas.py
 python scripts/refresh_schemas.py SCANv2 FINANCIALv2
 
-# Start MCP server (Claude Code invokes this via mcp config)
-python mcp_server.py
+# User token (first-time device code auth)
+pip install -r requirements-client.txt
+python get-user-token.py
 ```
 
-## Configuration
-`.env` file required (copy from `.env.example`):
-```
-AZURE_TENANT_ID=d54794b1-f598-4c0f-a276-6039a39774ac
-AZURE_CLIENT_ID=6028b4a4-5849-4425-91fa-b1768a8b8b51
-AZURE_CLIENT_SECRET=<from Entra — secret name: xmla>
-# These two are used by scripts/test_connection.py and scripts/example_queries.py only:
-PBI_XMLA_ENDPOINT=powerbi://api.powerbi.com/v1.0/myorg/DEMAND
-PBI_DATASET_NAME=SCANv2
-```
-Note: `mcp_server.py` uses the dataset registry (not `PBI_XMLA_ENDPOINT`/`PBI_DATASET_NAME`).
+## Team Member Onboarding (5 min)
+
+1. `pip install msal`
+2. `python get-user-token.py` → follow device code prompt (browser login)
+3. Add to `~/.claude/.mcp.json`:
+   ```json
+   "fabric": {
+     "type": "stdio",
+     "command": "cmd",
+     "args": ["/c", "C:\\...\\connector-fabric\\start-mcp.cmd"]
+   }
+   ```
+4. Restart Claude Code → `fabric_dax_query`, `fabric_list_datasets` etc. available
+
+## Deployment
+
+- **Container App**: `connector-fabric` in `rg-majans-agents` (Australia East)
+- **Ingress**: External, port 8010, min 1 / max 3 replicas
+- **Custom domain**: `fabric.majans.com` (managed SSL cert)
+- **CI/CD**: Push to main → `deploy.yml` → 1Password secrets → ACR build → Container App update
+- **GitHub secrets**: `OP_SERVICE_ACCOUNT_TOKEN`, `AZURE_CREDENTIALS` (repo-level)
 
 ## Registering with Claude Code
-Add to `.claude.json` MCP config:
+
+**Local stdio (Windows, full tools):**
 ```json
 {
   "command": "python",
-  "args": ["C:\\Users\\Amit\\OneDrive - Majans Pty Ltd\\Documents 1\\GitHub\\connector-fabric\\mcp_server.py"]
+  "args": ["C:\\...\\connector-fabric\\mcp_server.py"]
 }
 ```
 
-## Key Dependency Notes
-- `pythonnet` must be installed for `clr` import to work — not in `requirements.txt`
+**Remote via start-mcp.cmd (per-user permissions):**
+```json
+{
+  "type": "stdio",
+  "command": "cmd",
+  "args": ["/c", "C:\\...\\connector-fabric\\start-mcp.cmd"]
+}
+```
+
+## Key Notes
+- MCP SDK requires `transport_security` with `allowed_hosts` for custom domains (DNS rebinding protection)
+- `pythonnet` must be installed for XMLA tools — not in `requirements.txt`
 - ADOMD.NET DLL is bundled locally (`adomd_package/lib/net45/`) — no system install needed
-- XMLA tools are Windows-only (MSOLAP + CLR/pythonnet), REST tools work cross-platform
-- ADOMD.NET is lazy-loaded — REST-only tools work without pythonnet installed
+- XMLA tools are Windows-only, REST tools work cross-platform
+- Token cache for user auth: `~/.connector-fabric/token_cache.bin`
