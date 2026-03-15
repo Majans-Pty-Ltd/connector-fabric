@@ -23,4 +23,4 @@ if [ -z "$FABRIC_TOKEN" ]; then
 fi
 
 # Launch mcp-remote as stdio proxy to the remote StreamableHTTP MCP server
-exec npx -y mcp-remote@latest https://fabric.majans.com/mcp --header "Authorization: Bearer $FABRIC_TOKEN"
+exec npx -y mcp-remote@latest https://fabric.majans.com/mcp/ --header "Authorization: Bearer $FABRIC_TOKEN"

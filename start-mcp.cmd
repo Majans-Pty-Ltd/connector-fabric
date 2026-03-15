@@ -23,4 +23,4 @@ if "%FABRIC_TOKEN%"=="" (
 )
 
 REM Launch mcp-remote as stdio proxy to the remote StreamableHTTP MCP server
-npx -y mcp-remote@latest https://fabric.majans.com/mcp --header "Authorization: Bearer %FABRIC_TOKEN%"
+npx -y mcp-remote@latest https://fabric.majans.com/mcp/ --header "Authorization: Bearer %FABRIC_TOKEN%"
