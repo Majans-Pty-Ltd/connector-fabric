@@ -400,6 +400,267 @@ def fabric_discover_workspaces() -> dict:
     return _tool_fabric_discover_workspaces()
 
 
+# --- FABRIC REST API TOOLS (MCP only) ---
+
+
+@mcp.tool()
+def fabric_list_workspace_items(
+    workspace_id: str,
+    item_type: str = "",
+) -> dict:
+    """List items in a Fabric workspace (semantic models, pipelines, lakehouses, dataflows, etc.).
+
+    Args:
+        workspace_id: The workspace GUID (use fabric_discover_workspaces to find it).
+        item_type: Optional filter — SemanticModel, DataPipeline, Lakehouse, Notebook, Dataflow, etc.
+    """
+    url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}/items"
+    if item_type:
+        url += f"?type={item_type}"
+    try:
+        resp = requests.get(url, headers=_request_headers(), timeout=30)
+        if resp.status_code == 403:
+            return {"error": f"Access denied to workspace {workspace_id}."}
+        resp.raise_for_status()
+        items = resp.json().get("value", [])
+        return {
+            "items": [
+                {"id": i.get("id"), "type": i.get("type"), "name": i.get("displayName")}
+                for i in items
+            ]
+        }
+    except requests.exceptions.HTTPError as e:
+        return {
+            "error": f"API error ({e.response.status_code}): {e.response.text[:500]}"
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@mcp.tool()
+def fabric_get_refresh_history(
+    workspace_id: str,
+    dataset_id: str,
+    top: int = 10,
+) -> dict:
+    """Get refresh history for a semantic model (dataset).
+
+    Args:
+        workspace_id: The workspace GUID.
+        dataset_id: The dataset/semantic model GUID.
+        top: Number of recent refreshes to return (default 10).
+    """
+    url = f"https://api.powerbi.com/v1.0/myorg/groups/{workspace_id}/datasets/{dataset_id}/refreshes?$top={top}"
+    try:
+        resp = requests.get(url, headers=_request_headers(), timeout=30)
+        if resp.status_code == 403:
+            return {"error": "Access denied to this dataset."}
+        resp.raise_for_status()
+        return {"refreshes": resp.json().get("value", [])}
+    except requests.exceptions.HTTPError as e:
+        return {
+            "error": f"API error ({e.response.status_code}): {e.response.text[:500]}"
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@mcp.tool()
+def fabric_trigger_refresh(workspace_id: str, dataset_id: str) -> dict:
+    """Trigger a refresh for a semantic model (dataset).
+
+    Args:
+        workspace_id: The workspace GUID.
+        dataset_id: The dataset/semantic model GUID.
+    """
+    url = f"https://api.powerbi.com/v1.0/myorg/groups/{workspace_id}/datasets/{dataset_id}/refreshes"
+    try:
+        resp = requests.post(url, headers=_request_headers(), timeout=30)
+        if resp.status_code == 202:
+            return {
+                "status": "triggered",
+                "message": f"Refresh triggered for dataset {dataset_id}.",
+            }
+        return {
+            "error": f"Refresh trigger failed ({resp.status_code}): {resp.text[:500]}"
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@mcp.tool()
+def fabric_list_dataflows(workspace_id: str) -> dict:
+    """List dataflows (Gen1 and Gen2) in a Power BI workspace.
+
+    Args:
+        workspace_id: The workspace GUID.
+    """
+    url = f"https://api.powerbi.com/v1.0/myorg/groups/{workspace_id}/dataflows"
+    try:
+        resp = requests.get(url, headers=_request_headers(), timeout=30)
+        if resp.status_code == 403:
+            return {"error": f"Access denied to workspace {workspace_id}."}
+        resp.raise_for_status()
+        dataflows = resp.json().get("value", [])
+        return {
+            "dataflows": [
+                {
+                    "id": df.get("objectId"),
+                    "name": df.get("name"),
+                    "description": df.get("description", ""),
+                }
+                for df in dataflows
+            ]
+        }
+    except requests.exceptions.HTTPError as e:
+        return {
+            "error": f"API error ({e.response.status_code}): {e.response.text[:500]}"
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@mcp.tool()
+def fabric_get_dataflow_transactions(
+    workspace_id: str,
+    dataflow_id: str,
+) -> dict:
+    """Get transaction/refresh history for a dataflow.
+
+    Args:
+        workspace_id: The workspace GUID.
+        dataflow_id: The dataflow GUID (objectId from fabric_list_dataflows).
+    """
+    url = f"https://api.powerbi.com/v1.0/myorg/groups/{workspace_id}/dataflows/{dataflow_id}/transactions"
+    try:
+        resp = requests.get(url, headers=_request_headers(), timeout=30)
+        if resp.status_code == 403:
+            return {"error": "Access denied to this dataflow."}
+        resp.raise_for_status()
+        return {"transactions": resp.json().get("value", [])}
+    except requests.exceptions.HTTPError as e:
+        return {
+            "error": f"API error ({e.response.status_code}): {e.response.text[:500]}"
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@mcp.tool()
+def fabric_get_dataflow_definition(workspace_id: str, dataflow_id: str) -> dict:
+    """Get the M-query definition of a Fabric Gen2 dataflow.
+
+    Retrieves the Power Query (M) expressions that define each table/query
+    in the dataflow. Useful for inspecting filters, source connections,
+    and transformation logic.
+
+    Args:
+        workspace_id: The workspace GUID.
+        dataflow_id: The dataflow item GUID (from fabric_list_workspace_items).
+    """
+    import base64
+
+    url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}/items/{dataflow_id}/getDefinition"
+    try:
+        resp = requests.post(url, headers=_request_headers(), timeout=30)
+
+        if resp.status_code == 200:
+            definition = resp.json()
+        elif resp.status_code == 202:
+            location = resp.headers.get("Location", "")
+            retry_after = int(resp.headers.get("Retry-After", "5"))
+            if not location:
+                return {"error": "Accepted (202) but no Location header to poll."}
+            import time
+
+            for _ in range(12):
+                time.sleep(retry_after)
+                poll = requests.get(location, headers=_request_headers(), timeout=30)
+                if poll.status_code == 200:
+                    definition = poll.json()
+                    break
+                elif poll.status_code == 202:
+                    retry_after = int(poll.headers.get("Retry-After", "5"))
+                    continue
+                else:
+                    return {
+                        "error": f"Poll error ({poll.status_code}): {poll.text[:500]}"
+                    }
+            else:
+                return {"error": "Timed out waiting for definition (60s)."}
+        elif resp.status_code == 403:
+            return {"error": "Access denied to this dataflow definition."}
+        else:
+            return {"error": f"API error ({resp.status_code}): {resp.text[:500]}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+    parts = definition.get("definition", {}).get("parts", [])
+    result = []
+    for part in parts:
+        path = part.get("path", "unknown")
+        payload = part.get("payload", "")
+        try:
+            content = base64.b64decode(payload).decode("utf-8")
+        except Exception:
+            content = "(unable to decode)"
+        result.append({"path": path, "content": content})
+    return {"parts": result}
+
+
+@mcp.tool()
+def fabric_get_pipeline_runs(
+    workspace_id: str,
+    pipeline_id: str,
+) -> dict:
+    """Get recent pipeline run history.
+
+    Args:
+        workspace_id: The workspace GUID.
+        pipeline_id: The pipeline item GUID.
+    """
+    url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}/items/{pipeline_id}/jobs/instances"
+    try:
+        resp = requests.get(url, headers=_request_headers(), timeout=30)
+        if resp.status_code == 403:
+            return {"error": "Access denied to this pipeline."}
+        resp.raise_for_status()
+        return {"runs": resp.json().get("value", [])}
+    except requests.exceptions.HTTPError as e:
+        return {
+            "error": f"API error ({e.response.status_code}): {e.response.text[:500]}"
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@mcp.tool()
+def fabric_trigger_pipeline(workspace_id: str, pipeline_id: str) -> dict:
+    """Trigger a pipeline run in Fabric.
+
+    Args:
+        workspace_id: The workspace GUID.
+        pipeline_id: The pipeline item GUID.
+    """
+    url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}/items/{pipeline_id}/jobs/instances?jobType=Pipeline"
+    try:
+        resp = requests.post(url, headers=_request_headers(), timeout=30)
+        if resp.status_code == 202:
+            location = resp.headers.get("Location", "")
+            result = {
+                "status": "triggered",
+                "message": f"Pipeline {pipeline_id} triggered.",
+            }
+            if location:
+                result["monitor_url"] = location
+            return result
+        return {
+            "error": f"Pipeline trigger failed ({resp.status_code}): {resp.text[:500]}"
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
 # --- FASTAPI APP ---
 
 
