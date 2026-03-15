@@ -1,8 +1,12 @@
 """
-HTTP wrapper for connector-fabric — exposes MCP tools as HTTP endpoints.
+HTTP wrapper for connector-fabric — exposes MCP tools as HTTP endpoints
+AND as a StreamableHTTP MCP server for per-user Fabric access.
 
-Designed for deployment as an Azure Container App so that agent-scandata
-can call tools via HTTP POST /call-tool.
+Two auth paths:
+  /mcp       → StreamableHTTP (MCP protocol). Bearer token from user →
+               PBI API calls as that user. Fabric enforces workspace roles.
+  /call-tool → Legacy REST (backward compat for agents). X-API-Key required →
+               SP token → PBI API with full access.
 
 DAX execution uses the Power BI REST API (executeQueries) instead of XMLA,
 so this runs on Linux without Windows/.NET dependencies.
@@ -17,9 +21,14 @@ from typing import Any
 
 import requests
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 from pydantic import BaseModel
+
+from auth import TokenExtractorASGI, user_token_var
 
 load_dotenv()
 
@@ -30,6 +39,7 @@ logger = logging.getLogger("connector-fabric")
 TENANT_ID = os.getenv("AZURE_TENANT_ID", "")
 CLIENT_ID = os.getenv("AZURE_CLIENT_ID", "")
 CLIENT_SECRET = os.getenv("AZURE_CLIENT_SECRET", "")
+API_KEY = os.getenv("FABRIC_API_KEY", "")
 PORT = int(os.getenv("PORT", "8010"))
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -72,6 +82,12 @@ WORKSPACES = {
             "COSTINGv2": "Costing model",
         },
     },
+    "HR": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/HR",
+        "datasets": {
+            "HR": "HR analytics — headcount, workforce, Employment Hero data",
+        },
+    },
 }
 
 DEFAULT_DATASET = "SCANv2"
@@ -103,7 +119,8 @@ def _resolve_dataset(dataset: str) -> dict:
 _token_cache: dict[str, Any] = {"token": None, "expires_at": 0}
 
 
-def _get_token() -> str:
+def _get_sp_token() -> str:
+    """Get Service Principal token via client credentials flow."""
     now = time.time()
     if _token_cache["token"] and _token_cache["expires_at"] > now + 60:
         return _token_cache["token"]
@@ -125,20 +142,37 @@ def _get_token() -> str:
     return _token_cache["token"]
 
 
-def _headers() -> dict:
-    return {"Authorization": f"Bearer {_get_token()}"}
+def _sp_headers() -> dict:
+    """Headers using Service Principal token — for startup discovery and agent calls."""
+    return {"Authorization": f"Bearer {_get_sp_token()}"}
+
+
+def _request_headers() -> dict:
+    """Headers using user token if available, else Service Principal token.
+
+    When a user connects via /mcp with a Bearer token, the ASGI middleware
+    stores it in user_token_var. Tool functions call this to make PBI API
+    calls as that user, so Fabric enforces workspace roles natively.
+    """
+    user_tok = user_token_var.get()
+    if user_tok:
+        return {"Authorization": f"Bearer {user_tok}"}
+    return _sp_headers()
 
 
 # --- WORKSPACE/DATASET GUID DISCOVERY ---
 
 
 def _discover_guids():
-    """Discover workspace and dataset GUIDs via REST API."""
+    """Discover workspace and dataset GUIDs via REST API.
+
+    Always uses SP token — GUIDs are universal identifiers, not per-user.
+    """
     global _workspace_guids, _dataset_guids
     try:
         resp = requests.get(
             "https://api.powerbi.com/v1.0/myorg/groups",
-            headers=_headers(),
+            headers=_sp_headers(),
             timeout=30,
         )
         resp.raise_for_status()
@@ -152,7 +186,7 @@ def _discover_guids():
                 # Discover datasets in this workspace
                 ds_resp = requests.get(
                     f"https://api.powerbi.com/v1.0/myorg/groups/{ws_id}/datasets",
-                    headers=_headers(),
+                    headers=_sp_headers(),
                     timeout=30,
                 )
                 if ds_resp.ok:
@@ -169,8 +203,14 @@ def _discover_guids():
 # --- DAX EXECUTION VIA REST API ---
 
 
-def _execute_dax_rest(query: str, dataset: str = DEFAULT_DATASET, max_rows: int = 500) -> dict:
-    """Execute DAX query via Power BI REST API executeQueries endpoint."""
+def _execute_dax_rest(
+    query: str, dataset: str = DEFAULT_DATASET, max_rows: int = 500
+) -> dict:
+    """Execute DAX query via Power BI REST API executeQueries endpoint.
+
+    Uses the calling user's token when available (per-user access control),
+    falls back to SP token for agent calls.
+    """
     info = _resolve_dataset(dataset)
     ws_name = info["workspace"]
     ds_name = info["dataset"]
@@ -180,14 +220,16 @@ def _execute_dax_rest(query: str, dataset: str = DEFAULT_DATASET, max_rows: int 
     ds_guid = _dataset_guids.get(ds_key)
 
     if not ws_guid or not ds_guid:
-        # Try rediscovery
+        # Re-discover with SP token (GUID cache is universal)
         _discover_guids()
         ws_guid = _workspace_guids.get(ws_name.upper())
         ds_guid = _dataset_guids.get(ds_key)
         if not ws_guid or not ds_guid:
-            return {"error": f"Could not resolve GUIDs for {ws_name}/{ds_name}. "
-                    f"Available workspaces: {list(_workspace_guids.keys())}, "
-                    f"datasets: {list(_dataset_guids.keys())}"}
+            return {
+                "error": f"Could not resolve GUIDs for {ws_name}/{ds_name}. "
+                f"Available workspaces: {list(_workspace_guids.keys())}, "
+                f"datasets: {list(_dataset_guids.keys())}"
+            }
 
     url = f"https://api.powerbi.com/v1.0/myorg/groups/{ws_guid}/datasets/{ds_guid}/executeQueries"
     payload = {
@@ -196,11 +238,16 @@ def _execute_dax_rest(query: str, dataset: str = DEFAULT_DATASET, max_rows: int 
     }
 
     try:
-        resp = requests.post(url, json=payload, headers=_headers(), timeout=120)
+        resp = requests.post(url, json=payload, headers=_request_headers(), timeout=120)
         if resp.status_code == 400:
             error_data = resp.json()
             error_msg = error_data.get("error", {}).get("message", resp.text)
             return {"error": f"DAX error: {error_msg}", "query": query}
+        if resp.status_code == 403:
+            return {
+                "error": f"Access denied to {ws_name}/{ds_name}. "
+                "Your account does not have permission to query this dataset."
+            }
         resp.raise_for_status()
         result = resp.json()
 
@@ -224,14 +271,19 @@ def _execute_dax_rest(query: str, dataset: str = DEFAULT_DATASET, max_rows: int 
         return {"columns": columns, "rows": rows, "total_rows": len(rows)}
 
     except requests.exceptions.HTTPError as e:
-        return {"error": f"REST API error ({e.response.status_code}): {e.response.text[:500]}"}
+        return {
+            "error": f"REST API error ({e.response.status_code}): {e.response.text[:500]}"
+        }
     except Exception as e:
         return {"error": str(e)}
 
 
 # --- TOOL IMPLEMENTATIONS ---
 
-def _tool_fabric_dax_query(query: str, max_rows: int = 500, dataset: str = DEFAULT_DATASET, **_) -> dict:
+
+def _tool_fabric_dax_query(
+    query: str, max_rows: int = 500, dataset: str = DEFAULT_DATASET, **_
+) -> dict:
     return _execute_dax_rest(query, dataset, max_rows)
 
 
@@ -240,7 +292,9 @@ def _tool_fabric_list_tables(dataset: str = DEFAULT_DATASET, **_) -> dict:
     info = _resolve_dataset(dataset)
     schema_path = os.path.join(SCHEMAS_DIR, f"{info['dataset']}.json")
     if not os.path.exists(schema_path):
-        return {"error": f"No cached schema for {info['dataset']}. Available schemas: {os.listdir(SCHEMAS_DIR)}"}
+        return {
+            "error": f"No cached schema for {info['dataset']}. Available schemas: {os.listdir(SCHEMAS_DIR)}"
+        }
     with open(schema_path) as f:
         return json.load(f)
 
@@ -260,10 +314,11 @@ def _tool_fabric_list_datasets(**_) -> dict:
 
 
 def _tool_fabric_discover_workspaces(**_) -> dict:
+    """Discover workspaces — uses calling user's token when available."""
     try:
         resp = requests.get(
             "https://api.powerbi.com/v1.0/myorg/groups",
-            headers=_headers(),
+            headers=_request_headers(),
             timeout=30,
         )
         resp.raise_for_status()
@@ -272,7 +327,7 @@ def _tool_fabric_discover_workspaces(**_) -> dict:
         return {"error": str(e)}
 
 
-# Tool registry
+# Tool registry (used by /call-tool REST endpoint)
 TOOLS: dict[str, callable] = {
     "fabric_dax_query": _tool_fabric_dax_query,
     "fabric_list_tables": _tool_fabric_list_tables,
@@ -282,7 +337,71 @@ TOOLS: dict[str, callable] = {
 }
 
 
+# --- MCP SERVER (StreamableHTTP) ---
+
+CONTAINER_FQDN = (
+    "connector-fabric.proudplant-b5864354.australiaeast.azurecontainerapps.io"
+)
+CUSTOM_DOMAIN = "fabric.majans.com"
+
+mcp = FastMCP(
+    "connector-fabric",
+    stateless_http=True,
+    json_response=True,
+    transport_security=TransportSecuritySettings(
+        enable_dns_rebinding_protection=True,
+        allowed_hosts=[
+            f"{CUSTOM_DOMAIN}",
+            f"{CUSTOM_DOMAIN}:*",
+            f"{CONTAINER_FQDN}",
+            f"{CONTAINER_FQDN}:*",
+            "127.0.0.1:*",
+            "localhost:*",
+        ],
+    ),
+)
+mcp.settings.streamable_http_path = "/"
+
+
+@mcp.tool()
+def fabric_dax_query(query: str, max_rows: int = 500, dataset: str = "SCANv2") -> dict:
+    """Execute a DAX query against a Fabric semantic model.
+
+    Uses EVALUATE syntax. Results are returned as columns + rows.
+    The dataset parameter selects which semantic model to query.
+    """
+    return _tool_fabric_dax_query(query=query, max_rows=max_rows, dataset=dataset)
+
+
+@mcp.tool()
+def fabric_list_tables(dataset: str = "SCANv2") -> dict:
+    """List tables and columns from cached schema for a dataset."""
+    return _tool_fabric_list_tables(dataset=dataset)
+
+
+@mcp.tool()
+def fabric_get_schema(dataset: str = "SCANv2") -> dict:
+    """Get cached schema (tables, columns, measures) for a dataset."""
+    return _tool_fabric_get_schema(dataset=dataset)
+
+
+@mcp.tool()
+def fabric_list_datasets() -> dict:
+    """List all configured datasets grouped by workspace."""
+    return _tool_fabric_list_datasets()
+
+
+@mcp.tool()
+def fabric_discover_workspaces() -> dict:
+    """Discover all workspaces accessible to the current user.
+
+    Returns only workspaces the calling user has permission to access.
+    """
+    return _tool_fabric_discover_workspaces()
+
+
 # --- FASTAPI APP ---
+
 
 class CallToolRequest(BaseModel):
     name: str
@@ -293,12 +412,20 @@ class CallToolRequest(BaseModel):
 async def lifespan(app: FastAPI):
     logger.info("Discovering workspace/dataset GUIDs...")
     _discover_guids()
-    logger.info("Found %d workspaces, %d datasets", len(_workspace_guids), len(_dataset_guids))
-    yield
+    logger.info(
+        "Found %d workspaces, %d datasets", len(_workspace_guids), len(_dataset_guids)
+    )
+    async with mcp.session_manager.run():
+        yield
 
 
 app = FastAPI(title="connector-fabric", lifespan=lifespan)
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(
+    CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]
+)
+
+# Mount MCP StreamableHTTP at /mcp with Bearer token extraction
+app.mount("/mcp", TokenExtractorASGI(mcp.streamable_http_app()))
 
 
 @app.get("/health")
@@ -317,21 +444,41 @@ async def list_tools():
         "fabric_dax_query": {
             "description": "Execute a DAX query against a Fabric semantic model",
             "parameters": {
-                "query": {"type": "string", "description": "DAX EVALUATE query", "required": True},
-                "max_rows": {"type": "integer", "description": "Max rows to return", "default": 500},
-                "dataset": {"type": "string", "description": "Dataset name", "default": DEFAULT_DATASET},
+                "query": {
+                    "type": "string",
+                    "description": "DAX EVALUATE query",
+                    "required": True,
+                },
+                "max_rows": {
+                    "type": "integer",
+                    "description": "Max rows to return",
+                    "default": 500,
+                },
+                "dataset": {
+                    "type": "string",
+                    "description": "Dataset name",
+                    "default": DEFAULT_DATASET,
+                },
             },
         },
         "fabric_list_tables": {
             "description": "List tables and columns from cached schema",
             "parameters": {
-                "dataset": {"type": "string", "description": "Dataset name", "default": DEFAULT_DATASET},
+                "dataset": {
+                    "type": "string",
+                    "description": "Dataset name",
+                    "default": DEFAULT_DATASET,
+                },
             },
         },
         "fabric_get_schema": {
             "description": "Get cached schema for a dataset",
             "parameters": {
-                "dataset": {"type": "string", "description": "Dataset name", "default": DEFAULT_DATASET},
+                "dataset": {
+                    "type": "string",
+                    "description": "Dataset name",
+                    "default": DEFAULT_DATASET,
+                },
             },
         },
         "fabric_list_datasets": {
@@ -339,7 +486,7 @@ async def list_tools():
             "parameters": {},
         },
         "fabric_discover_workspaces": {
-            "description": "Discover all workspaces accessible to the service principal",
+            "description": "Discover all workspaces accessible to the current identity",
             "parameters": {},
         },
     }
@@ -347,12 +494,34 @@ async def list_tools():
 
 
 @app.post("/call-tool")
-async def call_tool(req: CallToolRequest):
-    """Execute an MCP tool by name with given arguments. Returns MCP-style response."""
+async def call_tool(req: CallToolRequest, request: Request):
+    """Execute an MCP tool by name with given arguments.
+
+    Requires X-API-Key header for authentication (agents use this).
+    Returns MCP-style response.
+    """
+    # API key guard — agents must authenticate
+    if API_KEY:
+        provided_key = request.headers.get("x-api-key", "")
+        if provided_key != API_KEY:
+            return JSONResponse(
+                status_code=401,
+                content={"error": "Invalid or missing X-API-Key header"},
+            )
+
     tool_fn = TOOLS.get(req.name)
     if not tool_fn:
         return {
-            "content": [{"type": "text", "text": json.dumps({"error": f"Unknown tool: {req.name}. Available: {list(TOOLS.keys())}"})}],
+            "content": [
+                {
+                    "type": "text",
+                    "text": json.dumps(
+                        {
+                            "error": f"Unknown tool: {req.name}. Available: {list(TOOLS.keys())}"
+                        }
+                    ),
+                }
+            ],
             "isError": True,
         }
 
@@ -371,4 +540,5 @@ async def call_tool(req: CallToolRequest):
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=PORT)
