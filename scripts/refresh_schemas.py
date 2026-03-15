@@ -50,11 +50,13 @@ def refresh_dataset(dataset_name: str) -> dict:
         tbl = row[0]
         if tbl not in tables:
             tables[tbl] = []
-        tables[tbl].append({
-            "name": row[1],
-            "data_type": str(row[2]) if row[2] else "",
-            "description": str(row[3]) if row[3] else "",
-        })
+        tables[tbl].append(
+            {
+                "name": row[1],
+                "data_type": str(row[2]) if row[2] else "",
+                "description": str(row[3]) if row[3] else "",
+            }
+        )
 
     # Query measures
     meas_query = """
@@ -70,20 +72,21 @@ def refresh_dataset(dataset_name: str) -> dict:
 
     measures = []
     for row in meas_rows:
-        measures.append({
-            "table": str(row[0]) if row[0] else "",
-            "name": str(row[1]) if row[1] else "",
-            "format_string": str(row[2]) if row[2] else "",
-            "description": str(row[3]) if row[3] else "",
-        })
+        measures.append(
+            {
+                "table": str(row[0]) if row[0] else "",
+                "name": str(row[1]) if row[1] else "",
+                "format_string": str(row[2]) if row[2] else "",
+                "description": str(row[3]) if row[3] else "",
+            }
+        )
 
     schema = {
         "dataset": ds_name,
         "workspace": info["workspace"],
         "captured_at": datetime.now(timezone.utc).isoformat(),
         "tables": [
-            {"name": tbl, "columns": cols}
-            for tbl, cols in sorted(tables.items())
+            {"name": tbl, "columns": cols} for tbl, cols in sorted(tables.items())
         ],
         "measures": measures,
     }

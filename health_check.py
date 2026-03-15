@@ -2,7 +2,7 @@
 Majans MCP Health Check — Daily Automated Check
 
 Tests connectivity to all MCP-integrated systems:
-1. Power BI XMLA endpoints (4 IBP workspaces, 15 datasets)
+1. Power BI XMLA endpoints (4 workspaces, 15 datasets)
 2. D365 UAT/PROD token acquisition
 3. 1Password CLI availability and secret expiry warnings
 
@@ -52,11 +52,27 @@ PBI_WORKSPACES = {
     },
     "SUPPLY": {
         "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/SUPPLY",
-        "datasets": ["AM", "CUSTOMER SERVICE v2", "INVENTORYV2", "MANUFACTURING V3", "PURCHASINGV3"],
+        "datasets": [
+            "AM",
+            "CUSTOMER SERVICE v2",
+            "INVENTORYV2",
+            "MANUFACTURING V3",
+            "PURCHASINGV3",
+        ],
     },
     "REVIEW": {
         "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/REVIEW",
-        "datasets": ["FINANCIALv2", "PLANAUDIT", "THREE-WAY", "PRODUCTIONCOST", "COSTINGv2"],
+        "datasets": [
+            "FINANCIALv2",
+            "PLANAUDIT",
+            "THREE-WAY",
+            "PRODUCTIONCOST",
+            "COSTINGv2",
+        ],
+    },
+    "HR": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/HR",
+        "datasets": ["HR"],
     },
 }
 
@@ -269,8 +285,7 @@ def main():
         "results": results,
         "expiry_warnings": expiry_warnings,
         "all_healthy": all(
-            r["status"]
-            in ("connected", "signed_in", "not_signed_in", "skipped")
+            r["status"] in ("connected", "signed_in", "not_signed_in", "skipped")
             for r in results
         ),
     }

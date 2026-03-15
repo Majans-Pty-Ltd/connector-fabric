@@ -26,12 +26,13 @@ TENANT_ID = os.getenv("AZURE_TENANT_ID")
 CLIENT_ID = os.getenv("AZURE_CLIENT_ID")
 CLIENT_SECRET = os.getenv("AZURE_CLIENT_SECRET")
 
-# Workspace registry: 4 IBP-domain Fabric workspaces, 15 datasets
+# Workspace registry: 6 Fabric workspaces, 18 datasets
 WORKSPACES = {
     "PRODUCT": {
         "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/PRODUCT",
         "datasets": {
             "CONSUMERv2": "Consumer insights model",
+            "MAGIC": "NPD pipeline, gate process, product management",
         },
     },
     "DEMAND": {
@@ -61,6 +62,18 @@ WORKSPACES = {
             "THREE-WAY": "Three-way match",
             "PRODUCTIONCOST": "Production costing",
             "COSTINGv2": "Costing model",
+        },
+    },
+    "FIELD": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/FIELD",
+        "datasets": {
+            "FIELD": "Field marketing — store audits, planogram compliance, distribution",
+        },
+    },
+    "HR": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/HR",
+        "datasets": {
+            "HR": "HR analytics — headcount, workforce, Employment Hero data",
         },
     },
 }
@@ -119,6 +132,20 @@ def _ensure_xmla():
     clr.AddReference(
         os.path.join(adomd_dll_path, "Microsoft.AnalysisServices.AdomdClient.dll")
     )
+
+    # Load TOM (Tabular Object Model) if available — needed for fabric_alter_measure
+    tom_dll_path = os.path.join(SCRIPT_DIR, "tom_package", "lib", "net45")
+    if os.path.isdir(tom_dll_path):
+        sys.path.insert(0, tom_dll_path)
+        os.environ["PATH"] = tom_dll_path + os.pathsep + os.environ.get("PATH", "")
+        for dll_name in [
+            "Microsoft.AnalysisServices.Core.dll",
+            "Microsoft.AnalysisServices.Tabular.dll",
+            "Microsoft.AnalysisServices.Tabular.Json.dll",
+        ]:
+            dll_full = os.path.join(tom_dll_path, dll_name)
+            if os.path.isfile(dll_full):
+                clr.AddReference(dll_full)
 
     from pyadomd import Pyadomd
 
@@ -239,7 +266,7 @@ def _to_markdown_table(headers: list, rows: list, max_rows: int = 100) -> str:
 mcp = FastMCP(
     "fabric",
     instructions=(
-        "Microsoft Fabric MCP server for Majans — provides access to 15 semantic models across 4 IBP workspaces "
+        "Microsoft Fabric MCP server for Majans — provides access to 15 semantic models across 4 workspaces "
         "(PRODUCT, DEMAND, SUPPLY, REVIEW) via DAX queries (XMLA), static schema lookups, "
         "workspace management, pipeline operations, and dataset refresh via the Fabric REST API.\n\n"
         "All XMLA tools take a 'dataset' parameter — the semantic model name. "
@@ -428,7 +455,9 @@ def fabric_list_datasets() -> str:
             lines.append(f"| {ds_name} | {ds_desc} |")
             total += 1
         lines.append("")
-    lines.append(f"*{total} datasets across {len(WORKSPACES)} workspaces. Default: {DEFAULT_DATASET}*")
+    lines.append(
+        f"*{total} datasets across {len(WORKSPACES)} workspaces. Default: {DEFAULT_DATASET}*"
+    )
     return "\n".join(lines)
 
 
@@ -514,11 +543,13 @@ def fabric_refresh_schema(dataset: str) -> str:
             tbl = row[0]
             if tbl not in tables:
                 tables[tbl] = []
-            tables[tbl].append({
-                "name": row[1],
-                "data_type": str(row[2]) if row[2] else "",
-                "description": str(row[3]) if row[3] else "",
-            })
+            tables[tbl].append(
+                {
+                    "name": row[1],
+                    "data_type": str(row[2]) if row[2] else "",
+                    "description": str(row[3]) if row[3] else "",
+                }
+            )
 
         # Query measures
         meas_query = """
@@ -534,20 +565,21 @@ def fabric_refresh_schema(dataset: str) -> str:
 
         measures = []
         for row in meas_rows:
-            measures.append({
-                "table": str(row[0]) if row[0] else "",
-                "name": str(row[1]) if row[1] else "",
-                "format_string": str(row[2]) if row[2] else "",
-                "description": str(row[3]) if row[3] else "",
-            })
+            measures.append(
+                {
+                    "table": str(row[0]) if row[0] else "",
+                    "name": str(row[1]) if row[1] else "",
+                    "format_string": str(row[2]) if row[2] else "",
+                    "description": str(row[3]) if row[3] else "",
+                }
+            )
 
         schema = {
             "dataset": ds_name,
             "workspace": info["workspace"],
             "captured_at": datetime.now(timezone.utc).isoformat(),
             "tables": [
-                {"name": tbl, "columns": cols}
-                for tbl, cols in sorted(tables.items())
+                {"name": tbl, "columns": cols} for tbl, cols in sorted(tables.items())
             ],
             "measures": measures,
         }
@@ -606,11 +638,14 @@ def fabric_discover_workspaces(format: str = "markdown") -> str:
             try:
                 ds_resp = requests.get(
                     f"https://api.powerbi.com/v1.0/myorg/groups/{ws_id}/datasets",
-                    headers=headers, timeout=30,
+                    headers=headers,
+                    timeout=30,
                 )
                 if ds_resp.status_code == 200:
                     for ds in ds_resp.json().get("value", []):
-                        ws_entry["datasets"].append({"id": ds["id"], "name": ds["name"]})
+                        ws_entry["datasets"].append(
+                            {"id": ds["id"], "name": ds["name"]}
+                        )
             except Exception:
                 pass
             result.append(ws_entry)
@@ -692,7 +727,10 @@ def fabric_list_workspace_items(
 
     if format == "json":
         return json.dumps(
-            [{"id": i.get("id"), "type": i.get("type"), "name": i.get("displayName")} for i in items]
+            [
+                {"id": i.get("id"), "type": i.get("type"), "name": i.get("displayName")}
+                for i in items
+            ]
         )
 
     lines = [f"## Workspace Items ({len(items)} found)\n"]
@@ -840,9 +878,7 @@ def fabric_get_pipeline_runs(
 
 
 @mcp.tool()
-def fabric_list_dataflows(
-    workspace_id: str, format: str = "markdown"
-) -> str:
+def fabric_list_dataflows(workspace_id: str, format: str = "markdown") -> str:
     """List dataflows in a Power BI workspace.
 
     Args:
@@ -968,6 +1004,434 @@ def fabric_trigger_pipeline(workspace_id: str, pipeline_id: str) -> str:
             return f"Pipeline trigger failed ({resp.status_code}): {resp.text[:500]}"
     except Exception as e:
         return f"API error: {e}"
+
+
+@mcp.tool()
+def fabric_get_dataflow_definition(workspace_id: str, dataflow_id: str) -> str:
+    """Get the M-query definition of a Fabric Gen2 dataflow.
+
+    Uses the Fabric Items API (getDefinition) to retrieve the Power Query (M)
+    expressions that define each table/query in the dataflow. Useful for
+    inspecting filters, source connections, and transformation logic.
+
+    Args:
+        workspace_id: The workspace GUID.
+        dataflow_id: The dataflow item GUID (from fabric_list_workspace_items).
+    """
+    import base64
+    import requests
+    import time
+
+    try:
+        token = _get_fabric_token()
+    except Exception as e:
+        return f"Auth error: {e}"
+
+    headers = {"Authorization": f"Bearer {token}"}
+    url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}/items/{dataflow_id}/getDefinition"
+
+    try:
+        resp = requests.post(url, headers=headers, timeout=30)
+
+        # 200 = definition returned immediately
+        if resp.status_code == 200:
+            definition = resp.json()
+        # 202 = long-running operation, poll for result
+        elif resp.status_code == 202:
+            location = resp.headers.get("Location", "")
+            retry_after = int(resp.headers.get("Retry-After", "5"))
+            if not location:
+                return "Accepted (202) but no Location header to poll."
+            for _ in range(12):  # max ~60s
+                time.sleep(retry_after)
+                poll = requests.get(location, headers=headers, timeout=30)
+                if poll.status_code == 200:
+                    definition = poll.json()
+                    break
+                elif poll.status_code == 202:
+                    retry_after = int(poll.headers.get("Retry-After", "5"))
+                    continue
+                else:
+                    return f"Poll error ({poll.status_code}): {poll.text[:500]}"
+            else:
+                return "Timed out waiting for definition (60s)."
+        else:
+            return f"API error ({resp.status_code}): {resp.text[:500]}"
+    except Exception as e:
+        return f"API error: {e}"
+
+    # Parse the definition parts — each part has path and payload (base64)
+    parts = definition.get("definition", {}).get("parts", [])
+    if not parts:
+        return "Definition returned but no parts found."
+
+    lines = [f"## Dataflow Definition ({len(parts)} part(s))\n"]
+    for part in parts:
+        path = part.get("path", "unknown")
+        payload = part.get("payload", "")
+        try:
+            content = base64.b64decode(payload).decode("utf-8")
+        except Exception:
+            content = "(unable to decode payload)"
+        lines.append(f"### {path}\n")
+        lines.append(f"```\n{content}\n```\n")
+
+    return "\n".join(lines)
+
+
+@mcp.tool()
+def fabric_alter_measure(
+    dataset: str, table: str, measure: str, expression: str, description: str = ""
+) -> str:
+    """Update a DAX measure expression in a published Fabric semantic model.
+
+    Uses the Tabular Object Model (TOM) via XMLA to modify the measure in-place.
+    The change takes effect immediately — no refresh needed.
+
+    Args:
+        dataset: Semantic model name — e.g. MANUFACTURING V3, FINANCIALv2.
+        table: Table containing the measure (e.g. MEASURETABLE, PLANLABOURRATE).
+        measure: Exact measure name to update.
+        expression: New DAX expression for the measure.
+        description: Optional new description (leave empty to keep existing).
+    """
+    try:
+        server, db, model = _tom_connect(dataset)
+    except RuntimeError as e:
+        return f"Error: {e}"
+
+    try:
+        tom_table = None
+        for t in model.Tables:
+            if t.Name == table:
+                tom_table = t
+                break
+        if tom_table is None:
+            return f"Error: Table '{table}' not found in {dataset}."
+
+        tom_measure = None
+        for m in tom_table.Measures:
+            if m.Name == measure:
+                tom_measure = m
+                break
+        if tom_measure is None:
+            return f"Error: Measure '{measure}' not found in table '{table}'."
+
+        old_expression = tom_measure.Expression
+        tom_measure.Expression = expression
+        if description:
+            tom_measure.Description = description
+
+        model.SaveChanges()
+
+        return (
+            f"Measure '{measure}' updated successfully in {dataset}.\n\n"
+            f"**Old expression:**\n```dax\n{old_expression}\n```\n\n"
+            f"**New expression:**\n```dax\n{expression}\n```"
+        )
+    except Exception as e:
+        return f"Error updating measure: {e}"
+    finally:
+        try:
+            server.Disconnect()
+        except Exception:
+            pass
+
+
+def _tom_connect(dataset: str):
+    """Connect to a dataset via TOM and return (server, db, model)."""
+    _ensure_xmla()
+
+    try:
+        from Microsoft.AnalysisServices.Tabular import Server
+    except ImportError:
+        raise RuntimeError(
+            "TOM (Tabular Object Model) DLLs not found. "
+            "Install tom_package with Microsoft.AnalysisServices.Tabular.dll."
+        )
+
+    info = _resolve_dataset(dataset)
+    conn_str = (
+        f"Provider=MSOLAP;"
+        f"Data Source={info['endpoint']};"
+        f"Initial Catalog={info['dataset']};"
+        f"User ID=app:{CLIENT_ID}@{TENANT_ID};"
+        f"Password={CLIENT_SECRET};"
+        f"Persist Security Info=True;"
+        f"Impersonation Level=Impersonate;"
+    )
+
+    server = Server()
+    server.Connect(conn_str)
+
+    db = None
+    dataset_name = info["dataset"]
+    for i in range(server.Databases.Count):
+        if server.Databases[i].Name == dataset_name:
+            db = server.Databases[i]
+            break
+    if db is None:
+        server.Disconnect()
+        raise RuntimeError(f"Database '{dataset_name}' not found on server.")
+
+    return server, db, db.Model
+
+
+@mcp.tool()
+def fabric_create_measure(
+    dataset: str,
+    table: str,
+    measure: str,
+    expression: str,
+    format_string: str = "",
+    description: str = "",
+) -> str:
+    """Create a new DAX measure in a published Fabric semantic model.
+
+    If the measure already exists in the specified table, it will be updated instead.
+    Uses TOM via XMLA — change takes effect immediately, no refresh needed.
+
+    Args:
+        dataset: Semantic model name — e.g. MANUFACTURING V3, FINANCIALv2.
+        table: Table to add the measure to (e.g. MEASURETABLE).
+        measure: Name for the new measure.
+        expression: DAX expression for the measure.
+        format_string: Optional format string (e.g. "$#,0.00").
+        description: Optional description.
+    """
+    try:
+        server, db, model = _tom_connect(dataset)
+    except RuntimeError as e:
+        return f"Error: {e}"
+
+    try:
+        from Microsoft.AnalysisServices.Tabular import Measure
+
+        tom_table = None
+        for t in model.Tables:
+            if t.Name == table:
+                tom_table = t
+                break
+        if tom_table is None:
+            return f"Error: Table '{table}' not found in {dataset}."
+
+        # Check if measure already exists — update instead
+        for m in tom_table.Measures:
+            if m.Name == measure:
+                old_expr = m.Expression
+                m.Expression = expression
+                if description:
+                    m.Description = description
+                if format_string:
+                    m.FormatString = format_string
+                model.SaveChanges()
+                return (
+                    f"Measure '{measure}' already existed — updated.\n\n"
+                    f"**Old expression:**\n```dax\n{old_expr}\n```\n\n"
+                    f"**New expression:**\n```dax\n{expression}\n```"
+                )
+
+        new_measure = Measure()
+        new_measure.Name = measure
+        new_measure.Expression = expression
+        if description:
+            new_measure.Description = description
+        if format_string:
+            new_measure.FormatString = format_string
+
+        tom_table.Measures.Add(new_measure)
+        model.SaveChanges()
+        return f"Measure '{measure}' created in '{table}' ({dataset}).\n\n```dax\n{expression}\n```"
+    except Exception as e:
+        return f"Error creating measure: {e}"
+    finally:
+        try:
+            server.Disconnect()
+        except Exception:
+            pass
+
+
+@mcp.tool()
+def fabric_create_calc_table(
+    dataset: str,
+    table: str,
+    m_expression: str,
+    refresh: bool = True,
+    columns: str = "",
+) -> str:
+    """Create a calculated table in a Fabric semantic model using an M (Power Query) expression.
+
+    If the table already exists, it will be dropped and recreated (including any relationships).
+    After creation, the table is refreshed to populate data.
+
+    Args:
+        dataset: Semantic model name — e.g. MANUFACTURING V3.
+        table: Name for the new table (e.g. _LINE_BRIDGE).
+        m_expression: M/Power Query expression that defines the table data.
+        refresh: Whether to refresh the table after creation (default True).
+        columns: Optional comma-separated column specs in "name:type" format.
+            Supported types: string, int64, double, boolean, datetime.
+            Example: "Assumption:string,Period:string,Value:double"
+            If omitted, relies on refresh to auto-detect columns.
+    """
+    try:
+        server, db, model = _tom_connect(dataset)
+    except RuntimeError as e:
+        return f"Error: {e}"
+
+    try:
+        from Microsoft.AnalysisServices.Tabular import (
+            Table,
+            Partition,
+            MPartitionSource,
+            DataColumn,
+            DataType,
+            RefreshType,
+        )
+
+        TYPE_MAP = {
+            "string": DataType.String,
+            "int64": DataType.Int64,
+            "double": DataType.Double,
+            "boolean": DataType.Boolean,
+            "datetime": DataType.DateTime,
+        }
+
+        # Remove existing table and relationships
+        for t in model.Tables:
+            if t.Name == table:
+                rels_to_remove = []
+                for r in model.Relationships:
+                    if r.FromTable.Name == table or r.ToTable.Name == table:
+                        rels_to_remove.append(r)
+                for r in rels_to_remove:
+                    model.Relationships.Remove(r)
+                model.Tables.Remove(t)
+                model.SaveChanges()
+                break
+
+        new_table = Table()
+        new_table.Name = table
+
+        # Add explicit columns if provided
+        if columns:
+            for col_spec in columns.split(","):
+                col_spec = col_spec.strip()
+                if ":" not in col_spec:
+                    continue
+                col_name, col_type = col_spec.split(":", 1)
+                col_name = col_name.strip()
+                col_type = col_type.strip().lower()
+                if col_type not in TYPE_MAP:
+                    return f"Error: Unknown column type '{col_type}'. Use: {', '.join(TYPE_MAP.keys())}"
+                col = DataColumn()
+                col.Name = col_name
+                col.DataType = TYPE_MAP[col_type]
+                col.SourceColumn = col_name
+                new_table.Columns.Add(col)
+
+        partition = Partition()
+        partition.Name = table
+        source = MPartitionSource()
+        source.Expression = m_expression
+        partition.Source = source
+
+        new_table.Partitions.Add(partition)
+        model.Tables.Add(new_table)
+        model.SaveChanges()
+
+        if refresh:
+            new_table.RequestRefresh(RefreshType.Full)
+            model.SaveChanges()
+
+        col_count = new_table.Columns.Count
+        return f"Calculated table '{table}' created in {dataset} with {col_count} column(s)."
+    except Exception as e:
+        return f"Error creating table: {e}"
+    finally:
+        try:
+            server.Disconnect()
+        except Exception:
+            pass
+
+
+@mcp.tool()
+def fabric_create_relationship(
+    dataset: str,
+    from_table: str,
+    from_column: str,
+    to_table: str,
+    to_column: str,
+    cross_filter_both: bool = False,
+) -> str:
+    """Create a relationship between two tables in a Fabric semantic model.
+
+    Creates a single-column relationship. The 'from' side is the many side,
+    the 'to' side is the one side (must have unique values).
+
+    Args:
+        dataset: Semantic model name — e.g. MANUFACTURING V3.
+        from_table: Many-side table name.
+        from_column: Many-side column name.
+        to_table: One-side table name (column must have unique values).
+        to_column: One-side column name.
+        cross_filter_both: Enable bi-directional cross-filtering (default False).
+    """
+    try:
+        server, db, model = _tom_connect(dataset)
+    except RuntimeError as e:
+        return f"Error: {e}"
+
+    try:
+        from Microsoft.AnalysisServices.Tabular import (
+            SingleColumnRelationship,
+            CrossFilteringBehavior,
+        )
+
+        ft = tc = None
+        for t in model.Tables:
+            if t.Name == from_table:
+                ft = t
+            if t.Name == to_table:
+                tc = t
+        if ft is None:
+            return f"Error: Table '{from_table}' not found."
+        if tc is None:
+            return f"Error: Table '{to_table}' not found."
+
+        fc = None
+        for c in ft.Columns:
+            if c.Name == from_column:
+                fc = c
+                break
+        if fc is None:
+            return f"Error: Column '{from_column}' not found in '{from_table}'."
+
+        tcc = None
+        for c in tc.Columns:
+            if c.Name == to_column:
+                tcc = c
+                break
+        if tcc is None:
+            return f"Error: Column '{to_column}' not found in '{to_table}'."
+
+        rel = SingleColumnRelationship()
+        rel.Name = f"{from_table}_{from_column}_to_{to_table}_{to_column}"
+        rel.FromColumn = fc
+        rel.ToColumn = tcc
+        if cross_filter_both:
+            rel.CrossFilteringBehavior = CrossFilteringBehavior.BothDirections
+
+        model.Relationships.Add(rel)
+        model.SaveChanges()
+        return f"Relationship created: {from_table}[{from_column}] → {to_table}[{to_column}]"
+    except Exception as e:
+        return f"Error creating relationship: {e}"
+    finally:
+        try:
+            server.Disconnect()
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":
