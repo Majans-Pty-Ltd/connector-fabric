@@ -444,6 +444,132 @@ def _tool_fabric_discover_workspaces(**_) -> dict:
         return {"error": str(e)}
 
 
+# --- Fabric REST API tool wrappers (for /call-tool registry) ---
+
+
+def _tool_fabric_list_workspace_items(workspace_id: str, item_type: str = "", **_) -> dict:
+    url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}/items"
+    if item_type:
+        url += f"?type={item_type}"
+    try:
+        resp = requests.get(url, headers=_request_headers(), timeout=30)
+        if resp.status_code == 403:
+            return {"error": f"Access denied to workspace {workspace_id}."}
+        resp.raise_for_status()
+        items = resp.json().get("value", [])
+        return {"items": [{"id": i.get("id"), "type": i.get("type"), "name": i.get("displayName")} for i in items]}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def _tool_fabric_get_refresh_history(workspace_id: str, dataset_id: str, top: int = 10, **_) -> dict:
+    url = f"https://api.powerbi.com/v1.0/myorg/groups/{workspace_id}/datasets/{dataset_id}/refreshes?$top={top}"
+    try:
+        resp = requests.get(url, headers=_request_headers(), timeout=30)
+        resp.raise_for_status()
+        return {"refreshes": resp.json().get("value", [])}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def _tool_fabric_trigger_refresh(workspace_id: str, dataset_id: str, **_) -> dict:
+    url = f"https://api.powerbi.com/v1.0/myorg/groups/{workspace_id}/datasets/{dataset_id}/refreshes"
+    try:
+        resp = requests.post(url, headers=_request_headers(), timeout=30)
+        if resp.status_code == 202:
+            return {"status": "triggered", "message": f"Refresh triggered for dataset {dataset_id}."}
+        return {"error": f"Refresh trigger failed ({resp.status_code}): {resp.text[:500]}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def _tool_fabric_list_dataflows(workspace_id: str, **_) -> dict:
+    url = f"https://api.powerbi.com/v1.0/myorg/groups/{workspace_id}/dataflows"
+    try:
+        resp = requests.get(url, headers=_request_headers(), timeout=30)
+        resp.raise_for_status()
+        dataflows = resp.json().get("value", [])
+        return {"dataflows": [{"id": df.get("objectId"), "name": df.get("name"), "description": df.get("description", "")} for df in dataflows]}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def _tool_fabric_get_dataflow_transactions(workspace_id: str, dataflow_id: str, **_) -> dict:
+    url = f"https://api.powerbi.com/v1.0/myorg/groups/{workspace_id}/dataflows/{dataflow_id}/transactions"
+    try:
+        resp = requests.get(url, headers=_request_headers(), timeout=30)
+        resp.raise_for_status()
+        return {"transactions": resp.json().get("value", [])}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def _tool_fabric_get_dataflow_definition(workspace_id: str, dataflow_id: str, **_) -> dict:
+    import base64
+    url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}/items/{dataflow_id}/getDefinition"
+    try:
+        resp = requests.post(url, headers=_request_headers(), timeout=30)
+        if resp.status_code == 200:
+            definition = resp.json()
+        elif resp.status_code == 202:
+            location = resp.headers.get("Location", "")
+            retry_after = int(resp.headers.get("Retry-After", "5"))
+            if not location:
+                return {"error": "Accepted (202) but no Location header to poll."}
+            for _ in range(12):
+                time.sleep(retry_after)
+                poll = requests.get(location, headers=_request_headers(), timeout=30)
+                if poll.status_code == 200:
+                    definition = poll.json()
+                    break
+                elif poll.status_code == 202:
+                    retry_after = int(poll.headers.get("Retry-After", "5"))
+                else:
+                    return {"error": f"Poll error ({poll.status_code}): {poll.text[:500]}"}
+            else:
+                return {"error": "Timed out waiting for definition (60s)."}
+        else:
+            return {"error": f"API error ({resp.status_code}): {resp.text[:500]}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+    parts = definition.get("definition", {}).get("parts", [])
+    result = []
+    for part in parts:
+        payload = part.get("payload", "")
+        try:
+            content = base64.b64decode(payload).decode("utf-8")
+        except Exception:
+            content = "(unable to decode)"
+        result.append({"path": part.get("path", "unknown"), "content": content})
+    return {"parts": result}
+
+
+def _tool_fabric_get_pipeline_runs(workspace_id: str, pipeline_id: str, **_) -> dict:
+    url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}/items/{pipeline_id}/jobs/instances"
+    try:
+        resp = requests.get(url, headers=_request_headers(), timeout=30)
+        resp.raise_for_status()
+        return {"runs": resp.json().get("value", [])}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def _tool_fabric_trigger_pipeline(workspace_id: str, pipeline_id: str, **_) -> dict:
+    url = f"https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}/items/{pipeline_id}/jobs/instances?jobType=Pipeline"
+    try:
+        resp = requests.post(url, headers=_request_headers(), timeout=30)
+        if resp.status_code == 202:
+            location = resp.headers.get("Location", "")
+            result = {"status": "triggered", "message": f"Pipeline {pipeline_id} triggered."}
+            if location:
+                result["monitor_url"] = location
+            return result
+        return {"error": f"Pipeline trigger failed ({resp.status_code}): {resp.text[:500]}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 # Tool registry (used by /call-tool REST endpoint)
 TOOLS: dict[str, callable] = {
     "fabric_dax_query": _tool_fabric_dax_query,
@@ -453,6 +579,14 @@ TOOLS: dict[str, callable] = {
     "fabric_get_schema": _tool_fabric_get_schema,
     "fabric_list_datasets": _tool_fabric_list_datasets,
     "fabric_discover_workspaces": _tool_fabric_discover_workspaces,
+    "fabric_list_workspace_items": _tool_fabric_list_workspace_items,
+    "fabric_get_refresh_history": _tool_fabric_get_refresh_history,
+    "fabric_trigger_refresh": _tool_fabric_trigger_refresh,
+    "fabric_list_dataflows": _tool_fabric_list_dataflows,
+    "fabric_get_dataflow_transactions": _tool_fabric_get_dataflow_transactions,
+    "fabric_get_dataflow_definition": _tool_fabric_get_dataflow_definition,
+    "fabric_get_pipeline_runs": _tool_fabric_get_pipeline_runs,
+    "fabric_trigger_pipeline": _tool_fabric_trigger_pipeline,
 }
 
 
