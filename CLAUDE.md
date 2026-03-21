@@ -4,8 +4,10 @@
 Python MCP server + HTTP API providing access to Microsoft Fabric semantic models — DAX queries, schema lookups, workspace discovery, pipeline operations, and dataset refresh.
 
 **Two deployment modes**:
-- **Local (stdio)**: `mcp_server.py` — full-featured, Windows-only XMLA + REST tools
-- **Remote (Container App)**: `http_server.py` — REST API + StreamableHTTP MCP, Linux-compatible
+- **Local (stdio)**: `mcp_server.py` — full-featured, Windows-only XMLA + TOM + REST tools
+- **Remote (Container App)**: `http_server.py` — XMLA (if Windows) + REST API + StreamableHTTP MCP
+
+**DAX execution**: `fabric_dax_query` tries XMLA first (bypasses PBI REST permission chain issues with composite/DirectQuery models), falls back to REST API automatically. Explicit `fabric_dax_query_xmla` and `fabric_dax_query_rest` tools also available.
 
 ## Architecture
 

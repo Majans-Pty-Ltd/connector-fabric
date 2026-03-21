@@ -8,8 +8,9 @@ Two auth paths:
   /call-tool → Legacy REST (backward compat for agents). X-API-Key required →
                SP token → PBI API with full access.
 
-DAX execution uses the Power BI REST API (executeQueries) instead of XMLA,
-so this runs on Linux without Windows/.NET dependencies.
+DAX execution: XMLA (preferred, if ADOMD.NET available on Windows) with
+automatic fallback to Power BI REST API (executeQueries) on Linux.
+XMLA bypasses PBI REST API permission chain issues with composite models.
 """
 
 import json
@@ -206,6 +207,93 @@ def _discover_guids():
         logger.error("Failed to discover workspace GUIDs: %s", e)
 
 
+# --- XMLA (OPTIONAL — Windows only) ---
+
+_xmla_available: bool | None = None  # None = not checked yet
+_Pyadomd = None
+
+
+def _check_xmla() -> bool:
+    """Check if XMLA/ADOMD.NET is available (Windows + pyadomd + .NET DLLs)."""
+    global _xmla_available, _Pyadomd
+    if _xmla_available is not None:
+        return _xmla_available
+
+    try:
+        adomd_dll_path = os.path.join(SCRIPT_DIR, "adomd_package", "lib", "net45")
+        if not os.path.isdir(adomd_dll_path):
+            logger.info("XMLA: ADOMD.NET DLLs not found — REST-only mode")
+            _xmla_available = False
+            return False
+
+        import sys
+        sys.path.insert(0, adomd_dll_path)
+        os.environ["PATH"] = adomd_dll_path + os.pathsep + os.environ.get("PATH", "")
+
+        import clr
+        clr.AddReference(
+            os.path.join(adomd_dll_path, "Microsoft.AnalysisServices.AdomdClient.dll")
+        )
+
+        from pyadomd import Pyadomd
+        _Pyadomd = Pyadomd
+        _xmla_available = True
+        logger.info("XMLA: ADOMD.NET loaded — XMLA+REST dual mode")
+        return True
+    except Exception as e:
+        logger.info("XMLA: Not available (%s) — REST-only mode", e)
+        _xmla_available = False
+        return False
+
+
+def _build_conn_str(dataset: str) -> str:
+    """Build an XMLA connection string for the given dataset."""
+    info = _resolve_dataset(dataset)
+    return (
+        f"Provider=MSOLAP;"
+        f"Data Source={info['endpoint']};"
+        f"Initial Catalog={info['dataset']};"
+        f"User ID=app:{CLIENT_ID}@{TENANT_ID};"
+        f"Password={CLIENT_SECRET};"
+        f"Persist Security Info=True;"
+        f"Impersonation Level=Impersonate;"
+    )
+
+
+def _execute_dax_xmla(
+    query: str, dataset: str = DEFAULT_DATASET, max_rows: int = 500
+) -> dict:
+    """Execute DAX query via XMLA/ADOMD.NET.
+
+    Connects directly to the Analysis Services endpoint using SP credentials
+    in the connection string. Bypasses PBI REST API permission layer.
+    """
+    if not _check_xmla():
+        raise RuntimeError("XMLA not available")
+
+    conn_str = _build_conn_str(dataset)
+    try:
+        conn = _Pyadomd(conn_str)
+        conn.open()
+        try:
+            cur = conn.cursor()
+            cur.execute(query)
+            headers = [col[0] for col in cur.description] if cur.description else []
+            rows_raw = cur.fetchall()
+            cur.close()
+
+            # Convert to list of dicts (same format as REST API response)
+            rows = []
+            for row in rows_raw[:max_rows]:
+                rows.append({h: v for h, v in zip(headers, row)})
+
+            return {"columns": headers, "rows": rows, "total_rows": len(rows_raw), "method": "xmla"}
+        finally:
+            conn.close()
+    except Exception as e:
+        return {"error": f"XMLA error: {e}", "method": "xmla"}
+
+
 # --- DAX EXECUTION VIA REST API ---
 
 
@@ -290,6 +378,29 @@ def _execute_dax_rest(
 def _tool_fabric_dax_query(
     query: str, max_rows: int = 500, dataset: str = DEFAULT_DATASET, **_
 ) -> dict:
+    """Execute DAX — tries XMLA first (bypasses REST permission chain), falls back to REST."""
+    if _check_xmla():
+        result = _execute_dax_xmla(query, dataset, max_rows)
+        if "error" not in result:
+            return result
+        # XMLA failed — log and fall back to REST
+        logger.warning("XMLA failed for %s, falling back to REST: %s", dataset, result.get("error"))
+    return _execute_dax_rest(query, dataset, max_rows)
+
+
+def _tool_fabric_dax_query_xmla(
+    query: str, max_rows: int = 500, dataset: str = DEFAULT_DATASET, **_
+) -> dict:
+    """Execute DAX via XMLA only (no REST fallback). Errors if XMLA unavailable."""
+    if not _check_xmla():
+        return {"error": "XMLA not available. Requires Windows with ADOMD.NET + pyadomd."}
+    return _execute_dax_xmla(query, dataset, max_rows)
+
+
+def _tool_fabric_dax_query_rest(
+    query: str, max_rows: int = 500, dataset: str = DEFAULT_DATASET, **_
+) -> dict:
+    """Execute DAX via REST API only (no XMLA). For explicit REST-only calls."""
     return _execute_dax_rest(query, dataset, max_rows)
 
 
@@ -336,6 +447,8 @@ def _tool_fabric_discover_workspaces(**_) -> dict:
 # Tool registry (used by /call-tool REST endpoint)
 TOOLS: dict[str, callable] = {
     "fabric_dax_query": _tool_fabric_dax_query,
+    "fabric_dax_query_xmla": _tool_fabric_dax_query_xmla,
+    "fabric_dax_query_rest": _tool_fabric_dax_query_rest,
     "fabric_list_tables": _tool_fabric_list_tables,
     "fabric_get_schema": _tool_fabric_get_schema,
     "fabric_list_datasets": _tool_fabric_list_datasets,
@@ -374,9 +487,33 @@ def fabric_dax_query(query: str, max_rows: int = 500, dataset: str = "SCANv2") -
     """Execute a DAX query against a Fabric semantic model.
 
     Uses EVALUATE syntax. Results are returned as columns + rows.
-    The dataset parameter selects which semantic model to query.
+    Automatically uses XMLA (preferred, bypasses permission chain issues)
+    with fallback to REST API if XMLA is unavailable.
     """
     return _tool_fabric_dax_query(query=query, max_rows=max_rows, dataset=dataset)
+
+
+@mcp.tool()
+def fabric_dax_query_xmla(query: str, max_rows: int = 500, dataset: str = "SCANv2") -> dict:
+    """Execute a DAX query via XMLA/ADOMD.NET only (no REST fallback).
+
+    XMLA connects directly to the Analysis Services endpoint using SP
+    credentials. Bypasses PBI REST API permission layer — works even on
+    composite models with DirectQuery chains that block the REST API.
+    Requires Windows with ADOMD.NET.
+    """
+    return _tool_fabric_dax_query_xmla(query=query, max_rows=max_rows, dataset=dataset)
+
+
+@mcp.tool()
+def fabric_dax_query_rest(query: str, max_rows: int = 500, dataset: str = "SCANv2") -> dict:
+    """Execute a DAX query via Power BI REST API only (no XMLA).
+
+    Uses the PBI executeQueries endpoint. Subject to PBI REST API permission
+    requirements (Build permission needed on the dataset and all upstream
+    models in the chain for composite/DirectQuery models).
+    """
+    return _tool_fabric_dax_query_rest(query=query, max_rows=max_rows, dataset=dataset)
 
 
 @mcp.tool()
@@ -701,32 +838,31 @@ async def health():
         "status": "ok",
         "workspaces": len(_workspace_guids),
         "datasets": len(_dataset_guids),
+        "xmla_available": _check_xmla(),
+        "dax_method": "xmla+rest" if _check_xmla() else "rest",
     }
 
 
 @app.get("/tools")
 async def list_tools():
     """List available tools with their parameter schemas."""
+    dax_params = {
+        "query": {"type": "string", "description": "DAX EVALUATE query", "required": True},
+        "max_rows": {"type": "integer", "description": "Max rows to return", "default": 500},
+        "dataset": {"type": "string", "description": "Dataset name", "default": DEFAULT_DATASET},
+    }
     tool_schemas = {
         "fabric_dax_query": {
-            "description": "Execute a DAX query against a Fabric semantic model",
-            "parameters": {
-                "query": {
-                    "type": "string",
-                    "description": "DAX EVALUATE query",
-                    "required": True,
-                },
-                "max_rows": {
-                    "type": "integer",
-                    "description": "Max rows to return",
-                    "default": 500,
-                },
-                "dataset": {
-                    "type": "string",
-                    "description": "Dataset name",
-                    "default": DEFAULT_DATASET,
-                },
-            },
+            "description": "Execute DAX (XMLA preferred, REST fallback)",
+            "parameters": dax_params,
+        },
+        "fabric_dax_query_xmla": {
+            "description": "Execute DAX via XMLA only (bypasses REST permission chain)",
+            "parameters": dax_params,
+        },
+        "fabric_dax_query_rest": {
+            "description": "Execute DAX via REST API only",
+            "parameters": dax_params,
         },
         "fabric_list_tables": {
             "description": "List tables and columns from cached schema",
