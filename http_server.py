@@ -88,6 +88,12 @@ WORKSPACES = {
             "HR": "HR analytics — headcount, workforce, Employment Hero data",
         },
     },
+    "FIELD": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/FIELD",
+        "datasets": {
+            "FIELD": "Field marketing — store sales, stock, ranging, distribution, Metcash B2B",
+        },
+    },
 }
 
 DEFAULT_DATASET = "SCANv2"
