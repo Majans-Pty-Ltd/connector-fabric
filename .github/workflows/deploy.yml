@@ -45,10 +45,29 @@ jobs:
 
   smoke-test:
     needs: deploy
-    uses: Majans-Pty-Ltd/audit-heartbeat/.github/workflows/post-deploy-smoke.yml@main
-    with:
-      container_name: connector-fabric
-      health_url: https://fabric.majans.com/health
-    secrets:
-      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Verify revision is ready
+        run: |
+          for i in $(seq 1 12); do
+            LATEST=$(az containerapp revision list \
+              --name connector-fabric --resource-group rg-majans-agents \
+              --query "sort_by([?properties.active], &properties.createdTime) | [-1].{prov:properties.provisioningState, run:properties.runningState}" \
+              -o json 2>/dev/null) || LATEST="{}"
+            PROV=$(echo "$LATEST" | jq -r '.prov // "unknown"')
+            RUN=$(echo "$LATEST" | jq -r '.run // "unknown"')
+            echo "[$(( i * 10 ))s] Provisioning: $PROV, Running: $RUN"
+            if [[ "$PROV" == "Provisioned" ]]; then break; fi
+            sleep 10
+          done
+          [[ "$PROV" == "Provisioned" ]] || { echo "::error::Revision not ready"; exit 1; }
+
+      - name: Health check
+        run: |
+          HTTP_CODE=$(curl -s -o /tmp/h.json -w '%{http_code}' --retry 3 --retry-delay 10 --max-time 30 https://fabric.majans.com/health)
+          echo "HTTP: $HTTP_CODE, Body: $(cat /tmp/h.json)"
+          [[ "$HTTP_CODE" =~ ^2 ]] || { echo "::error::Health check failed: HTTP $HTTP_CODE"; exit 1; }
