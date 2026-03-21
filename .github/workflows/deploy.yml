@@ -42,3 +42,13 @@ jobs:
               AZURE_CLIENT_ID="$AZURE_CLIENT_ID" \
               AZURE_CLIENT_SECRET="$AZURE_CLIENT_SECRET" \
               FABRIC_API_KEY="$FABRIC_API_KEY"
+
+  smoke-test:
+    needs: deploy
+    uses: Majans-Pty-Ltd/audit-heartbeat/.github/workflows/post-deploy-smoke.yml@main
+    with:
+      container_name: connector-fabric
+      health_url: https://fabric.majans.com/health
+    secrets:
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
