@@ -37,9 +37,7 @@ def _get_jwks_client() -> jwt.PyJWKClient | None:
     if cached is not None:
         return cached
 
-    jwks_url = (
-        f"https://login.microsoftonline.com/{TENANT_ID}/discovery/v2.0/keys"
-    )
+    jwks_url = f"https://login.microsoftonline.com/{TENANT_ID}/discovery/v2.0/keys"
     try:
         client = jwt.PyJWKClient(jwks_url, cache_keys=True, lifespan=86400)
         _jwks_cache[_JWKS_CACHE_KEY] = client
