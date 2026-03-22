@@ -1,7 +1,7 @@
 """Managed Identity JWT validation for connector-fabric.
 
 Validates JWTs from Azure Container Apps managed identities.
-Expected audience: api://connector-fabric
+Expected audience: api://76f295bb-dc42-4419-a6a4-b74812d30ef4
 Required role: MCP.Invoke
 """
 
@@ -15,7 +15,7 @@ logger = logging.getLogger("connector-fabric.jwt")
 
 # Azure AD tenant and expected claims
 TENANT_ID = os.getenv("AZURE_TENANT_ID", "")
-EXPECTED_AUDIENCE = "api://connector-fabric"
+EXPECTED_AUDIENCE = "api://76f295bb-dc42-4419-a6a4-b74812d30ef4"
 ISSUER_V2 = f"https://login.microsoftonline.com/{TENANT_ID}/v2.0" if TENANT_ID else ""
 REQUIRED_ROLE = "MCP.Invoke"
 
@@ -54,7 +54,7 @@ def validate_mi_token(token: str) -> dict | None:
     """Validate a Managed Identity JWT token.
 
     Returns the decoded claims dict if the token is a valid MI token with:
-      - aud == api://connector-fabric
+      - aud == api://76f295bb-dc42-4419-a6a4-b74812d30ef4
       - iss == Azure AD v2.0 issuer for configured tenant
       - roles claim contains MCP.Invoke
 
