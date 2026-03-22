@@ -29,7 +29,7 @@ from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 from pydantic import BaseModel
 
-from auth import TokenExtractorASGI, user_token_var
+from auth import MANAGED_IDENTITY_ENABLED, TokenExtractorASGI, user_token_var
 
 load_dotenv()
 
@@ -1034,17 +1034,33 @@ async def list_tools():
 async def call_tool(req: CallToolRequest, request: Request):
     """Execute an MCP tool by name with given arguments.
 
-    Requires X-API-Key header for authentication (agents use this).
+    Requires X-API-Key header or valid MI JWT Bearer token for authentication.
     Returns MCP-style response.
     """
-    # API key guard — agents must authenticate
+    # Auth guard — agents must authenticate via API key or MI JWT
     if API_KEY:
         provided_key = request.headers.get("x-api-key", "")
         if provided_key != API_KEY:
-            return JSONResponse(
-                status_code=401,
-                content={"error": "Invalid or missing X-API-Key header"},
-            )
+            # API key missing/invalid — try MI JWT as fallback
+            authed_via_mi = False
+            if MANAGED_IDENTITY_ENABLED:
+                auth_header = request.headers.get("authorization", "")
+                if auth_header.lower().startswith("bearer "):
+                    from jwt_validator import validate_mi_token
+
+                    mi_claims = validate_mi_token(auth_header[7:])
+                    if mi_claims is not None:
+                        authed_via_mi = True
+                        logger.info(
+                            "MI auth on /call-tool — appid=%s",
+                            mi_claims.get("appid", mi_claims.get("azp", "unknown")),
+                        )
+
+            if not authed_via_mi:
+                return JSONResponse(
+                    status_code=401,
+                    content={"error": "Invalid or missing X-API-Key header"},
+                )
 
     tool_fn = TOOLS.get(req.name)
     if not tool_fn:
