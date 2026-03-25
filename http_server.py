@@ -3,8 +3,9 @@ HTTP wrapper for connector-fabric — exposes MCP tools as HTTP endpoints
 AND as a StreamableHTTP MCP server for per-user Fabric access.
 
 Two auth paths:
-  /mcp       → StreamableHTTP (MCP protocol). Bearer token from user →
-               PBI API calls as that user. Fabric enforces workspace roles.
+  /mcp       → StreamableHTTP (MCP protocol). Three modes: Bearer MI JWT
+               (validated via JWKS, SP path), Bearer user token (per-user
+               Fabric calls), or X-API-Key (agent SP fallback).
   /call-tool → Legacy REST (backward compat for agents). X-API-Key required →
                SP token → PBI API with full access.
 
@@ -29,7 +30,7 @@ from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 from pydantic import BaseModel
 
-from auth import MANAGED_IDENTITY_ENABLED, TokenExtractorASGI, user_token_var
+from auth import MANAGED_IDENTITY_ENABLED, McpAuthMiddleware, user_token_var
 
 load_dotenv()
 
@@ -962,8 +963,8 @@ app.add_middleware(
     CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]
 )
 
-# Mount MCP StreamableHTTP at /mcp with Bearer token extraction
-app.mount("/mcp", TokenExtractorASGI(mcp.streamable_http_app()))
+# Mount MCP StreamableHTTP at /mcp with dual auth (Bearer + API key)
+app.mount("/mcp", McpAuthMiddleware(mcp.streamable_http_app(), api_key=API_KEY))
 
 
 @app.get("/health")

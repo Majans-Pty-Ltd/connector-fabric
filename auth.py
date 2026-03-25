@@ -1,76 +1,98 @@
-"""Token context for per-request auth in connector-fabric.
+"""Token context and auth middleware for connector-fabric.
 
-When a user connects via /mcp with a Bearer token, the middleware stores it
-in a context variable. Tool functions read it via _request_headers() to make
-PBI API calls as that user, enforcing Fabric workspace permissions natively.
-
-Managed Identity (MI) tokens are validated but NOT stored in user_token_var
-because they are NOT Fabric access tokens — the Fabric client falls back to
-SP credentials for MI-authenticated requests.
+Three auth modes on /mcp:
+  - Bearer token (MI JWT) → validated via JWKS, uses SP path (no user_token_var)
+  - Bearer token (user)   → stored in context var, Fabric API calls as that user
+  - X-API-Key             → validated against server API key, falls back to SP token
 """
 
 import contextvars
 import logging
 import os
 
-logger = logging.getLogger("connector-fabric.auth")
-
 # Per-request user token — set by ASGI middleware, read by _request_headers()
 user_token_var: contextvars.ContextVar[str | None] = contextvars.ContextVar(
     "user_token", default=None
 )
 
-# Feature flag — off by default for backwards compatibility
-MANAGED_IDENTITY_ENABLED = os.getenv("MANAGED_IDENTITY_ENABLED", "false").lower() in (
-    "true",
-    "1",
-    "yes",
+logger = logging.getLogger("connector-fabric.auth")
+
+# Feature flag — opt-in to Managed Identity JWT validation
+MANAGED_IDENTITY_ENABLED = (
+    os.getenv("MANAGED_IDENTITY_ENABLED", "false").lower() in ("true", "1", "yes")
 )
 
 
-class TokenExtractorASGI:
-    """ASGI middleware that extracts Bearer token from Authorization header
-    and stores it in the user_token_var context variable.
+class McpAuthMiddleware:
+    """ASGI middleware for /mcp endpoint — handles Bearer tokens and API keys.
 
-    When MANAGED_IDENTITY_ENABLED is true, Bearer tokens are first checked
-    as MI JWTs. Valid MI tokens proceed without setting user_token_var (so
-    tool functions fall back to SP credentials). Invalid MI tokens are treated
-    as delegated user tokens (existing path).
+    Bearer token (MI JWT): if MANAGED_IDENTITY_ENABLED, tries MI JWT validation
+    first. Valid MI tokens with MCP.Invoke role proceed on the SP path (no
+    user_token_var set — Fabric client uses SP credentials).
 
-    Wraps the MCP StreamableHTTP app so that tool functions can access
-    the calling user's token for per-user Fabric API calls.
+    Bearer token (users): extracted and stored in user_token_var for per-user
+    Fabric API calls. Fabric enforces that user's workspace permissions.
+
+    X-API-Key (agents): validated against server's API key. No user token set,
+    so tool functions fall back to SP token with full access.
+
+    No auth: rejected with 401 (unless no API key is configured — dev mode).
     """
 
-    def __init__(self, app):
+    def __init__(self, app, api_key: str = ""):
         self.app = app
+        self.api_key = api_key
 
     async def __call__(self, scope, receive, send):
         if scope["type"] == "http":
             headers = dict(scope.get("headers", []))
             auth_value = headers.get(b"authorization", b"").decode()
+            api_key_value = headers.get(b"x-api-key", b"").decode()
+
+            # Bearer token → try MI JWT first, then delegated user
             if auth_value.lower().startswith("bearer "):
                 token = auth_value[7:]
 
-                # MI JWT check — if enabled, try to validate as MI token first
+                # MI JWT path: validate against Azure AD JWKS
                 if MANAGED_IDENTITY_ENABLED:
                     from jwt_validator import validate_mi_token
 
                     mi_claims = validate_mi_token(token)
                     if mi_claims is not None:
-                        # Valid MI token — proceed WITHOUT setting user_token_var.
-                        # Tool functions will fall back to SP credentials.
+                        # Valid MI token — proceed on SP path (no user_token_var)
                         logger.info(
-                            "MI auth on /mcp — appid=%s",
-                            mi_claims.get("appid", mi_claims.get("azp", "unknown")),
+                            "MI auth: appid=%s",
+                            mi_claims.get("appid", mi_claims.get("azp", "?")),
                         )
                         await self.app(scope, receive, send)
                         return
 
-                # Delegated user token — existing path
+                # Delegated user token — store for per-user Fabric calls
                 tok = user_token_var.set(token)
                 try:
                     await self.app(scope, receive, send)
                 finally:
                     user_token_var.reset(tok)
                 return
+
+            # X-API-Key → agent auth (SP fallback)
+            if not self.api_key or api_key_value == self.api_key:
+                await self.app(scope, receive, send)
+                return
+
+            # Unauthorized
+            body = b'{"error":"Unauthorized: provide Bearer token or X-API-Key"}'
+            await send(
+                {
+                    "type": "http.response.start",
+                    "status": 401,
+                    "headers": [
+                        [b"content-type", b"application/json"],
+                        [b"content-length", str(len(body)).encode()],
+                    ],
+                }
+            )
+            await send({"type": "http.response.body", "body": body})
+            return
+
         await self.app(scope, receive, send)
