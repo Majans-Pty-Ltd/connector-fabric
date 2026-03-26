@@ -963,6 +963,14 @@ app.add_middleware(
     CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"]
 )
 
+
+@app.exception_handler(404)
+async def custom_404(request: Request, exc):
+    """Return 404 with 'error' field so MCP clients (Claude Code) can parse it
+    during OAuth discovery instead of choking on FastAPI's default {"detail":"Not Found"}."""
+    return JSONResponse(status_code=404, content={"error": "Not Found"})
+
+
 # Mount MCP StreamableHTTP at /mcp with dual auth (Bearer + API key)
 app.mount("/mcp", McpAuthMiddleware(mcp.streamable_http_app(), api_key=API_KEY))
 
