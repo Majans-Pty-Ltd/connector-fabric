@@ -6,8 +6,9 @@ Two auth paths:
   /mcp       → StreamableHTTP (MCP protocol). Three modes: Bearer MI JWT
                (validated via JWKS, SP path), Bearer user token (per-user
                Fabric calls), or X-API-Key (agent SP fallback).
-  /call-tool → Legacy REST (backward compat for agents). X-API-Key required →
-               SP token → PBI API with full access.
+  /call-tool → REST (backward compat for agents). Three modes: Bearer MI JWT
+               (SP path), Bearer delegated user token (per-user Fabric calls),
+               or X-API-Key (SP fallback).
 
 DAX execution: XMLA (preferred, if ADOMD.NET available on Windows) with
 automatic fallback to Power BI REST API (executeQueries) on Linux.
@@ -1043,33 +1044,47 @@ async def list_tools():
 async def call_tool(req: CallToolRequest, request: Request):
     """Execute an MCP tool by name with given arguments.
 
-    Requires X-API-Key header or valid MI JWT Bearer token for authentication.
-    Returns MCP-style response.
+    Auth modes (checked in order):
+      1. Bearer token → MI JWT validation (if enabled) → SP path
+      2. Bearer token → delegated user token → user_token_var (per-user Fabric permissions)
+      3. X-API-Key → SP path (backward compat for agents)
     """
-    # Auth guard — agents must authenticate via API key or MI JWT
-    if API_KEY:
+    # --- Auth guard ---
+    auth_header = request.headers.get("authorization", "")
+    has_bearer = auth_header.lower().startswith("bearer ")
+    delegated_token: str | None = None
+
+    if has_bearer:
+        token = auth_header[7:]
+
+        # Try MI JWT first (service-to-service)
+        if MANAGED_IDENTITY_ENABLED:
+            from jwt_validator import validate_mi_token
+
+            mi_claims = validate_mi_token(token)
+            if mi_claims is not None:
+                logger.info(
+                    "MI auth on /call-tool — appid=%s",
+                    mi_claims.get("appid", mi_claims.get("azp", "unknown")),
+                )
+                # Valid MI → proceed on SP path (no user_token_var)
+            else:
+                # Not a valid MI JWT → treat as delegated user token
+                delegated_token = token
+                logger.info("Delegated user auth on /call-tool")
+        else:
+            # MI not enabled → any Bearer is a delegated user token
+            delegated_token = token
+            logger.info("Delegated user auth on /call-tool (MI disabled)")
+
+    elif API_KEY:
+        # No Bearer — fall back to X-API-Key
         provided_key = request.headers.get("x-api-key", "")
         if provided_key != API_KEY:
-            # API key missing/invalid — try MI JWT as fallback
-            authed_via_mi = False
-            if MANAGED_IDENTITY_ENABLED:
-                auth_header = request.headers.get("authorization", "")
-                if auth_header.lower().startswith("bearer "):
-                    from jwt_validator import validate_mi_token
-
-                    mi_claims = validate_mi_token(auth_header[7:])
-                    if mi_claims is not None:
-                        authed_via_mi = True
-                        logger.info(
-                            "MI auth on /call-tool — appid=%s",
-                            mi_claims.get("appid", mi_claims.get("azp", "unknown")),
-                        )
-
-            if not authed_via_mi:
-                return JSONResponse(
-                    status_code=401,
-                    content={"error": "Invalid or missing X-API-Key header"},
-                )
+            return JSONResponse(
+                status_code=401,
+                content={"error": "Invalid or missing authentication (Bearer token or X-API-Key)"},
+            )
 
     tool_fn = TOOLS.get(req.name)
     if not tool_fn:
@@ -1087,6 +1102,8 @@ async def call_tool(req: CallToolRequest, request: Request):
             "isError": True,
         }
 
+    # If delegated token, set context var so tool functions use user's Fabric permissions
+    tok = user_token_var.set(delegated_token) if delegated_token else None
     try:
         result = tool_fn(**req.arguments)
         return {
@@ -1098,6 +1115,9 @@ async def call_tool(req: CallToolRequest, request: Request):
             "content": [{"type": "text", "text": json.dumps({"error": str(e)})}],
             "isError": True,
         }
+    finally:
+        if tok is not None:
+            user_token_var.reset(tok)
 
 
 if __name__ == "__main__":
