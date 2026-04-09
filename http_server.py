@@ -97,6 +97,12 @@ WORKSPACES = {
             "FIELD": "Field marketing — store sales, stock, ranging, distribution, Metcash B2B",
         },
     },
+    "Majans Fabric": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/Majans Fabric",
+        "datasets": {
+            "MajansLakehouse": "Quantium store-level data (Snowflake mirror) — daily/weekly scan, lost sales, stock, builds",
+        },
+    },
 }
 
 DEFAULT_DATASET = "SCANv2"

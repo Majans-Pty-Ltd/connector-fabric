@@ -76,6 +76,12 @@ WORKSPACES = {
             "HR": "HR analytics — headcount, workforce, Employment Hero data",
         },
     },
+    "Majans Fabric": {
+        "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/Majans Fabric",
+        "datasets": {
+            "MajansLakehouse": "Quantium store-level data (Snowflake mirror) — daily/weekly scan, lost sales, stock, builds",
+        },
+    },
 }
 
 DEFAULT_DATASET = "SCANv2"
@@ -1348,6 +1354,64 @@ def fabric_create_calc_table(
         return f"Calculated table '{table}' created in {dataset} with {col_count} column(s)."
     except Exception as e:
         return f"Error creating table: {e}"
+    finally:
+        try:
+            server.Disconnect()
+        except Exception:
+            pass
+
+
+@mcp.tool()
+def fabric_update_table(
+    dataset: str,
+    table: str,
+    exclude_from_refresh: bool | None = None,
+    is_hidden: bool | None = None,
+    description: str | None = None,
+) -> str:
+    """Update properties on an existing table in a Fabric semantic model.
+
+    Uses TOM via XMLA to modify table properties in-place. No refresh needed.
+
+    Args:
+        dataset: Semantic model name — e.g. HR, MANUFACTURING V3.
+        table: Exact table name to update.
+        exclude_from_refresh: If True, table is skipped during model refresh.
+        is_hidden: If True, table is hidden from report view.
+        description: Optional table description.
+    """
+    try:
+        server, db, model = _tom_connect(dataset)
+    except RuntimeError as e:
+        return f"Error: {e}"
+
+    try:
+        target = None
+        for t in model.Tables:
+            if t.Name == table:
+                target = t
+                break
+        if target is None:
+            return f"Error: Table '{table}' not found in {dataset}."
+
+        changes = []
+        if exclude_from_refresh is not None:
+            target.ExcludeFromModelRefresh = exclude_from_refresh
+            changes.append(f"ExcludeFromModelRefresh={exclude_from_refresh}")
+        if is_hidden is not None:
+            target.IsHidden = is_hidden
+            changes.append(f"IsHidden={is_hidden}")
+        if description is not None:
+            target.Description = description
+            changes.append(f"Description set")
+
+        if not changes:
+            return "No properties specified to update."
+
+        model.SaveChanges()
+        return f"Table '{table}' updated in {dataset}: {', '.join(changes)}"
+    except Exception as e:
+        return f"Error updating table: {e}"
     finally:
         try:
             server.Disconnect()
