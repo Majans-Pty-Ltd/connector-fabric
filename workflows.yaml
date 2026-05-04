@@ -1,0 +1,36 @@
+# Email and scheduled workflows owned by this repo.
+# Anyone modifying or adding an email workflow MUST update this file in the same PR.
+# Master registry: ~/.claude/projects/C--Users-Amit-.../memory/framework_email_workflow_registry.md
+
+workflows:
+  - name: plan-gold-staging-pipeline
+    description: External Fabric pipeline `PLAN GOLD STAGING TO LIVE COPY` — copies plan-gold staging data to live and emails a summary to the planning team. The pipeline lives in Fabric, not in this repo; this repo only contains the configuration script that wired up SP-based email auth.
+    type: email
+    trigger:
+      kind: managed_pipeline
+      external_system: |
+        Fabric pipeline ID 358af190-6f0b-45c5-b60c-afb7783728fc
+        in workspace a679e435-dc2a-40a3-88b2-c31179064d70
+      schedule: TBD  # set in Fabric pipeline definition; not visible from this repo
+      timezone: TBD
+    recipients:
+      - amit@majans.com
+      - davidr@majans.com
+      - simon@majans.com
+      - phoebe@majans.com
+    sender: mars@majans.com
+    subject_pattern: TBD  # set in Fabric pipeline WebActivity; not in repo
+    payload_type: report
+    code_path: scripts/update_pipeline.py
+    code_line: 29  # RECIPIENTS list
+    auth_via: graph_sp  # Fabric "Web" connection with SP credentials for graph.microsoft.com
+    creates_draft: false
+    owner: amit@majans.com
+    last_modified: 2026-05-04
+    notes: |
+      The actual email sender is the Fabric pipeline, not Python code in this repo.
+      The script `scripts/update_pipeline.py` is a one-off configuration script
+      that updated the pipeline to use SP auth (replacing user OAuth) — it does
+      not itself send email.
+      To audit what this pipeline is actually doing, open the Fabric workspace
+      and inspect the pipeline definition. See Open Issue #3 in registry.

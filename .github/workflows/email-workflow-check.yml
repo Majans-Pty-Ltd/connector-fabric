@@ -1,0 +1,12 @@
+name: Email Workflow Sprawl Gate
+
+# Fails this PR if it adds/modifies email-sending code without updating workflows.yaml.
+# Reusable workflow lives in audit-heartbeat. See ~/memory/framework_email_workflow_registry.md.
+
+on:
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  check:
+    uses: Majans-Pty-Ltd/audit-heartbeat/.github/workflows/email-workflow-check.yml@main

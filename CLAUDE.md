@@ -14,7 +14,7 @@ Python MCP server + HTTP API providing access to Microsoft Fabric semantic model
 ```
 AGENTS (Container Apps, internal)           TEAM MEMBERS (Windows, external)
 ────────────────────────────────            ────────────────────────────────
-agent-scandata, agent-costing...            Claude Code
+agent-hr, agent-costing...            Claude Code
         │                                         │ stdio
         │ POST /call-tool                         ▼
         │ + X-API-Key header               start-mcp.cmd
@@ -62,6 +62,7 @@ requirements-http.txt   # Server dependencies (FastAPI, MCP, requests)
 requirements-client.txt # Client dependencies (msal)
 requirements.txt        # Full local dependencies
 .env.template           # 1Password op:// references
+workflows.yaml          # Email workflows owned by this repo (see ~/memory/framework_email_workflow_registry.md for master registry)
 .github/workflows/
   ci.yml                # Lint (ruff)
   deploy.yml            # 1Password → ACR build → Container App update
