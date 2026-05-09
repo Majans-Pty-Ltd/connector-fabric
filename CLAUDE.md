@@ -70,17 +70,36 @@ workflows.yaml          # Email workflows owned by this repo (see ~/memory/frame
 
 ## Auth Model
 
+The connector accepts three credential types on every endpoint (`/mcp`, `/call-tool`). Precedence is enforced by the shared `auth.authenticate()` helper:
+
+1. **`X-API-Key` (highest)** — agent path, SP token, full access. If the header is present it must match — there is no silent fall-through to Bearer when the key is wrong.
+2. **`Authorization: Bearer <MI JWT>`** (when `MANAGED_IDENTITY_ENABLED=true`) — Container App MI-to-connector calls. Validated against Azure AD JWKS for `api://76f295bb-...`, must have `MCP.Invoke` role.
+3. **`Authorization: Bearer <vault/user token>`** — delegated user tokens AND Anthropic Managed Agents Vault tokens. Validated against Microsoft JWKS for the Power BI XMLA audience and an allow-list of Entra app IDs (default: `Fabric-MCP-User`).
+
 ### Agent calls (SP token, full access)
-- `POST /call-tool` with `X-API-Key` header
+- `POST /call-tool` (or `/mcp`) with `X-API-Key` header
 - Server uses Service Principal client credentials for PBI API
 - API key stored in 1Password: `Fabric MCP API Key`
 
 ### User calls (per-user Fabric permissions)
 - `/mcp` StreamableHTTP with `Authorization: Bearer <user_token>`
-- ASGI middleware extracts token → stored in `contextvars.ContextVar`
-- Tool functions call PBI API with user's token
-- Fabric enforces workspace roles: user with Viewer on DEMAND can query SCANv2, gets 403 on FINANCIALv2
-- Entra app: `Fabric-MCP-User` (`cf4685ef-d594-4ede-961d-5c3554be3974`), public client, delegated `Dataset.Read.All` + `Workspace.Read.All`
+- Token must be issued by `Fabric-MCP-User` (public client, `cf4685ef-...`) targeting `https://analysis.windows.net/powerbi/api`
+- Validator decodes the JWT, verifies signature against the Majans tenant JWKS, and checks `iss`, `aud`, and `appid`/`azp`
+- On success the token is stored in `contextvars.ContextVar` and tool functions call the PBI API with it — Fabric enforces workspace roles: user with Viewer on DEMAND can query SCANv2, gets 403 on FINANCIALv2
+- Acquired locally via `python get-user-token.py`
+
+### Anthropic Managed Agents Vault calls
+- Same `/mcp` endpoint, same `Authorization: Bearer <token>` header — vault credentials inject the same kind of delegated Fabric token
+- The vault stores the user's actual upstream-PBI access token (per the `static_bearer` cookbook pattern); this connector validates the same fields it validates for local Claude Code users
+- To allow tokens from additional Entra apps (e.g. a separate vault-credential app), set `VAULT_ALLOWED_APP_IDS` env var to a comma-separated list of allowed `appid` claim values
+- Set `VAULT_BEARER_AUTH_ENABLED=false` to disable strict validation and fall back to legacy Bearer passthrough — debug only
+
+### Verification
+
+```bash
+# Unit tests for the auth precedence + JWT validation logic (synthetic JWTs, mocked JWKS)
+AZURE_TENANT_ID=d54794b1-f598-4c0f-a276-6039a39774ac python test_vault_auth.py
+```
 
 ## Configured Workspaces & Datasets
 

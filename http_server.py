@@ -31,7 +31,7 @@ from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 from pydantic import BaseModel
 
-from auth import MANAGED_IDENTITY_ENABLED, McpAuthMiddleware, user_token_var
+from auth import McpAuthMiddleware, authenticate, user_token_var
 
 load_dotenv()
 
@@ -1050,47 +1050,22 @@ async def list_tools():
 async def call_tool(req: CallToolRequest, request: Request):
     """Execute an MCP tool by name with given arguments.
 
-    Auth modes (checked in order):
-      1. Bearer token → MI JWT validation (if enabled) → SP path
-      2. Bearer token → delegated user token → user_token_var (per-user Fabric permissions)
-      3. X-API-Key → SP path (backward compat for agents)
+    Auth precedence (handled by auth.authenticate):
+      1. X-API-Key       → SP path (must match if header present)
+      2. Bearer MI JWT   → SP path (when MANAGED_IDENTITY_ENABLED)
+      3. Bearer vault    → user path (delegated user permissions)
     """
-    # --- Auth guard ---
-    auth_header = request.headers.get("authorization", "")
-    has_bearer = auth_header.lower().startswith("bearer ")
-    delegated_token: str | None = None
-
-    if has_bearer:
-        token = auth_header[7:]
-
-        # Try MI JWT first (service-to-service)
-        if MANAGED_IDENTITY_ENABLED:
-            from jwt_validator import validate_mi_token
-
-            mi_claims = validate_mi_token(token)
-            if mi_claims is not None:
-                logger.info(
-                    "MI auth on /call-tool — appid=%s",
-                    mi_claims.get("appid", mi_claims.get("azp", "unknown")),
-                )
-                # Valid MI → proceed on SP path (no user_token_var)
-            else:
-                # Not a valid MI JWT → treat as delegated user token
-                delegated_token = token
-                logger.info("Delegated user auth on /call-tool")
-        else:
-            # MI not enabled → any Bearer is a delegated user token
-            delegated_token = token
-            logger.info("Delegated user auth on /call-tool (MI disabled)")
-
-    elif API_KEY:
-        # No Bearer — fall back to X-API-Key
-        provided_key = request.headers.get("x-api-key", "")
-        if provided_key != API_KEY:
-            return JSONResponse(
-                status_code=401,
-                content={"error": "Invalid or missing authentication (Bearer token or X-API-Key)"},
-            )
+    auth_result = authenticate(
+        request.headers.get("authorization", ""),
+        request.headers.get("x-api-key", ""),
+        API_KEY,
+    )
+    if not auth_result.allowed:
+        return JSONResponse(
+            status_code=401,
+            content={"error": f"Unauthorized: {auth_result.error}"},
+        )
+    delegated_token = auth_result.user_token
 
     tool_fn = TOOLS.get(req.name)
     if not tool_fn:
