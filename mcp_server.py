@@ -192,14 +192,19 @@ def _get_fabric_token() -> str:
 
 
 def _build_conn_str(dataset: str) -> str:
-    """Build an XMLA connection string for the given dataset."""
+    """Build an XMLA connection string for the given dataset.
+
+    Uses an MSAL access token in the Password field instead of the legacy
+    app:client_id@tenant_id pattern, which is incompatible with newer
+    ADOMD.NET DLLs (NuGet/SSMS 22+).
+    """
     info = _resolve_dataset(dataset)
+    token = _get_fabric_token()
     return (
         f"Provider=MSOLAP;"
         f"Data Source={info['endpoint']};"
         f"Initial Catalog={info['dataset']};"
-        f"User ID=app:{CLIENT_ID}@{TENANT_ID};"
-        f"Password={CLIENT_SECRET};"
+        f"Password={token};"
         f"Persist Security Info=True;"
         f"Impersonation Level=Impersonate;"
     )
@@ -208,11 +213,11 @@ def _build_conn_str(dataset: str) -> str:
 def _build_conn_str_no_catalog(dataset: str) -> str:
     """Build connection string without Initial Catalog (for discovery)."""
     info = _resolve_dataset(dataset)
+    token = _get_fabric_token()
     return (
         f"Provider=MSOLAP;"
         f"Data Source={info['endpoint']};"
-        f"User ID=app:{CLIENT_ID}@{TENANT_ID};"
-        f"Password={CLIENT_SECRET};"
+        f"Password={token};"
         f"Persist Security Info=True;"
         f"Impersonation Level=Impersonate;"
     )
@@ -1087,20 +1092,35 @@ def fabric_get_dataflow_definition(workspace_id: str, dataflow_id: str) -> str:
 
 @mcp.tool()
 def fabric_alter_measure(
-    dataset: str, table: str, measure: str, expression: str, description: str = ""
+    dataset: str,
+    table: str,
+    measure: str,
+    expression: str | None = None,
+    description: str = "",
+    format_string: str = "",
+    display_folder: str = "",
 ) -> str:
-    """Update a DAX measure expression in a published Fabric semantic model.
+    """Update a DAX measure in a published Fabric semantic model.
 
     Uses the Tabular Object Model (TOM) via XMLA to modify the measure in-place.
-    The change takes effect immediately — no refresh needed.
+    Only properties supplied (non-empty / non-None) are changed; pass nothing
+    for a property to leave it untouched. Metadata-only — no refresh needed.
 
     Args:
         dataset: Semantic model name — e.g. MANUFACTURING V3, FINANCIALv2.
-        table: Table containing the measure (e.g. MEASURETABLE, PLANLABOURRATE).
+        table: Table containing the measure (e.g. MEASURE_TABLE, PLANLABOURRATE).
         measure: Exact measure name to update.
-        expression: New DAX expression for the measure.
-        description: Optional new description (leave empty to keep existing).
+        expression: New DAX expression. None (default) keeps existing expression.
+        description: Optional new description (empty keeps existing).
+        format_string: Optional new format string e.g. "$#,##0", "0.0%"
+            (empty keeps existing).
+        display_folder: Optional DisplayFolder for grouping in the Power BI
+            Fields pane (empty keeps existing). Use "\\" to nest folders
+            (e.g. "Cost\\By Type").
     """
+    if expression is None and not description and not format_string and not display_folder:
+        return "No properties specified to update."
+
     try:
         server, db, model = _tom_connect(dataset)
     except RuntimeError as e:
@@ -1123,18 +1143,31 @@ def fabric_alter_measure(
         if tom_measure is None:
             return f"Error: Measure '{measure}' not found in table '{table}'."
 
-        old_expression = tom_measure.Expression
-        tom_measure.Expression = expression
+        changes = []
+        old_expression = None
+        if expression is not None:
+            old_expression = tom_measure.Expression
+            tom_measure.Expression = expression
+            changes.append("Expression")
         if description:
             tom_measure.Description = description
+            changes.append("Description")
+        if format_string:
+            tom_measure.FormatString = format_string
+            changes.append(f"FormatString='{format_string}'")
+        if display_folder:
+            tom_measure.DisplayFolder = display_folder
+            changes.append(f"DisplayFolder='{display_folder}'")
 
         model.SaveChanges()
 
-        return (
-            f"Measure '{measure}' updated successfully in {dataset}.\n\n"
-            f"**Old expression:**\n```dax\n{old_expression}\n```\n\n"
-            f"**New expression:**\n```dax\n{expression}\n```"
-        )
+        if old_expression is not None:
+            return (
+                f"Measure '{measure}' updated in {dataset}: {', '.join(changes)}.\n\n"
+                f"**Old expression:**\n```dax\n{old_expression}\n```\n\n"
+                f"**New expression:**\n```dax\n{expression}\n```"
+            )
+        return f"Measure '{measure}' updated in {dataset}: {', '.join(changes)}."
     except Exception as e:
         return f"Error updating measure: {e}"
     finally:
@@ -1157,12 +1190,12 @@ def _tom_connect(dataset: str):
         )
 
     info = _resolve_dataset(dataset)
+    token = _get_fabric_token()
     conn_str = (
         f"Provider=MSOLAP;"
         f"Data Source={info['endpoint']};"
         f"Initial Catalog={info['dataset']};"
-        f"User ID=app:{CLIENT_ID}@{TENANT_ID};"
-        f"Password={CLIENT_SECRET};"
+        f"Password={token};"
         f"Persist Security Info=True;"
         f"Impersonation Level=Impersonate;"
     )
@@ -1191,6 +1224,7 @@ def fabric_create_measure(
     expression: str,
     format_string: str = "",
     description: str = "",
+    display_folder: str = "",
 ) -> str:
     """Create a new DAX measure in a published Fabric semantic model.
 
@@ -1199,11 +1233,13 @@ def fabric_create_measure(
 
     Args:
         dataset: Semantic model name — e.g. MANUFACTURING V3, FINANCIALv2.
-        table: Table to add the measure to (e.g. MEASURETABLE).
+        table: Table to add the measure to (e.g. MEASURE_TABLE).
         measure: Name for the new measure.
         expression: DAX expression for the measure.
-        format_string: Optional format string (e.g. "$#,0.00").
+        format_string: Optional format string (e.g. "$#,##0", "0.0%").
         description: Optional description.
+        display_folder: Optional DisplayFolder for grouping in the Power BI
+            Fields pane (empty = none). Use "\\" to nest folders.
     """
     try:
         server, db, model = _tom_connect(dataset)
@@ -1230,6 +1266,8 @@ def fabric_create_measure(
                     m.Description = description
                 if format_string:
                     m.FormatString = format_string
+                if display_folder:
+                    m.DisplayFolder = display_folder
                 model.SaveChanges()
                 return (
                     f"Measure '{measure}' already existed — updated.\n\n"
@@ -1244,6 +1282,8 @@ def fabric_create_measure(
             new_measure.Description = description
         if format_string:
             new_measure.FormatString = format_string
+        if display_folder:
+            new_measure.DisplayFolder = display_folder
 
         tom_table.Measures.Add(new_measure)
         model.SaveChanges()
@@ -1403,7 +1443,7 @@ def fabric_update_table(
             changes.append(f"IsHidden={is_hidden}")
         if description is not None:
             target.Description = description
-            changes.append(f"Description set")
+            changes.append("Description set")
 
         if not changes:
             return "No properties specified to update."
@@ -1427,6 +1467,7 @@ def fabric_create_relationship(
     to_table: str,
     to_column: str,
     cross_filter_both: bool = False,
+    is_active: bool = True,
 ) -> str:
     """Create a relationship between two tables in a Fabric semantic model.
 
@@ -1440,6 +1481,11 @@ def fabric_create_relationship(
         to_table: One-side table name (column must have unique values).
         to_column: One-side column name.
         cross_filter_both: Enable bi-directional cross-filtering (default False).
+        is_active: Whether the new relationship is active (default True).
+            Set False when an active relationship already exists between the
+            two tables — only one active path is permitted per pair. The
+            inactive relationship can be activated on demand inside a measure
+            via USERELATIONSHIP(...).
     """
     try:
         server, db, model = _tom_connect(dataset)
@@ -1485,12 +1531,285 @@ def fabric_create_relationship(
         rel.ToColumn = tcc
         if cross_filter_both:
             rel.CrossFilteringBehavior = CrossFilteringBehavior.BothDirections
+        if not is_active:
+            rel.IsActive = False
 
         model.Relationships.Add(rel)
         model.SaveChanges()
-        return f"Relationship created: {from_table}[{from_column}] → {to_table}[{to_column}]"
+        state = "active" if is_active else "inactive"
+        return f"Relationship created ({state}): {from_table}[{from_column}] → {to_table}[{to_column}]"
     except Exception as e:
         return f"Error creating relationship: {e}"
+    finally:
+        try:
+            server.Disconnect()
+        except Exception:
+            pass
+
+
+def _find_relationship(model, from_table: str, from_column: str, to_table: str, to_column: str):
+    """Locate a SingleColumnRelationship by its From/To table+column pair.
+
+    Returns the TOM Relationship object or None. Names are matched
+    case-sensitively to mirror TOM's own comparisons.
+    """
+    for r in model.Relationships:
+        try:
+            if (
+                r.FromTable is not None
+                and r.ToTable is not None
+                and r.FromColumn is not None
+                and r.ToColumn is not None
+                and r.FromTable.Name == from_table
+                and r.FromColumn.Name == from_column
+                and r.ToTable.Name == to_table
+                and r.ToColumn.Name == to_column
+            ):
+                return r
+        except Exception:
+            continue
+    return None
+
+
+@mcp.tool()
+def fabric_alter_relationship(
+    dataset: str,
+    from_table: str,
+    from_column: str,
+    to_table: str,
+    to_column: str,
+    is_active: bool | None = None,
+    cross_filter_both: bool | None = None,
+) -> str:
+    """Modify an existing relationship in a Fabric semantic model.
+
+    Looks up the relationship by its From/To table+column pair (TOM
+    relationship names are auto-generated GUIDs and not useful to callers).
+    Only the properties supplied are changed; pass None to leave a property
+    untouched. Uses TOM via XMLA — metadata-only, no refresh required.
+
+    Args:
+        dataset: Semantic model name — e.g. HR, MANUFACTURING V3.
+        from_table: Many-side table name on the existing relationship.
+        from_column: Many-side column name.
+        to_table: One-side table name.
+        to_column: One-side column name.
+        is_active: If set, toggles the relationship's active state.
+        cross_filter_both: If set, toggles bi-directional cross-filtering
+            (True = BothDirections, False = OneDirection).
+    """
+    if is_active is None and cross_filter_both is None:
+        return "No properties specified to update."
+
+    try:
+        server, db, model = _tom_connect(dataset)
+    except RuntimeError as e:
+        return f"Error: {e}"
+
+    try:
+        from Microsoft.AnalysisServices.Tabular import CrossFilteringBehavior
+
+        rel = _find_relationship(model, from_table, from_column, to_table, to_column)
+        if rel is None:
+            return (
+                f"Error: Relationship not found: "
+                f"{from_table}[{from_column}] → {to_table}[{to_column}]."
+            )
+
+        changes = []
+        if is_active is not None:
+            rel.IsActive = is_active
+            changes.append(f"IsActive={is_active}")
+        if cross_filter_both is not None:
+            rel.CrossFilteringBehavior = (
+                CrossFilteringBehavior.BothDirections
+                if cross_filter_both
+                else CrossFilteringBehavior.OneDirection
+            )
+            changes.append(f"CrossFilteringBehavior={'BothDirections' if cross_filter_both else 'OneDirection'}")
+
+        model.SaveChanges()
+        return (
+            f"Relationship updated: {from_table}[{from_column}] → {to_table}[{to_column}] "
+            f"(name={rel.Name}); {', '.join(changes)}"
+        )
+    except Exception as e:
+        return f"Error altering relationship: {e}"
+    finally:
+        try:
+            server.Disconnect()
+        except Exception:
+            pass
+
+
+@mcp.tool()
+def fabric_delete_relationship(
+    dataset: str,
+    from_table: str,
+    from_column: str,
+    to_table: str,
+    to_column: str,
+) -> str:
+    """Delete an existing relationship from a Fabric semantic model.
+
+    Looks up the relationship by its From/To table+column pair and removes
+    it from the model. Uses TOM via XMLA — metadata-only, no refresh needed.
+
+    Args:
+        dataset: Semantic model name — e.g. HR, MANUFACTURING V3.
+        from_table: Many-side table name on the relationship to remove.
+        from_column: Many-side column name.
+        to_table: One-side table name.
+        to_column: One-side column name.
+    """
+    try:
+        server, db, model = _tom_connect(dataset)
+    except RuntimeError as e:
+        return f"Error: {e}"
+
+    try:
+        rel = _find_relationship(model, from_table, from_column, to_table, to_column)
+        if rel is None:
+            return (
+                f"Error: Relationship not found: "
+                f"{from_table}[{from_column}] → {to_table}[{to_column}]."
+            )
+
+        rel_name = rel.Name
+        model.Relationships.Remove(rel)
+        model.SaveChanges()
+        return (
+            f"Relationship deleted: {from_table}[{from_column}] → {to_table}[{to_column}] "
+            f"(name={rel_name})"
+        )
+    except Exception as e:
+        return f"Error deleting relationship: {e}"
+    finally:
+        try:
+            server.Disconnect()
+        except Exception:
+            pass
+
+
+@mcp.tool()
+def fabric_delete_measure(dataset: str, table: str, measure: str) -> str:
+    """Delete a measure from a Fabric semantic model.
+
+    Uses TOM via XMLA — metadata-only, no refresh required. The deleted
+    measure's expression is included in the response so the operation can
+    be reversed manually if needed.
+
+    Args:
+        dataset: Semantic model name — e.g. HR, MANUFACTURING V3.
+        table: Table containing the measure.
+        measure: Exact measure name to delete.
+    """
+    try:
+        server, db, model = _tom_connect(dataset)
+    except RuntimeError as e:
+        return f"Error: {e}"
+
+    try:
+        tom_table = None
+        for t in model.Tables:
+            if t.Name == table:
+                tom_table = t
+                break
+        if tom_table is None:
+            return f"Error: Table '{table}' not found in {dataset}."
+
+        tom_measure = None
+        for m in tom_table.Measures:
+            if m.Name == measure:
+                tom_measure = m
+                break
+        if tom_measure is None:
+            return f"Error: Measure '{measure}' not found in table '{table}'."
+
+        old_expr = tom_measure.Expression
+        tom_table.Measures.Remove(tom_measure)
+        model.SaveChanges()
+        return (
+            f"Measure '{measure}' deleted from '{table}' in {dataset}.\n\n"
+            f"**Deleted expression:**\n```dax\n{old_expr}\n```"
+        )
+    except Exception as e:
+        return f"Error deleting measure: {e}"
+    finally:
+        try:
+            server.Disconnect()
+        except Exception:
+            pass
+
+
+@mcp.tool()
+def fabric_alter_partition_m(
+    dataset: str, table: str, m_expression: str
+) -> str:
+    """Modify the M (Power Query) expression of a table's partition in-place.
+
+    Unlike fabric_create_calc_table (which drops and recreates the table),
+    this preserves the table's TableID, relationships, IsHidden,
+    ExcludeFromModelRefresh, LineageTag, and all other table-level properties.
+    Use this when you want to change the partition source M without losing
+    schema metadata or downstream Table.Combine references.
+
+    Limitations:
+    - The table must have exactly one partition (typical for M-imported tables).
+    - The partition must be M-sourced. DAX or other source types are rejected.
+    - A refresh is required to materialize new data — this tool is metadata-only.
+      Columns added/removed by the new M won't auto-propagate; if the new M
+      changes the column shape, you may need to refresh and then manage
+      columns separately.
+
+    Args:
+        dataset: Semantic model name — e.g. HR, MANUFACTURING V3.
+        table: Exact table name.
+        m_expression: New M / Power Query expression for the partition.
+    """
+    try:
+        server, db, model = _tom_connect(dataset)
+    except RuntimeError as e:
+        return f"Error: {e}"
+
+    try:
+        tom_table = None
+        for t in model.Tables:
+            if t.Name == table:
+                tom_table = t
+                break
+        if tom_table is None:
+            return f"Error: Table '{table}' not found in {dataset}."
+
+        n_partitions = tom_table.Partitions.Count
+        if n_partitions != 1:
+            return (
+                f"Error: Table '{table}' has {n_partitions} partitions. "
+                f"This tool only supports tables with exactly one partition."
+            )
+
+        partition = tom_table.Partitions[0]
+        source = partition.Source
+
+        old_expression = getattr(source, "Expression", None)
+        if old_expression is None:
+            return (
+                f"Error: Partition for '{table}' is not M-sourced "
+                f"(no Expression property; found {type(source).__name__}). "
+                f"This tool only edits M expressions."
+            )
+
+        source.Expression = m_expression
+        model.SaveChanges()
+
+        return (
+            f"Partition M expression updated for '{table}' in {dataset}.\n\n"
+            f"**Old expression:**\n```m\n{old_expression}\n```\n\n"
+            f"**New expression:**\n```m\n{m_expression}\n```\n\n"
+            f"Trigger a refresh to materialize new data."
+        )
+    except Exception as e:
+        return f"Error altering partition M: {e}"
     finally:
         try:
             server.Disconnect()
