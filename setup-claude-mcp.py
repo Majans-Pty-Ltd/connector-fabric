@@ -238,7 +238,7 @@ def verify_connectivity():
 
         app = msal.PublicClientApplication(
             conn["client_id"],
-            authority=f"https://login.microsoftonline.com/d54794b1-f598-4c0f-a276-6039a39774ac",
+            authority="https://login.microsoftonline.com/d54794b1-f598-4c0f-a276-6039a39774ac",
             token_cache=cache,
         )
 
@@ -289,7 +289,7 @@ def verify_connectivity():
             timeout=15,
         )
         if resp.status_code in (200, 401, 404, 406):
-            print(f"[OK] graph: reachable (set GRAPH_API_KEY env var for auth)")
+            print("[OK] graph: reachable (set GRAPH_API_KEY env var for auth)")
         else:
             print(f"[WARN] graph: HTTP {resp.status_code}")
     except Exception as e:
