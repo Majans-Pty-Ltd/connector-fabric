@@ -9,6 +9,8 @@ RUN pip install --no-cache-dir -r requirements-http.txt
 # Copy application code and static schemas
 COPY auth.py .
 COPY jwt_validator.py .
+COPY http_client.py .
+COPY lro.py .
 COPY http_server.py .
 COPY schemas/ schemas/
 
