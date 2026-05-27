@@ -114,10 +114,14 @@ def update_mcp_config(workspace: str):
             "command": "python",
             "args": [
                 proxy_path,
-                "--url", conn["url"],
-                "--client-id", conn["client_id"],
-                "--scopes", conn["scopes"],
-                "--cache-dir", conn["cache_dir"],
+                "--url",
+                conn["url"],
+                "--client-id",
+                conn["client_id"],
+                "--scopes",
+                conn["scopes"],
+                "--cache-dir",
+                conn["cache_dir"],
             ],
         }
 
@@ -232,13 +236,14 @@ def verify_connectivity():
             continue
 
         import msal
+
         cache = msal.SerializableTokenCache()
         with open(cache_file) as f:
             cache.deserialize(f.read())
 
         app = msal.PublicClientApplication(
             conn["client_id"],
-            authority=f"https://login.microsoftonline.com/d54794b1-f598-4c0f-a276-6039a39774ac",
+            authority="https://login.microsoftonline.com/d54794b1-f598-4c0f-a276-6039a39774ac",
             token_cache=cache,
         )
 
@@ -256,11 +261,16 @@ def verify_connectivity():
         try:
             resp = req.post(
                 conn["url"],
-                json={"jsonrpc": "2.0", "method": "initialize", "params": {
-                    "protocolVersion": "2024-11-05",
-                    "capabilities": {},
-                    "clientInfo": {"name": "setup-check", "version": "1.0"},
-                }, "id": 1},
+                json={
+                    "jsonrpc": "2.0",
+                    "method": "initialize",
+                    "params": {
+                        "protocolVersion": "2024-11-05",
+                        "capabilities": {},
+                        "clientInfo": {"name": "setup-check", "version": "1.0"},
+                    },
+                    "id": 1,
+                },
                 headers={
                     "Authorization": f"Bearer {result['access_token']}",
                     "Content-Type": "application/json",
@@ -270,7 +280,9 @@ def verify_connectivity():
             )
             if resp.status_code == 200:
                 server_info = resp.json().get("result", {}).get("serverInfo", {})
-                print(f"[OK] {name}: connected ({server_info.get('name', '?')} v{server_info.get('version', '?')})")
+                print(
+                    f"[OK] {name}: connected ({server_info.get('name', '?')} v{server_info.get('version', '?')})"
+                )
             else:
                 print(f"[WARN] {name}: HTTP {resp.status_code}")
         except Exception as e:
@@ -280,16 +292,21 @@ def verify_connectivity():
     try:
         resp = req.post(
             GRAPH_CONFIG["url"] + "/",
-            json={"jsonrpc": "2.0", "method": "initialize", "params": {
-                "protocolVersion": "2024-11-05",
-                "capabilities": {},
-                "clientInfo": {"name": "setup-check", "version": "1.0"},
-            }, "id": 1},
+            json={
+                "jsonrpc": "2.0",
+                "method": "initialize",
+                "params": {
+                    "protocolVersion": "2024-11-05",
+                    "capabilities": {},
+                    "clientInfo": {"name": "setup-check", "version": "1.0"},
+                },
+                "id": 1,
+            },
             headers={"Content-Type": "application/json", "Accept": "application/json"},
             timeout=15,
         )
         if resp.status_code in (200, 401, 404, 406):
-            print(f"[OK] graph: reachable (set GRAPH_API_KEY env var for auth)")
+            print("[OK] graph: reachable (set GRAPH_API_KEY env var for auth)")
         else:
             print(f"[WARN] graph: HTTP {resp.status_code}")
     except Exception as e:

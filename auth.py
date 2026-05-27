@@ -18,8 +18,10 @@ user_token_var: contextvars.ContextVar[str | None] = contextvars.ContextVar(
 logger = logging.getLogger("connector-fabric.auth")
 
 # Feature flag — opt-in to Managed Identity JWT validation
-MANAGED_IDENTITY_ENABLED = (
-    os.getenv("MANAGED_IDENTITY_ENABLED", "false").lower() in ("true", "1", "yes")
+MANAGED_IDENTITY_ENABLED = os.getenv("MANAGED_IDENTITY_ENABLED", "false").lower() in (
+    "true",
+    "1",
+    "yes",
 )
 
 

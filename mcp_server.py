@@ -1118,7 +1118,12 @@ def fabric_alter_measure(
             Fields pane (empty keeps existing). Use "\\" to nest folders
             (e.g. "Cost\\By Type").
     """
-    if expression is None and not description and not format_string and not display_folder:
+    if (
+        expression is None
+        and not description
+        and not format_string
+        and not display_folder
+    ):
         return "No properties specified to update."
 
     try:
@@ -1547,7 +1552,9 @@ def fabric_create_relationship(
             pass
 
 
-def _find_relationship(model, from_table: str, from_column: str, to_table: str, to_column: str):
+def _find_relationship(
+    model, from_table: str, from_column: str, to_table: str, to_column: str
+):
     """Locate a SingleColumnRelationship by its From/To table+column pair.
 
     Returns the TOM Relationship object or None. Names are matched
@@ -1626,7 +1633,9 @@ def fabric_alter_relationship(
                 if cross_filter_both
                 else CrossFilteringBehavior.OneDirection
             )
-            changes.append(f"CrossFilteringBehavior={'BothDirections' if cross_filter_both else 'OneDirection'}")
+            changes.append(
+                f"CrossFilteringBehavior={'BothDirections' if cross_filter_both else 'OneDirection'}"
+            )
 
         model.SaveChanges()
         return (
@@ -1743,9 +1752,7 @@ def fabric_delete_measure(dataset: str, table: str, measure: str) -> str:
 
 
 @mcp.tool()
-def fabric_alter_partition_m(
-    dataset: str, table: str, m_expression: str
-) -> str:
+def fabric_alter_partition_m(dataset: str, table: str, m_expression: str) -> str:
     """Modify the M (Power Query) expression of a table's partition in-place.
 
     Unlike fabric_create_calc_table (which drops and recreates the table),
