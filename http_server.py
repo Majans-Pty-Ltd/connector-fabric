@@ -247,15 +247,18 @@ def _check_xmla() -> bool:
             return False
 
         import sys
+
         sys.path.insert(0, adomd_dll_path)
         os.environ["PATH"] = adomd_dll_path + os.pathsep + os.environ.get("PATH", "")
 
         import clr
+
         clr.AddReference(
             os.path.join(adomd_dll_path, "Microsoft.AnalysisServices.AdomdClient.dll")
         )
 
         from pyadomd import Pyadomd
+
         _Pyadomd = Pyadomd
         _xmla_available = True
         logger.info("XMLA: ADOMD.NET loaded — XMLA+REST dual mode")
@@ -312,7 +315,12 @@ def _execute_dax_xmla(
             for row in rows_raw[:max_rows]:
                 rows.append({h: v for h, v in zip(headers, row)})
 
-            return {"columns": headers, "rows": rows, "total_rows": len(rows_raw), "method": "xmla"}
+            return {
+                "columns": headers,
+                "rows": rows,
+                "total_rows": len(rows_raw),
+                "method": "xmla",
+            }
         finally:
             conn.close()
     except Exception as e:
@@ -487,7 +495,9 @@ async def _tool_fabric_dax_query_xmla(
 ) -> dict:
     """Execute DAX via XMLA only (no REST fallback). Errors if XMLA unavailable."""
     if not _check_xmla():
-        return {"error": "XMLA not available. Requires Windows with ADOMD.NET + pyadomd."}
+        return {
+            "error": "XMLA not available. Requires Windows with ADOMD.NET + pyadomd."
+        }
     return await asyncio.to_thread(_execute_dax_xmla, query, dataset, max_rows)
 
 
@@ -732,7 +742,9 @@ async def _tool_fabric_get_pipeline_runs(
         return {"error": str(e)}
 
 
-async def _tool_fabric_trigger_pipeline(workspace_id: str, pipeline_id: str, **_) -> dict:
+async def _tool_fabric_trigger_pipeline(
+    workspace_id: str, pipeline_id: str, **_
+) -> dict:
     """Trigger pipeline run. Fire-and-forget.
 
     For status tracking use `fabric_run_pipeline` (LRO MCP tool) instead —
@@ -1416,9 +1428,21 @@ async def health():
 async def list_tools():
     """List available tools with their parameter schemas."""
     dax_params = {
-        "query": {"type": "string", "description": "DAX EVALUATE query", "required": True},
-        "max_rows": {"type": "integer", "description": "Max rows to return", "default": 500},
-        "dataset": {"type": "string", "description": "Dataset name", "default": DEFAULT_DATASET},
+        "query": {
+            "type": "string",
+            "description": "DAX EVALUATE query",
+            "required": True,
+        },
+        "max_rows": {
+            "type": "integer",
+            "description": "Max rows to return",
+            "default": 500,
+        },
+        "dataset": {
+            "type": "string",
+            "description": "Dataset name",
+            "default": DEFAULT_DATASET,
+        },
     }
     tool_schemas = {
         "fabric_dax_query": {
@@ -1508,7 +1532,9 @@ async def call_tool(req: CallToolRequest, request: Request):
         if provided_key != API_KEY:
             return JSONResponse(
                 status_code=401,
-                content={"error": "Invalid or missing authentication (Bearer token or X-API-Key)"},
+                content={
+                    "error": "Invalid or missing authentication (Bearer token or X-API-Key)"
+                },
             )
 
     tool_fn = TOOLS.get(req.name)

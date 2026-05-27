@@ -31,7 +31,9 @@ def log(msg: str):
 class TokenManager:
     """MSAL token manager with silent refresh."""
 
-    def __init__(self, client_id: str, tenant_id: str, scopes: list[str], cache_dir: str):
+    def __init__(
+        self, client_id: str, tenant_id: str, scopes: list[str], cache_dir: str
+    ):
         self.scopes = scopes
         self.cache_dir = os.path.expanduser(cache_dir)
         self.cache_file = os.path.join(self.cache_dir, "token_cache.bin")
@@ -67,7 +69,9 @@ class TokenManager:
             self._save_cache()
             return result["access_token"]
 
-        raise RuntimeError(f"Auth failed: {result.get('error_description', json.dumps(result))}")
+        raise RuntimeError(
+            f"Auth failed: {result.get('error_description', json.dumps(result))}"
+        )
 
     def _save_cache(self):
         if self.cache.has_state_changed:
@@ -84,10 +88,12 @@ class McpProxy:
         self.token_manager = token_manager
         self.session_id: str | None = None
         self.http = requests.Session()
-        self.http.headers.update({
-            "Content-Type": "application/json",
-            "Accept": "application/json, text/event-stream",
-        })
+        self.http.headers.update(
+            {
+                "Content-Type": "application/json",
+                "Accept": "application/json, text/event-stream",
+            }
+        )
 
     def _get_headers(self) -> dict:
         token = self.token_manager.get_token()
@@ -141,17 +147,21 @@ class McpProxy:
                 self._write(resp.json())
 
         except requests.exceptions.Timeout:
-            self._write({
-                "jsonrpc": "2.0",
-                "id": message.get("id"),
-                "error": {"code": -32000, "message": "Request timed out (120s)"},
-            })
+            self._write(
+                {
+                    "jsonrpc": "2.0",
+                    "id": message.get("id"),
+                    "error": {"code": -32000, "message": "Request timed out (120s)"},
+                }
+            )
         except requests.exceptions.ConnectionError as e:
-            self._write({
-                "jsonrpc": "2.0",
-                "id": message.get("id"),
-                "error": {"code": -32000, "message": f"Connection error: {e}"},
-            })
+            self._write(
+                {
+                    "jsonrpc": "2.0",
+                    "id": message.get("id"),
+                    "error": {"code": -32000, "message": f"Connection error: {e}"},
+                }
+            )
 
     def _write(self, message: dict) -> None:
         """Write a JSON-RPC message to stdout."""
@@ -177,11 +187,13 @@ class McpProxy:
                 # Try to send error response if we have a message ID
                 try:
                     msg = json.loads(line)
-                    self._write({
-                        "jsonrpc": "2.0",
-                        "id": msg.get("id"),
-                        "error": {"code": -32603, "message": str(e)},
-                    })
+                    self._write(
+                        {
+                            "jsonrpc": "2.0",
+                            "id": msg.get("id"),
+                            "error": {"code": -32603, "message": str(e)},
+                        }
+                    )
                 except Exception:
                     pass
 
@@ -189,12 +201,28 @@ class McpProxy:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="MCP stdio-to-HTTP proxy with MSAL token refresh")
-    parser.add_argument("--url", required=True, help="Remote MCP server URL (e.g. https://d365.majans.com/mcp/)")
-    parser.add_argument("--client-id", required=True, help="Entra app client ID for delegated auth")
-    parser.add_argument("--tenant-id", default="d54794b1-f598-4c0f-a276-6039a39774ac", help="Entra tenant ID")
+    parser = argparse.ArgumentParser(
+        description="MCP stdio-to-HTTP proxy with MSAL token refresh"
+    )
+    parser.add_argument(
+        "--url",
+        required=True,
+        help="Remote MCP server URL (e.g. https://d365.majans.com/mcp/)",
+    )
+    parser.add_argument(
+        "--client-id", required=True, help="Entra app client ID for delegated auth"
+    )
+    parser.add_argument(
+        "--tenant-id",
+        default="d54794b1-f598-4c0f-a276-6039a39774ac",
+        help="Entra tenant ID",
+    )
     parser.add_argument("--scopes", required=True, help="Space-separated OAuth scopes")
-    parser.add_argument("--cache-dir", required=True, help="Directory for MSAL token cache (e.g. ~/.connector-d365)")
+    parser.add_argument(
+        "--cache-dir",
+        required=True,
+        help="Directory for MSAL token cache (e.g. ~/.connector-d365)",
+    )
     args = parser.parse_args()
 
     scopes = args.scopes.split()
