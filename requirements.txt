@@ -1,7 +1,7 @@
 pyadomd==0.1.1
 python-dotenv==1.2.1
 azure-identity==1.25.2
-requests==2.32.5
+requests==2.33.0
 mcp>=1.0.0
 PyJWT>=2.8.0
 cryptography>=42.0.0
