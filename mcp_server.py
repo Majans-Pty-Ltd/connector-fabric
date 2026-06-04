@@ -26,7 +26,7 @@ TENANT_ID = os.getenv("AZURE_TENANT_ID")
 CLIENT_ID = os.getenv("AZURE_CLIENT_ID")
 CLIENT_SECRET = os.getenv("AZURE_CLIENT_SECRET")
 
-# Workspace registry: 6 Fabric workspaces, 18 datasets
+# Workspace registry: 7 Fabric workspaces, 21 datasets
 WORKSPACES = {
     "PRODUCT": {
         "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/PRODUCT",
@@ -50,7 +50,9 @@ WORKSPACES = {
             "AM": "Asset management",
             "CUSTOMER SERVICE v2": "Customer service metrics",
             "INVENTORYV2": "Inventory management",
+            "MACHINE": "OEE / SCADA machine performance — Ignition historian tags, machine states, alarms, A/P/Q measures, linked to D365 production orders",
             "MANUFACTURING V3": "Production & supply chain",
+            "MCPHEE_COST": "McPhee 3PL warehousing & distribution invoice costs — pallet storage/despatch charges, cost/pallet, by warehouse",
             "PURCHASINGV3": "Vendor SIFOT/DIFOT, PO delivery, supplier scoring",
         },
     },
@@ -67,7 +69,7 @@ WORKSPACES = {
     "FIELD": {
         "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/FIELD",
         "datasets": {
-            "FIELD": "Field marketing — store audits, planogram compliance, distribution",
+            "FIELD": "Field marketing — store sales, stock, ranging, distribution, Metcash B2B",
         },
     },
     "HR": {
@@ -277,18 +279,21 @@ def _to_markdown_table(headers: list, rows: list, max_rows: int = 100) -> str:
 mcp = FastMCP(
     "fabric",
     instructions=(
-        "Microsoft Fabric MCP server for Majans — provides access to 15 semantic models across 4 workspaces "
-        "(PRODUCT, DEMAND, SUPPLY, REVIEW) via DAX queries (XMLA), static schema lookups, "
+        "Microsoft Fabric MCP server for Majans — provides access to 21 semantic models across 7 workspaces "
+        "(PRODUCT, DEMAND, SUPPLY, REVIEW, FIELD, HR, Majans Fabric) via DAX queries (XMLA), static schema lookups, "
         "workspace management, pipeline operations, and dataset refresh via the Fabric REST API.\n\n"
         "All XMLA tools take a 'dataset' parameter — the semantic model name. "
-        "Default dataset is SCANv2. Use fabric_list_datasets() to see all 15 datasets.\n\n"
+        "Default dataset is SCANv2. Use fabric_list_datasets() to see all 21 datasets.\n\n"
         "For fast schema lookups (no XMLA connection needed), use fabric_get_schema(dataset). "
         "For live queries, use fabric_list_tables(dataset) and fabric_list_measures(dataset).\n\n"
         "Datasets by workspace:\n"
-        "  PRODUCT: CONSUMERv2\n"
+        "  PRODUCT: CONSUMERv2, MAGIC\n"
         "  DEMAND: SALESv2, SCANv2, STORE, SCAN TOTAL GROCERY\n"
-        "  SUPPLY: AM, CUSTOMER SERVICE v2, INVENTORYV2, MANUFACTURING V3, PURCHASINGV3\n"
-        "  REVIEW: FINANCIALv2, PLANAUDIT, THREE-WAY, PRODUCTIONCOST, COSTINGv2"
+        "  SUPPLY: AM, CUSTOMER SERVICE v2, INVENTORYV2, MACHINE, MANUFACTURING V3, MCPHEE_COST, PURCHASINGV3\n"
+        "  REVIEW: FINANCIALv2, PLANAUDIT, THREE-WAY, PRODUCTIONCOST, COSTINGv2\n"
+        "  FIELD: FIELD\n"
+        "  HR: HR\n"
+        "  Majans Fabric: MajansLakehouse"
     ),
 )
 

@@ -57,6 +57,7 @@ WORKSPACES = {
         "endpoint": "powerbi://api.powerbi.com/v1.0/myorg/PRODUCT",
         "datasets": {
             "CONSUMERv2": "Consumer insights model",
+            "MAGIC": "NPD pipeline, gate process, product management",
         },
     },
     "DEMAND": {
@@ -74,7 +75,9 @@ WORKSPACES = {
             "AM": "Asset management",
             "CUSTOMER SERVICE v2": "Customer service metrics",
             "INVENTORYV2": "Inventory management",
+            "MACHINE": "OEE / SCADA machine performance — Ignition historian tags, machine states, alarms, A/P/Q measures, linked to D365 production orders",
             "MANUFACTURING V3": "Production & supply chain",
+            "MCPHEE_COST": "McPhee 3PL warehousing & distribution invoice costs — pallet storage/despatch charges, cost/pallet, by warehouse",
             "PURCHASINGV3": "Vendor SIFOT/DIFOT, PO delivery, supplier scoring",
         },
     },
